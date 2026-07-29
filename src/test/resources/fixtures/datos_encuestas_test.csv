@@ -1,0 +1,6 @@
+id,estamento,factor,calificacion,periodo
+R001,ESTUDIANTE,Plan de Estudios,5,2026-1
+R002,ESTUDIANTE,Infraestructura,4,2026-1
+R003,PROFESOR,Plan de Estudios,4,2026-1
+R004,EGRESADO,Plan de Estudios,3,2026-1
+R005,EMPLEADOR,Infraestructura,5,2026-1

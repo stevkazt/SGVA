@@ -1,0 +1,9 @@
+# Ignore experimental log and tracking
+PROMPT_LOG.md
+
+# Build & System Artifacts
+.gradle/
+build/
+.idea/
+*.iml
+out/
