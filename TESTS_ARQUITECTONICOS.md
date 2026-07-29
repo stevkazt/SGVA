@@ -53,7 +53,3 @@ En la metodología del proyecto, el desarrollo es asistido por un agente de Inte
 3. **Métrica de Desviación:** Si una prueba falla tras la ejecución de un prompt, el fallo se registra objetivamente en el log del experimento (`PROMPT_LOG.md`) como un evento de *Restauración Arquitectónica*, permitiendo cuantificar el grado de supervisión requerido durante el proceso.
 
 ---
-
-## 5. Conclusión
-
-La suite de pruebas arquitectónicas no requiere justificaciones especulativas sobre el comportamiento de las herramientas utilizadas; se justifica por sí misma como un **instrumento de medición estandarizado** alineado con los principios de la ingeniería de software clásica y las normas internacionales de calidad de software.
