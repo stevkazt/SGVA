@@ -10,7 +10,7 @@ El proyecto está estructurado bajo los principios de **Arquitectura Limpia (Cle
 
 ## Stack Tecnológico
 * **Lenguaje:** Kotlin (JVM 17)
-* **Framework:** Spring Boot 3.x
+* **Framework:** Spring Boot 4.1.0
 * **Gestor de Dependencias:** Gradle (Kotlin DSL)
 * **Pruebas de Arquitectura:** ArchUnit
 * **Análisis de Código Estático:** SonarQube local

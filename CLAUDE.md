@@ -6,7 +6,7 @@
 
 ## Stack Tecnológico y Reglas Centrales
 - **Lenguaje:** Kotlin (JVM 17)
-- **Framework:** Spring Boot 3.x con Gradle Kotlin DSL (`build.gradle.kts`)
+- **Framework:** Spring Boot 4.1.0 con Gradle Kotlin DSL (`build.gradle.kts`)
 - **Patrón de Arquitectura:** Arquitectura Limpia (Puertos y Adaptadores)
 
 ## Restricciones Arquitectónicas (Estrictas)
