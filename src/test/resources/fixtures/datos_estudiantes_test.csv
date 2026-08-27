@@ -1,11 +1,11 @@
 id,programa,facultad,cohorte,estado,puntajeSaberPro
-EST-20211-001,Ingeniería de Telecomunicaciones,Ingeniería,2021-1,GRADUADO,210
-EST-20211-002,Ingeniería de Telecomunicaciones,Ingeniería,2021-1,GRADUADO,195
-EST-20211-003,Ingeniería de Telecomunicaciones,Ingeniería,2021-1,DESERTOR,
-EST-20221-004,Ingeniería de Telecomunicaciones,Ingeniería,2022-1,MATRICULADO,180
-EST-20221-005,Ingeniería de Telecomunicaciones,Ingeniería,2022-1,MATRICULADO,
-EST-20231-006,Ingeniería de Sistemas,Ingeniería,2023-1,MATRICULADO,
-EST-20231-007,Ingeniería de Sistemas,Ingeniería,2023-1,DESERTOR,
-EST-20241-008,Ingeniería de Telecomunicaciones,Ingeniería,2024-1,MATRICULADO,
-EST-20202-009,Ingeniería de Sistemas,Ingeniería,2020-2,GRADUADO,225
-EST-20202-010,Ingeniería de Telecomunicaciones,Ingeniería,2020-2,GRADUADO,188
+2021101,Ingeniería de Telecomunicaciones,Ingeniería,20211,GRADUADO,210
+2021102,Ingeniería de Telecomunicaciones,Ingeniería,20211,GRADUADO,195
+2021103,Ingeniería de Telecomunicaciones,Ingeniería,20211,DESERTOR,
+2022104,Ingeniería de Telecomunicaciones,Ingeniería,20221,MATRICULADO,180
+2022105,Ingeniería de Telecomunicaciones,Ingeniería,20221,MATRICULADO,
+2023106,Ingeniería de Sistemas,Ingeniería,20231,MATRICULADO,
+2023107,Ingeniería de Sistemas,Ingeniería,20231,DESERTOR,
+2024108,Ingeniería de Telecomunicaciones,Ingeniería,20241,MATRICULADO,
+2020209,Ingeniería de Sistemas,Ingeniería,20202,GRADUADO,225
+2020210,Ingeniería de Telecomunicaciones,Ingeniería,20202,GRADUADO,188
