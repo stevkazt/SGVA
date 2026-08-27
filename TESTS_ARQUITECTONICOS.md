@@ -37,10 +37,18 @@ Las verificaciones configuradas en `ArchitectureTest.kt` corresponden a práctic
 
 | Categoría | Regla Evaluada | Estándar / Práctica de Referencia |
 | :--- | :--- | :--- |
-| **Aislamiento de Capas** | El dominio y casos de uso no dependen de `infrastructure` ni de frameworks (`Spring`, `Jackson`). | *Clean Architecture* (Martin, 2017). Garantiza la independencia tecnológica del núcleo de negocio. |
-| **Desacoplamiento** | Prohibición de anotaciones del framework (`@Service`, `@Component`) en el núcleo. | Principio de Inversión de Dependencias (DIP). Mantiene la portabilidad del código de negocio sin atarlo a un runtime específico. |
-| **Convenciones de Nomenclatura** | Sufijos obligatorios (`UseCase`, `Repository`, `Exception`, `Controller`). | *Domain-Driven Design* (Evans, 2003) y Guías de Estilo Estándar de Kotlin/Java. Facilita la legibilidad y la navegabilidad del proyecto. |
+| **Aislamiento de Capas** | El dominio no depende de `usecases`, `infrastructure`, ni de frameworks o librerías externas (`Spring`, `Jakarta`/`javax`, `Jackson`); los casos de uso no dependen de `infrastructure` ni de `Spring`/`Jakarta`/`javax`. | *Clean Architecture* (Martin, 2017). Garantiza la independencia tecnológica del núcleo de negocio frente a cualquier framework o especificación externa, no solo Spring. |
+| **Desacoplamiento** | Prohibición de anotaciones del framework (`@Service`, `@Component`, `@Autowired`) en el dominio y los casos de uso. | Principio de Inversión de Dependencias (DIP). Mantiene la portabilidad del código de negocio sin atarlo a un runtime específico. |
+| **Convenciones de Nomenclatura** | Sufijos obligatorios: `UseCase` para casos de uso; `Repository` **o** `Port` para interfaces del dominio; `Exception` para excepciones de dominio; `Controller` para adaptadores REST anotados con `@RestController`. | *Domain-Driven Design* (Evans, 2003) y Guías de Estilo Estándar de Kotlin/Java. El doble sufijo `Repository`/`Port` refleja que el dominio expone tanto puertos de persistencia (`AcademicDataRepository`) como puertos de servicio genéricos (`DocumentParserPort`), ambos igualmente válidos como interfaces de salida (Outbound Ports). |
 | **Calidad de Código** | Prohibición del uso de salidas estándar por consola (`println`). | Práctica estándar de registro (Logging) en sistemas empresariales (OWASP / Clean Code). |
+
+### 3.1. Nota sobre cobertura de bloques `catch` vacíos
+
+`CLAUDE.md` prohíbe explícitamente los bloques `catch` vacíos como requisito de calidad de código. Esta regla **no está implementada como prueba ArchUnit** en `ArchitectureTest.kt`, ya que ArchUnit no ofrece una regla predefinida equivalente a `GeneralCodingRules.NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS` para este caso, y su verificación depende de análisis de flujo a nivel de método más propio de un analizador estático de código que de un verificador de dependencias entre paquetes.
+
+Esta restricción se delega a **SonarQube**, específicamente a la regla **S108** (*"Empty blocks should be removed or contain a comment"*), que sí opera a ese nivel de granularidad. Esta división de responsabilidades es intencional: ArchUnit gobierna la estructura y las dependencias entre capas (Tasa de Violaciones Arquitectónicas por KLOC); SonarQube gobierna la calidad interna del código (Ratio de Deuda Técnica). Verificar lo mismo en ambos instrumentos introduciría doble conteo al comparar las dos métricas entre versiones (V1–V4).
+
+Verificado: la regla S108 ("Nested blocks of code should not be left empty") está activa en el Quality Profile de Kotlin usado para este proyecto (verificado el 27 de agosto de 2026, vía Rules → activation=true → s108, perfil Kotlin). Este gap queda cerrado sin necesidad de una regla ArchUnit adicional.
 
 ---
 
