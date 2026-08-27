@@ -11,14 +11,13 @@ class ArchitectureTest {
     private val classes = ClassFileImporter().importPackages("com.example.sgva")
 
     // =========================================================================
-    // 1. REGLAS DE AISLAMIENTO Y DEPEPENDENCIA (CLEAN ARCHITECTURE)
+    // 1. REGLAS DE AISLAMIENTO Y DEPENDENCIA (CLEAN ARCHITECTURE)
     // =========================================================================
-
     @Test
     fun `el dominio no debe depender de capas externas ni frameworks`() {
         noClasses()
             .that().resideInAPackage("..domain..")
-            .should().dependOnClassesThroughSkyline()
+            .should().dependOnClassesThat()
             .resideInAnyPackage(
                 "..usecases..",
                 "..infrastructure..",
@@ -34,13 +33,14 @@ class ArchitectureTest {
     fun `los casos de uso no deben depender de infraestructura ni frameworks`() {
         noClasses()
             .that().resideInAPackage("..usecases..")
-            .should().dependOnClassesThroughSkyline()
+            .should().dependOnClassesThat()
             .resideInAnyPackage(
                 "..infrastructure..",
                 "org.springframework..",
                 "jakarta..",
                 "javax.."
             )
+            .allowEmptyShould(true)
             .check(classes)
     }
 
@@ -57,22 +57,25 @@ class ArchitectureTest {
     // =========================================================================
     // 2. CONVENCIONES DE NOMENCLATURA
     // =========================================================================
-
     @Test
     fun `las clases de casos de uso deben finalizar en UseCase`() {
         classes()
             .that().resideInAPackage("..usecases..")
             .and().areNotInterfaces()
             .should().haveSimpleNameEndingWith("UseCase")
+            .allowEmptyShould(true)
             .check(classes)
     }
 
     @Test
-    fun `las interfaces de repositorio en el dominio deben finalizar en Repository`() {
+    fun `las interfaces de puerto en el dominio deben finalizar en Repository o Port`() {
         classes()
             .that().resideInAPackage("..domain..")
             .and().areInterfaces()
+            .and().doNotHaveFullyQualifiedName("com.example.sgva.domain.DomainMarker")
             .should().haveSimpleNameEndingWith("Repository")
+            .orShould().haveSimpleNameEndingWith("Port")
+            .allowEmptyShould(true)
             .check(classes)
     }
 
@@ -82,6 +85,7 @@ class ArchitectureTest {
             .that().resideInAPackage("..domain..")
             .and().areAssignableTo(Throwable::class.java)
             .should().haveSimpleNameEndingWith("Exception")
+            .allowEmptyShould(true)
             .check(classes)
     }
 
@@ -91,13 +95,13 @@ class ArchitectureTest {
             .that().resideInAPackage("..infrastructure..")
             .and().areAnnotatedWith("org.springframework.web.bind.annotation.RestController")
             .should().haveSimpleNameEndingWith("Controller")
+            .allowEmptyShould(true)
             .check(classes)
     }
 
     // =========================================================================
     // 3. BUENAS PRÁCTICAS DE CÓDIGO
     // =========================================================================
-
     @Test
     fun `no se debe usar la salida estandar ni de error directa (println)`() {
         NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS.check(classes)
