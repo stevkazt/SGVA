@@ -12,6 +12,7 @@ Dado que muchas interacciones involucran secuencias largas de ediciones (no un s
 | ID | Iteración | Herramienta | Tipo | Resumen | ArchUnit | Deuda_SonarQube | Detalle |
 |---|---|---|---|---|---|---|---|
 <!-- INDEX_ROW_ANCHOR -->
+| P-005 | V1 | Claude Code CLI | Generación — indicadores de calidad, Módulo 2 (docentes) | Distribución de formación y capacidad instalada vía IndicadorCalidad; EquivalenciaTiempoCompleto con factores provisionales documentados | PASS 8/8 (0 restauraciones) | A — 0.1% (0 issues nuevos) | [logs/V1/P-005.md](logs/V1/P-005.md) |
 | P-004 | V1 | Claude Code CLI | Generación — indicadores de calidad, Módulo 1 (estudiantes) | Evolución de matrícula, tasa de deserción y consolidación Saber Pro vía IndicadorCalidad; Clock inyectado para ventana de 7 años | PASS 8/8 (2 restauraciones autodetectadas) | A — 0.1% (0 issues nuevos) | [logs/V1/P-004.md](logs/V1/P-004.md) |
 | P-003 | V1 | Claude Code CLI | Generación — carga CSV/Excel, validación y normalización | Ingesta de archivos vía DocumentParserPort (FastCSV/Apache POI), normalización en infraestructura, reutiliza casos de uso de registro | PASS 8/8 | A — 0.2% (3 issues nuevos, 15min deuda) | [logs/V1/P-003.md](logs/V1/P-003.md) |
 | P-002 | V1 | Claude Code CLI | Generación — casos de uso, puerto de persistencia y adaptador en memoria | Registrar/consultar Estudiante y Docente vía puerto único AcademicDataRepository, adaptador en memoria | PASS 8/8 | A — 0.0% (2 issues preexistentes, 0 nuevos) | [logs/V1/P-002.md](logs/V1/P-002.md) |
