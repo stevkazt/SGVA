@@ -38,5 +38,12 @@ data class IndicadorCalidad(
         const val EVOLUCION_MATRICULA: String = "Evolución de Matrícula"
         const val TASA_DESERCION: String = "Tasa de Deserción"
         const val PROMEDIO_SABER_PRO: String = "Promedio Saber Pro"
+
+        /** Nombres canónicos de los indicadores del Módulo 2 (`DESIGN_SGVA.md` §1). */
+        const val DISTRIBUCION_FORMACION: String = "Distribución de Formación"
+        const val RELACION_ESTUDIANTE_PROFESOR: String = "Relación Estudiante/Profesor"
+
+        /** Nombre del indicador de distribución para un nivel de formación concreto. */
+        fun distribucionFormacionPara(nivel: String): String = "$DISTRIBUCION_FORMACION - $nivel"
     }
 }
