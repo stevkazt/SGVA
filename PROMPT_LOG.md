@@ -12,6 +12,7 @@ Dado que muchas interacciones involucran secuencias largas de ediciones (no un s
 | ID | Iteración | Herramienta | Tipo | Resumen | ArchUnit | Deuda_SonarQube | Detalle |
 |---|---|---|---|---|---|---|---|
 <!-- INDEX_ROW_ANCHOR -->
+| P-003 | V1 | Claude Code CLI | Generación — carga CSV/Excel, validación y normalización | Ingesta de archivos vía DocumentParserPort (FastCSV/Apache POI), normalización en infraestructura, reutiliza casos de uso de registro | PASS 8/8 | A — 0.2% (3 issues nuevos, 15min deuda) | [logs/V1/P-003.md](logs/V1/P-003.md) |
 | P-002 | V1 | Claude Code CLI | Generación — casos de uso, puerto de persistencia y adaptador en memoria | Registrar/consultar Estudiante y Docente vía puerto único AcademicDataRepository, adaptador en memoria | PASS 8/8 | A — 0.0% (2 issues preexistentes, 0 nuevos) | [logs/V1/P-002.md](logs/V1/P-002.md) |
 | P-001 | V1 | Claude Code CLI | Generación inicial | Modelado de entidades de dominio Estudiante y Docente, con validación de formato (AAAAS) y rango (Saber Pro) vía excepciones propias | PASS | A — 2 Code Smells | [logs/V1/P-001.md](logs/V1/P-001.md) |
 | P-000 | V0 | Manual | Configuración | Configuración base del framework e instrumentación de pruebas | PASS | 3 Code Smells (Línea Base) | [logs/V0/P-000.md](logs/V0/P-000.md) |

@@ -111,7 +111,6 @@ Interfaces que definen los límites por los cuales la lógica de negocio se comu
 ### Puertos de Salida (Outbound/Driven Ports)
 - **AcademicDataRepository**: Interfaz para persistir o recuperar las entidades de dominio procesadas (Spring Data/In-Memory).
 - **DocumentParserPort**: Interfaz para delegar la extracción física de datos según el tipo de archivo (.csv / .xlsx). *(Renombrado desde `DocumentParser` para cumplir la convención de sufijos `Repository`/`Port` de `CLAUDE.md`.)*
-
 ---
 
 ## 4. Capa de Adaptadores e Infraestructura (Detalles Externos)
@@ -123,8 +122,7 @@ Implementaciones técnicas expuestas al cambio tecnológico. El Dominio e interf
 
 ### Adaptadores de Salida (Secondary Adapters)
 - **ApachePoiExcelParser**: Implementación física encargada de abrir y parsear archivos binarios de Excel (.xlsx).
-- **OpenCsvParser**: Implementación física encargada de procesar archivos delimitados por comas (.csv).
-
+- **CsvDocumentParser**: Implementación física encargada de procesar archivos delimitados por comas (.csv). *(Diseño original especificaba OpenCSV/`OpenCsvParser`; en P-003, Claude Code CLI sustituyó por la librería **FastCSV**, justificando la decisión por ausencia de dependencias transitivas y mejor alineación con el stack de Spring Boot 4. Aceptado por el investigador; ver `logs/V1/P-003.md` para el detalle completo de la decisión y su justificación.)*
 ---
 
 ## 5. Protocolo de Validación en Origen
