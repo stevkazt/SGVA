@@ -8,7 +8,8 @@ package com.example.sgva.domain
  * Las reglas de validación se aplican en el dominio y nunca se delegan
  * silenciosamente a la infraestructura (Sección 0.1 de `DESIGN_SGVA.md`).
  */
-open class DominioException(mensaje: String) : IllegalArgumentException(mensaje)
+open class DominioException(mensaje: String, causa: Throwable? = null) :
+    IllegalArgumentException(mensaje, causa)
 
 /** Se lanza cuando un campo obligatorio de una entidad llega vacío o en blanco. */
 class CampoRequeridoVacioException(campo: String) :
@@ -47,3 +48,19 @@ class PuntajeSaberProFueraDeRangoException(valor: Int) :
  */
 class EntidadDuplicadaException(tipoEntidad: String, id: String) :
     DominioException("Ya existe un registro de $tipoEntidad con id '$id'.")
+
+/**
+ * Se lanza cuando un archivo cargado desde el exterior no puede procesarse: le
+ * faltan columnas obligatorias, está corrupto o contiene datos que —ni siquiera
+ * tras la normalización en infraestructura— pueden convertirse en una entidad
+ * válida (`DESIGN_SGVA.md` §5.2).
+ *
+ * Es una excepción controlada: los adaptadores de parseo la usan para envolver
+ * cualquier fallo técnico de la librería subyacente y dar una alerta clara sin
+ * romper la ejecución de la aplicación.
+ *
+ * @param mensaje descripción del problema, con el nombre del archivo y —si aplica— el número de fila.
+ * @param causa excepción técnica original, si la hubo.
+ */
+class FormatoArchivoInvalidoException(mensaje: String, causa: Throwable? = null) :
+    DominioException(mensaje, causa)
