@@ -2,6 +2,8 @@ package com.example.sgva.infrastructure.configuracion
 
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.DocumentParserPort
+import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
+import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
 import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
@@ -74,4 +76,16 @@ class ConfiguracionCasosDeUso {
     @Bean
     fun consolidarPuntajesSaberProUseCase(repositorio: AcademicDataRepository): ConsolidarPuntajesSaberProUseCase =
         ConsolidarPuntajesSaberProUseCase(repositorio)
+
+    @Bean
+    fun calcularDistribucionFormacionUseCase(
+        repositorio: AcademicDataRepository,
+    ): CalcularDistribucionFormacionUseCase =
+        CalcularDistribucionFormacionUseCase(repositorio)
+
+    @Bean
+    fun calcularCapacidadInstaladaUseCase(
+        repositorio: AcademicDataRepository,
+    ): CalcularCapacidadInstaladaUseCase =
+        CalcularCapacidadInstaladaUseCase(repositorio)
 }
