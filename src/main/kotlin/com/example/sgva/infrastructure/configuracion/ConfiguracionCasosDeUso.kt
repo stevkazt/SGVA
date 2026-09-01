@@ -2,6 +2,9 @@ package com.example.sgva.infrastructure.configuracion
 
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.DocumentParserPort
+import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
+import com.example.sgva.usecases.CalcularTasaDesercionUseCase
+import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
@@ -10,6 +13,7 @@ import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.time.Clock
 
 /**
  * Composición (wiring) de los casos de uso como beans de Spring.
@@ -51,4 +55,23 @@ class ConfiguracionCasosDeUso {
         registrarDocenteUseCase: RegistrarDocenteUseCase,
     ): ProcesarDatosDocentesUseCase =
         ProcesarDatosDocentesUseCase(parsers, registrarDocenteUseCase)
+
+    /** Reloj del sistema; se aísla en un bean para poder fijarlo en pruebas. */
+    @Bean
+    fun reloj(): Clock = Clock.systemDefaultZone()
+
+    @Bean
+    fun calcularEvolucionMatriculaUseCase(
+        repositorio: AcademicDataRepository,
+        reloj: Clock,
+    ): CalcularEvolucionMatriculaUseCase =
+        CalcularEvolucionMatriculaUseCase(repositorio, reloj)
+
+    @Bean
+    fun calcularTasaDesercionUseCase(repositorio: AcademicDataRepository): CalcularTasaDesercionUseCase =
+        CalcularTasaDesercionUseCase(repositorio)
+
+    @Bean
+    fun consolidarPuntajesSaberProUseCase(repositorio: AcademicDataRepository): ConsolidarPuntajesSaberProUseCase =
+        ConsolidarPuntajesSaberProUseCase(repositorio)
 }
