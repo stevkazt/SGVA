@@ -64,3 +64,18 @@ class EntidadDuplicadaException(tipoEntidad: String, id: String) :
  */
 class FormatoArchivoInvalidoException(mensaje: String, causa: Throwable? = null) :
     DominioException(mensaje, causa)
+
+/**
+ * Se lanza cuando el cálculo de un [IndicadorCalidad] produce un valor que no es
+ * un número finito (`NaN` o infinito), señal de una división por cero o de datos
+ * corruptos que no se filtraron antes del cálculo.
+ */
+class ValorIndicadorInvalidoException(nombre: String, valor: Double) :
+    DominioException("El indicador '$nombre' produjo un valor no finito ($valor).")
+
+/**
+ * Se lanza cuando no hay datos suficientes para calcular un indicador: una
+ * cohorte o periodo sin estudiantes registrados, o un conjunto sin ningún
+ * puntaje Saber Pro presentado.
+ */
+class DatosInsuficientesException(mensaje: String) : DominioException(mensaje)
