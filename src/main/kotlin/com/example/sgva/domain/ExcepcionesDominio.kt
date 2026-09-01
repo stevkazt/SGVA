@@ -36,3 +36,14 @@ class PuntajeSaberProFueraDeRangoException(valor: Int) :
         "El puntaje Saber Pro debe estar entre ${Estudiante.RANGO_SABER_PRO.first} y " +
             "${Estudiante.RANGO_SABER_PRO.last} inclusive; valor recibido: $valor.",
     )
+
+/**
+ * Se lanza al intentar registrar una entidad cuyo identificador ya existe en el
+ * repositorio. El registro es una operación de alta: modificar un registro
+ * existente queda fuera del alcance de esta versión.
+ *
+ * @param tipoEntidad nombre legible de la entidad (ej.: `"estudiante"`, `"docente"`).
+ * @param id identificador que ya estaba registrado.
+ */
+class EntidadDuplicadaException(tipoEntidad: String, id: String) :
+    DominioException("Ya existe un registro de $tipoEntidad con id '$id'.")
