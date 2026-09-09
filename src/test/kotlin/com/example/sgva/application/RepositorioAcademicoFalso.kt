@@ -7,8 +7,10 @@ import com.example.sgva.domain.Estudiante
 /**
  * Doble de prueba en memoria del puerto [AcademicDataRepository]. Permite
  * ejercitar los casos de uso sin depender del adaptador de infraestructura.
+ * Pública (no `internal`) para poder exponerse como bean de Spring en las
+ * pruebas de integración de `infrastructure.web` (`ConfiguracionCasosDeUsoDePrueba`).
  */
-internal class RepositorioAcademicoFalso : AcademicDataRepository {
+class RepositorioAcademicoFalso : AcademicDataRepository {
 
     private val estudiantes = LinkedHashMap<String, Estudiante>()
     private val docentes = LinkedHashMap<String, Docente>()
@@ -30,4 +32,10 @@ internal class RepositorioAcademicoFalso : AcademicDataRepository {
     override fun buscarDocentePorId(id: String): Docente? = docentes[id]
 
     override fun listarDocentes(): List<Docente> = docentes.values.toList()
+
+    /** Vacía ambos almacenes; útil para reutilizar la misma instancia entre pruebas. */
+    fun limpiar() {
+        estudiantes.clear()
+        docentes.clear()
+    }
 }
