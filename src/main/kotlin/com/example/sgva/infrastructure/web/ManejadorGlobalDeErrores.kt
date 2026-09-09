@@ -31,7 +31,7 @@ class ManejadorGlobalDeErrores {
     /** No hay datos suficientes para calcular el indicador solicitado. */
     @ExceptionHandler(DatosInsuficientesException::class)
     fun manejarDatosInsuficientes(ex: DatosInsuficientesException): ResponseEntity<ErrorRespuesta> =
-        responder(HttpStatus.UNPROCESSABLE_ENTITY, ex.message)
+        responder(HttpStatus.UNPROCESSABLE_CONTENT, ex.message)
 
     /** Resto de violaciones de reglas de negocio (formato inválido, campo vacío, archivo no soportado, etc.). */
     @ExceptionHandler(DominioException::class)
