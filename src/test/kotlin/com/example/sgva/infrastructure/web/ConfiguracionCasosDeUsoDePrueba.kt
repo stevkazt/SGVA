@@ -7,14 +7,19 @@ import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
 import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
 import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
+import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
+import com.example.sgva.usecases.ConsultarRespuestasEncuestaUseCase
+import com.example.sgva.usecases.GenerarMatrizRadarUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import java.time.Clock
@@ -98,4 +103,29 @@ class ConfiguracionCasosDeUsoDePrueba {
         repositorio: AcademicDataRepository,
     ): CalcularCapacidadInstaladaUseCase =
         CalcularCapacidadInstaladaUseCase(repositorio)
+
+    @Bean
+    fun registrarRespuestaEncuestaUseCase(repositorio: AcademicDataRepository): RegistrarRespuestaEncuestaUseCase =
+        RegistrarRespuestaEncuestaUseCase(repositorio)
+
+    @Bean
+    fun consultarRespuestasEncuestaUseCase(repositorio: AcademicDataRepository): ConsultarRespuestasEncuestaUseCase =
+        ConsultarRespuestasEncuestaUseCase(repositorio)
+
+    @Bean
+    fun procesarRespuestasEncuestasUseCase(
+        parsers: List<DocumentParserPort>,
+        registrarRespuestaEncuestaUseCase: RegistrarRespuestaEncuestaUseCase,
+    ): ProcesarRespuestasEncuestasUseCase =
+        ProcesarRespuestasEncuestasUseCase(parsers, registrarRespuestaEncuestaUseCase)
+
+    @Bean
+    fun calcularPonderacionLikertUseCase(repositorio: AcademicDataRepository): CalcularPonderacionLikertUseCase =
+        CalcularPonderacionLikertUseCase(repositorio)
+
+    @Bean
+    fun generarMatrizRadarUseCase(
+        calcularPonderacionLikertUseCase: CalcularPonderacionLikertUseCase,
+    ): GenerarMatrizRadarUseCase =
+        GenerarMatrizRadarUseCase(calcularPonderacionLikertUseCase)
 }

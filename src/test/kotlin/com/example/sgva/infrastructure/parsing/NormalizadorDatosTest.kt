@@ -38,4 +38,11 @@ class NormalizadorDatosTest {
         assertThrows<NumberFormatException> { NormalizadorDatos.enteroOpcional("N/A") }
         assertThrows<NumberFormatException> { NormalizadorDatos.enteroOpcional("210.5") }
     }
+
+    @Test
+    fun `el entero obligatorio admite un valor valido pero rechaza el vacio`() {
+        assertEquals(4, NormalizadorDatos.entero("4"))
+        assertThrows<NumberFormatException> { NormalizadorDatos.entero("") }
+        assertThrows<NumberFormatException> { NormalizadorDatos.entero(null) }
+    }
 }

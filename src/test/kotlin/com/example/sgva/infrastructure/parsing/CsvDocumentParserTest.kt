@@ -4,6 +4,7 @@ import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.FormatoArchivoInvalidoException
 import com.example.sgva.domain.NivelFormacion
 import com.example.sgva.domain.TipoDedicacion
+import com.example.sgva.domain.TipoEstamento
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -42,6 +43,21 @@ class CsvDocumentParserTest {
         assertTrue(docentes.all { it.periodo == "20261" })
         assertEquals(NivelFormacion.DOCTORADO, docentes.first().nivelFormacion)
         assertEquals(TipoDedicacion.MEDIO_TIEMPO, docentes.last().dedicacion)
+    }
+
+    @Test
+    fun `extrae las respuestas de encuesta del fixture y normaliza el periodo con guion`() {
+        val respuestas =
+            parser.extraerRespuestasEncuestas("datos_encuestas_test.csv", fixture("datos_encuestas_test.csv"))
+
+        assertEquals(5, respuestas.size)
+        assertTrue(respuestas.all { it.periodo == "20261" })
+        val primera = respuestas.first()
+        assertEquals("R001", primera.id)
+        assertEquals(TipoEstamento.ESTUDIANTE, primera.estamento)
+        assertEquals("Plan de Estudios", primera.factor)
+        assertEquals(5, primera.calificacion)
+        assertEquals(TipoEstamento.EMPLEADOR, respuestas.last().estamento)
     }
 
     @Test

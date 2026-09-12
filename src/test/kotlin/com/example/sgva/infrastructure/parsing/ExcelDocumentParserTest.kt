@@ -2,6 +2,7 @@ package com.example.sgva.infrastructure.parsing
 
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.FormatoArchivoInvalidoException
+import com.example.sgva.domain.TipoEstamento
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -50,6 +51,23 @@ class ExcelDocumentParserTest {
 
         assertEquals(1, docentes.size)
         assertEquals("20261", docentes.first().periodo)
+    }
+
+    @Test
+    fun `extrae respuestas de encuesta de un libro con celdas numericas y de texto`() {
+        val libro = xlsx(
+            listOf("id", "estamento", "factor", "calificacion", "periodo"),
+            listOf("R001", "estudiante", "Infraestructura", 4.0, "2026-1"),
+            listOf("R002", "PROFESOR", "Plan de Estudios", "5", "20261"),
+        )
+
+        val respuestas = parser.extraerRespuestasEncuestas("encuestas.xlsx", libro)
+
+        assertEquals(2, respuestas.size)
+        assertEquals(TipoEstamento.ESTUDIANTE, respuestas[0].estamento)
+        assertEquals(4, respuestas[0].calificacion)
+        assertEquals("20261", respuestas[0].periodo)
+        assertEquals(TipoEstamento.PROFESOR, respuestas[1].estamento)
     }
 
     @Test

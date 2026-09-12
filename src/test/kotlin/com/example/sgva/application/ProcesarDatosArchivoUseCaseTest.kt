@@ -5,8 +5,10 @@ import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -20,6 +22,8 @@ class ProcesarDatosArchivoUseCaseTest {
         ProcesarDatosEstudiantesUseCase(parsers, RegistrarEstudianteUseCase(repositorio))
     private val procesarDocentes =
         ProcesarDatosDocentesUseCase(parsers, RegistrarDocenteUseCase(repositorio))
+    private val procesarEncuestas =
+        ProcesarRespuestasEncuestasUseCase(parsers, RegistrarRespuestaEncuestaUseCase(repositorio))
 
     @Test
     fun `carga el archivo de estudiantes y registra cada fila mediante el caso de uso de registro`() {
@@ -47,6 +51,19 @@ class ProcesarDatosArchivoUseCaseTest {
         assertEquals(4, resultado.omitidos.size)
         assertEquals(4, repositorio.listarDocentes().size)
         assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
+    }
+
+    @Test
+    fun `carga el archivo de encuestas y registra cada fila mediante el caso de uso de registro`() {
+        val resultado = procesarEncuestas.ejecutar(
+            "datos_encuestas_test.csv",
+            fixture("datos_encuestas_test.csv"),
+        )
+
+        assertEquals(5, resultado.totalRegistrosLeidos)
+        assertEquals(5, resultado.registrados)
+        assertTrue(resultado.omitidos.isEmpty())
+        assertEquals(5, repositorio.listarRespuestasEncuesta().size)
     }
 
     @Test

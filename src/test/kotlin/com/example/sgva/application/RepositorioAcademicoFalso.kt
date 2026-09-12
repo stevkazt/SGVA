@@ -3,6 +3,7 @@ package com.example.sgva.application
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.RespuestaEncuesta
 
 /**
  * Doble de prueba en memoria del puerto [AcademicDataRepository]. Permite
@@ -14,6 +15,7 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
 
     private val estudiantes = LinkedHashMap<String, Estudiante>()
     private val docentes = LinkedHashMap<String, Docente>()
+    private val respuestasEncuesta = LinkedHashMap<String, RespuestaEncuesta>()
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante {
         estudiantes[estudiante.id] = estudiante
@@ -33,9 +35,19 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
 
     override fun listarDocentes(): List<Docente> = docentes.values.toList()
 
-    /** Vacía ambos almacenes; útil para reutilizar la misma instancia entre pruebas. */
+    override fun guardarRespuestaEncuesta(respuesta: RespuestaEncuesta): RespuestaEncuesta {
+        respuestasEncuesta[respuesta.id] = respuesta
+        return respuesta
+    }
+
+    override fun buscarRespuestaEncuestaPorId(id: String): RespuestaEncuesta? = respuestasEncuesta[id]
+
+    override fun listarRespuestasEncuesta(): List<RespuestaEncuesta> = respuestasEncuesta.values.toList()
+
+    /** Vacía los tres almacenes; útil para reutilizar la misma instancia entre pruebas. */
     fun limpiar() {
         estudiantes.clear()
         docentes.clear()
+        respuestasEncuesta.clear()
     }
 }

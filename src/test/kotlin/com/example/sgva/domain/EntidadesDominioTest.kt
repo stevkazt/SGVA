@@ -134,8 +134,77 @@ class EntidadesDominioTest {
     }
 
     // =========================================================================
+    // RespuestaEncuesta
+    // =========================================================================
+
+    @Test
+    fun `una respuesta de encuesta valida se construye correctamente`() {
+        val respuesta = RespuestaEncuesta(
+            id = "R001",
+            estamento = TipoEstamento.ESTUDIANTE,
+            factor = "Infraestructura",
+            calificacion = 4,
+            periodo = "20261",
+        )
+
+        assertEquals(4, respuesta.calificacion)
+        assertEquals(TipoEstamento.ESTUDIANTE, respuesta.estamento)
+    }
+
+    @Test
+    fun `los limites 1 y 5 de la calificacion Likert son validos`() {
+        assertEquals(1, respuestaConCalificacion(1).calificacion)
+        assertEquals(5, respuestaConCalificacion(5).calificacion)
+    }
+
+    @Test
+    fun `una calificacion por encima de 5 es rechazada`() {
+        assertThrows<CalificacionFueraDeRangoException> { respuestaConCalificacion(6) }
+    }
+
+    @Test
+    fun `una calificacion de 0 es rechazada`() {
+        assertThrows<CalificacionFueraDeRangoException> { respuestaConCalificacion(0) }
+    }
+
+    @Test
+    fun `el periodo de la respuesta con formato invalido es rechazado`() {
+        assertThrows<FormatoPeriodoInvalidoException> {
+            RespuestaEncuesta(
+                id = "R001",
+                estamento = TipoEstamento.PROFESOR,
+                factor = "Plan de Estudios",
+                calificacion = 3,
+                periodo = "2026-1",
+            )
+        }
+    }
+
+    @Test
+    fun `un factor de respuesta en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            RespuestaEncuesta(
+                id = "R001",
+                estamento = TipoEstamento.EMPLEADOR,
+                factor = "  ",
+                calificacion = 3,
+                periodo = "20261",
+            )
+        }
+    }
+
+    // =========================================================================
     // Helpers
     // =========================================================================
+
+    private fun respuestaConCalificacion(calificacion: Int): RespuestaEncuesta =
+        RespuestaEncuesta(
+            id = "R001",
+            estamento = TipoEstamento.ESTUDIANTE,
+            factor = "Infraestructura",
+            calificacion = calificacion,
+            periodo = "20261",
+        )
 
     private fun estudianteConCohorte(cohorte: String): Estudiante =
         Estudiante(

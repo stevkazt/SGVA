@@ -4,7 +4,9 @@ import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.NivelFormacion
 import com.example.sgva.domain.Docente
+import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
+import com.example.sgva.domain.TipoEstamento
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -53,6 +55,22 @@ class AcademicDataRepositoryEnMemoriaTest {
 
         assertEquals(actualizado, repositorio.buscarDocentePorId("D-001"))
         assertEquals("D-001", repositorio.listarDocentes().first().id)
+    }
+
+    @Test
+    fun `guarda y recupera una respuesta de encuesta por id`() {
+        val respuesta = RespuestaEncuesta(
+            id = "R001",
+            estamento = TipoEstamento.ESTUDIANTE,
+            factor = "Infraestructura",
+            calificacion = 4,
+            periodo = "20261",
+        )
+
+        repositorio.guardarRespuestaEncuesta(respuesta)
+
+        assertEquals(respuesta, repositorio.buscarRespuestaEncuestaPorId("R001"))
+        assertNull(repositorio.buscarRespuestaEncuestaPorId("R999"))
     }
 
     private fun docente(
