@@ -3,7 +3,6 @@ package com.example.sgva.application
 import com.example.sgva.domain.DatosInsuficientesException
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoEstamento
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
 import com.example.sgva.usecases.GenerarMatrizRadarUseCase
 import org.junit.jupiter.api.Test
@@ -12,7 +11,7 @@ import kotlin.test.assertEquals
 
 class GenerarMatrizRadarUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val useCase = GenerarMatrizRadarUseCase(CalcularPonderacionLikertUseCase(repositorio))
 
     @Test

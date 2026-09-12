@@ -3,7 +3,6 @@ package com.example.sgva.application
 import com.example.sgva.domain.DatosInsuficientesException
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -11,7 +10,7 @@ import kotlin.test.assertEquals
 
 class CalcularTasaDesercionUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val useCase = CalcularTasaDesercionUseCase(repositorio)
 
     @Test

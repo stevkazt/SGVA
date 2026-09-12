@@ -2,7 +2,6 @@ package com.example.sgva.application
 
 import com.example.sgva.domain.FormatoArchivoInvalidoException
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
@@ -16,7 +15,7 @@ import kotlin.test.assertTrue
 
 class ProcesarDatosArchivoUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val parsers = listOf(CsvDocumentParser())
     private val procesarEstudiantes =
         ProcesarDatosEstudiantesUseCase(parsers, RegistrarEstudianteUseCase(repositorio))

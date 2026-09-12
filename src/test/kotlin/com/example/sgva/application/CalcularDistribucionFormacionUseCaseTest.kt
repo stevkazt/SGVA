@@ -4,7 +4,6 @@ import com.example.sgva.domain.DatosInsuficientesException
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.NivelFormacion
 import com.example.sgva.domain.TipoDedicacion
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -12,7 +11,7 @@ import kotlin.test.assertEquals
 
 class CalcularDistribucionFormacionUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val useCase = CalcularDistribucionFormacionUseCase(repositorio)
 
     @Test

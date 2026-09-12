@@ -2,7 +2,6 @@ package com.example.sgva.application
 
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import org.junit.jupiter.api.Test
 import java.time.Clock
@@ -12,7 +11,7 @@ import kotlin.test.assertEquals
 
 class CalcularEvolucionMatriculaUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val reloj = Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC)
     private val useCase = CalcularEvolucionMatriculaUseCase(repositorio, reloj)
 

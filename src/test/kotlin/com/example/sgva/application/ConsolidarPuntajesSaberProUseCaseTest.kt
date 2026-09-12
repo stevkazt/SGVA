@@ -4,7 +4,6 @@ import com.example.sgva.domain.DatosInsuficientesException
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.IndicadorCalidad
-import com.example.sgva.infrastructure.persistence.AcademicDataRepositoryEnMemoria
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -12,7 +11,7 @@ import kotlin.test.assertEquals
 
 class ConsolidarPuntajesSaberProUseCaseTest {
 
-    private val repositorio = AcademicDataRepositoryEnMemoria()
+    private val repositorio = RepositorioAcademicoFalso()
     private val useCase = ConsolidarPuntajesSaberProUseCase(repositorio)
 
     @Test
