@@ -4,7 +4,9 @@ import com.example.sgva.domain.Docente
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.NivelFormacion
+import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
+import com.example.sgva.domain.TipoEstamento
 
 /**
  * Convierte una fila del archivo (columna -> valor en bruto) en una entidad de
@@ -48,6 +50,20 @@ internal object MapeadorDocente : MapeadorEntidad<Docente> {
         facultad = NormalizadorDatos.texto(fila["facultad"]),
         nivelFormacion = aEnum<NivelFormacion>(fila["nivelFormacion"], "nivelFormacion"),
         dedicacion = aEnum<TipoDedicacion>(fila["dedicacion"], "dedicacion"),
+        periodo = NormalizadorDatos.periodoAcademico(fila["periodo"]),
+    )
+}
+
+internal object MapeadorRespuestaEncuesta : MapeadorEntidad<RespuestaEncuesta> {
+
+    override val columnasObligatorias =
+        setOf("id", "estamento", "factor", "calificacion", "periodo")
+
+    override fun mapear(fila: Map<String, String>): RespuestaEncuesta = RespuestaEncuesta(
+        id = NormalizadorDatos.texto(fila["id"]),
+        estamento = aEnum<TipoEstamento>(fila["estamento"], "estamento"),
+        factor = NormalizadorDatos.texto(fila["factor"]),
+        calificacion = NormalizadorDatos.entero(fila["calificacion"]),
         periodo = NormalizadorDatos.periodoAcademico(fila["periodo"]),
     )
 }

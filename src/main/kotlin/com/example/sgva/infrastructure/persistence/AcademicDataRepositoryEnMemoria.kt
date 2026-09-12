@@ -3,6 +3,7 @@ package com.example.sgva.infrastructure.persistence
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.RespuestaEncuesta
 import org.springframework.stereotype.Repository
 import java.util.Collections
 
@@ -27,6 +28,9 @@ class AcademicDataRepositoryEnMemoria : AcademicDataRepository {
     private val docentesPorId: MutableMap<String, Docente> =
         Collections.synchronizedMap(LinkedHashMap())
 
+    private val respuestasEncuestaPorId: MutableMap<String, RespuestaEncuesta> =
+        Collections.synchronizedMap(LinkedHashMap())
+
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante {
         estudiantesPorId[estudiante.id] = estudiante
         return estudiante
@@ -46,4 +50,14 @@ class AcademicDataRepositoryEnMemoria : AcademicDataRepository {
 
     override fun listarDocentes(): List<Docente> =
         synchronized(docentesPorId) { docentesPorId.values.toList() }
+
+    override fun guardarRespuestaEncuesta(respuesta: RespuestaEncuesta): RespuestaEncuesta {
+        respuestasEncuestaPorId[respuesta.id] = respuesta
+        return respuesta
+    }
+
+    override fun buscarRespuestaEncuestaPorId(id: String): RespuestaEncuesta? = respuestasEncuestaPorId[id]
+
+    override fun listarRespuestasEncuesta(): List<RespuestaEncuesta> =
+        synchronized(respuestasEncuestaPorId) { respuestasEncuestaPorId.values.toList() }
 }

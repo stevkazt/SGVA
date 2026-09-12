@@ -53,4 +53,13 @@ internal object NormalizadorDatos {
 
         throw NumberFormatException("'$limpio' no es un número entero válido")
     }
+
+    /**
+     * Interpreta un entero obligatorio (mismas reglas de [enteroOpcional] para
+     * decimales de Excel); a diferencia de aquel, una cadena vacía no es válida.
+     *
+     * @throws NumberFormatException si el valor está vacío o no es un entero reconocible.
+     */
+    fun entero(valor: String?): Int =
+        enteroOpcional(valor) ?: throw NumberFormatException("el valor es obligatorio y no puede estar vacío")
 }

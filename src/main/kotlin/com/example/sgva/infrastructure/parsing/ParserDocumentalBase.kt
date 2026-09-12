@@ -4,6 +4,7 @@ import com.example.sgva.domain.Docente
 import com.example.sgva.domain.DocumentParserPort
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.FormatoArchivoInvalidoException
+import com.example.sgva.domain.RespuestaEncuesta
 
 /**
  * Base común de los adaptadores de [DocumentParserPort]. Concentra el
@@ -29,6 +30,9 @@ internal abstract class ParserDocumentalBase : DocumentParserPort {
 
     final override fun extraerDocentes(nombreArchivo: String, contenido: ByteArray): List<Docente> =
         transformar(nombreArchivo, contenido, MapeadorDocente)
+
+    final override fun extraerRespuestasEncuestas(nombreArchivo: String, contenido: ByteArray): List<RespuestaEncuesta> =
+        transformar(nombreArchivo, contenido, MapeadorRespuestaEncuesta)
 
     private fun <T> transformar(
         nombreArchivo: String,
