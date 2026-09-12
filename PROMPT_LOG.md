@@ -12,7 +12,7 @@ Dado que muchas interacciones involucran secuencias largas de ediciones (no un s
 | ID | Iteración | Herramienta | Tipo | Resumen | ArchUnit | Deuda_SonarQube | Detalle |
 |---|---|---|---|---|---|---|---|
 <!-- INDEX_ROW_ANCHOR -->
-| P-007 | V1 | Claude Code CLI | TODO | TODO — ver logs/V1/P-007.md | TODO | TODO | [logs/V1/P-007.md](logs/V1/P-007.md) |
+| P-007 | V2 | Claude Code CLI | Generación — Módulo 3 completo (encuestas de percepción) | RespuestaEncuesta, PonderacionLikert, MatrizRadar, ingesta y REST; PonderacionLikert/MatrizRadar como tipos nuevos en vez de IndicadorCalidad | PASS 8/8 (0 restauraciones) | A — 0.1% (0 issues nuevos) | [logs/V2/P-007.md](logs/V2/P-007.md) |
 | P-006 | V1 | Claude Code CLI | Generación — adaptador REST (cierra V1) | Controladores REST para estudiantes, docentes e indicadores; manejo global de errores; 30 pruebas MockMvc | PASS 8/8 | A — 0.1% (0 issues nuevos) | [logs/V1/P-006.md](logs/V1/P-006.md) |
 | P-005 | V1 | Claude Code CLI | Generación — indicadores de calidad, Módulo 2 (docentes) | Distribución de formación y capacidad instalada vía IndicadorCalidad; EquivalenciaTiempoCompleto con factores provisionales documentados | PASS 8/8 (0 restauraciones) | A — 0.1% (0 issues nuevos) | [logs/V1/P-005.md](logs/V1/P-005.md) |
 | P-004 | V1 | Claude Code CLI | Generación — indicadores de calidad, Módulo 1 (estudiantes) | Evolución de matrícula, tasa de deserción y consolidación Saber Pro vía IndicadorCalidad; Clock inyectado para ventana de 7 años | PASS 8/8 (2 restauraciones autodetectadas) | A — 0.1% (0 issues nuevos) | [logs/V1/P-004.md](logs/V1/P-004.md) |
