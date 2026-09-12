@@ -36,4 +36,13 @@ interface AcademicDataRepository {
 
     /** Devuelve todos los docentes registrados, en orden de inserción. */
     fun listarDocentes(): List<Docente>
+
+    /** Persiste [respuesta] indexada por su `id` y la devuelve sin cambios. */
+    fun guardarRespuestaEncuesta(respuesta: RespuestaEncuesta): RespuestaEncuesta
+
+    /** Devuelve la respuesta de encuesta con [id], o `null` si no hay ninguna registrada. */
+    fun buscarRespuestaEncuestaPorId(id: String): RespuestaEncuesta?
+
+    /** Devuelve todas las respuestas de encuesta registradas, en orden de inserción. */
+    fun listarRespuestasEncuesta(): List<RespuestaEncuesta>
 }

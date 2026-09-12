@@ -39,6 +39,16 @@ class PuntajeSaberProFueraDeRangoException(valor: Int) :
     )
 
 /**
+ * Se lanza cuando la calificación de una [RespuestaEncuesta] está fuera del
+ * rango válido de la escala Likert de 5 puntos (`1..5` inclusive).
+ */
+class CalificacionFueraDeRangoException(valor: Int) :
+    DominioException(
+        "La calificación debe estar entre ${RespuestaEncuesta.RANGO_CALIFICACION.first} y " +
+            "${RespuestaEncuesta.RANGO_CALIFICACION.last} inclusive (escala Likert); valor recibido: $valor.",
+    )
+
+/**
  * Se lanza al intentar registrar una entidad cuyo identificador ya existe en el
  * repositorio. El registro es una operación de alta: modificar un registro
  * existente queda fuera del alcance de esta versión.
