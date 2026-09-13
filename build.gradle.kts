@@ -27,6 +27,7 @@ dependencies {
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("de.siegmar:fastcsv:3.7.0")
 	implementation("org.apache.poi:poi-ooxml:5.4.1")
+	implementation("org.apache.pdfbox:pdfbox:3.0.3")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
