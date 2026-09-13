@@ -14,6 +14,7 @@ import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
 import com.example.sgva.usecases.ConsultarRespuestasEncuestaUseCase
 import com.example.sgva.usecases.GenerarMatrizRadarUseCase
+import com.example.sgva.usecases.GenerarReporteEjecutivoUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
@@ -128,4 +129,22 @@ class ConfiguracionCasosDeUsoDePrueba {
         calcularPonderacionLikertUseCase: CalcularPonderacionLikertUseCase,
     ): GenerarMatrizRadarUseCase =
         GenerarMatrizRadarUseCase(calcularPonderacionLikertUseCase)
+
+    @Bean
+    fun generarReporteEjecutivoUseCase(
+        calcularEvolucionMatriculaUseCase: CalcularEvolucionMatriculaUseCase,
+        calcularTasaDesercionUseCase: CalcularTasaDesercionUseCase,
+        consolidarPuntajesSaberProUseCase: ConsolidarPuntajesSaberProUseCase,
+        calcularDistribucionFormacionUseCase: CalcularDistribucionFormacionUseCase,
+        calcularCapacidadInstaladaUseCase: CalcularCapacidadInstaladaUseCase,
+        consultarRespuestasEncuestaUseCase: ConsultarRespuestasEncuestaUseCase,
+    ): GenerarReporteEjecutivoUseCase =
+        GenerarReporteEjecutivoUseCase(
+            calcularEvolucionMatriculaUseCase,
+            calcularTasaDesercionUseCase,
+            consolidarPuntajesSaberProUseCase,
+            calcularDistribucionFormacionUseCase,
+            calcularCapacidadInstaladaUseCase,
+            consultarRespuestasEncuestaUseCase,
+        )
 }
