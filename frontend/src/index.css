@@ -1,0 +1,358 @@
+:root {
+  color-scheme: light;
+  /* Grises tintados hacia --brand-navy (en vez de grises neutros/cálidos)
+     para que cards, bordes y texto secundario se sientan parte del mismo
+     sistema que el header, no un tema genérico aparte. Ninguna de las
+     páginas reales de la Universidad (home, Tesorería, Campus Virtual) usa
+     gris neutro ni modo oscuro genérico; todas son claras con acentos
+     navy, así que SGVA no implementa prefers-color-scheme: dark. */
+  --surface-1: #fbfcfc;
+  --page-plane: #f6f7f9;
+  --text-primary: #0b0b0b;
+  --text-secondary: #4c5d82;
+  --text-muted: #8590aa;
+  --gridline: #e6e8ed;
+  --baseline: #bdc3d1;
+  --border: rgba(0, 23, 77, 0.12);
+  --success-text: #006300;
+
+  /* Marca Universidad Santo Tomás (Manual de Identidad Visual USTACOL 2023).
+     Colores calculados desde el CMYK oficial del manual: navy y gris del
+     logotipo SANTOTO (p.46), gris de modificador de sede (p.47), naranja
+     institucional (p.24). No confundir con --series-*, la paleta de gráficas
+     (validada para accesibilidad CVD), que se mantiene independiente. */
+  --brand-navy: #00174d;
+  --brand-slate: #6b8fa1;
+  --brand-modificador: #a3c3ce;
+  --brand-accent: #ffbf00;
+
+  --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-condensed: 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
+
+  --series-1: #2a78d6; /* blue */
+  --series-2: #eb6834; /* orange */
+  --series-3: #1baf7a; /* aqua */
+  --series-4: #eda100; /* yellow */
+
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-critical: #d03b3b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page-plane);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--brand-navy);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.top-nav {
+  position: relative;
+  background: var(--brand-navy);
+  overflow: hidden;
+}
+
+.top-nav__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  /* Mismo inset horizontal que `main` (padding: 24px 20px 60px), para que
+     el logo y el contenido de la página queden alineados verticalmente. */
+  padding: 10px 20px;
+}
+
+.top-nav::after {
+  /* Motivo de líneas diagonales del manual: aparece en la esquina superior
+     derecha de cada página del manual de identidad (p.ej. p.24-26, 44-49).
+     Alto fijo (no %) para que no se deforme si el nav crece por el wrap
+     en pantallas angostas. */
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 160px;
+  height: 64px;
+  background: repeating-linear-gradient(
+    -55deg,
+    transparent 0px,
+    transparent 6px,
+    rgba(255, 191, 0, 0.35) 6px,
+    rgba(255, 191, 0, 0.35) 8px
+  );
+  pointer-events: none;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.brand-lockup img {
+  display: block;
+  height: 40px;
+  width: auto;
+  /* "Solo negro.png" es la versión monocromática del manual (p.45);
+     se invierte a blanco para la variante sobre fondo oscuro, tal como
+     ilustra esa misma página. */
+  filter: brightness(0) invert(1);
+}
+
+.brand-lockup__modificador {
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid var(--brand-modificador);
+  color: var(--brand-modificador);
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.top-nav a {
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.top-nav a.active,
+.top-nav a:hover {
+  color: #ffffff;
+  border-bottom-color: var(--brand-accent);
+}
+
+.top-nav a:focus-visible,
+button:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+h1 {
+  font-family: var(--font-condensed);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-family: var(--font-condensed);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 0 0 24px;
+}
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.field label {
+  color: var(--text-secondary);
+}
+
+.field input,
+.field select {
+  font: inherit;
+  font-size: 14px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--baseline);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  min-width: 160px;
+}
+
+button {
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--brand-accent);
+  background: var(--brand-accent);
+  color: var(--brand-navy);
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.05);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: transparent;
+  border-color: var(--baseline);
+  color: var(--text-primary);
+}
+
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(208, 59, 59, 0.08);
+  border: 1px solid var(--status-critical);
+  color: var(--status-critical);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 3px solid var(--brand-accent);
+  padding-left: 12px;
+}
+
+.stat-tile__label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.stat-tile__value {
+  font-size: 32px;
+  font-weight: 600;
+  font-variant-numeric: proportional-nums;
+}
+
+.stat-tile__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--gridline);
+}
+
+th {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.result-summary {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.result-summary .stat-tile__value {
+  font-size: 24px;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.upload-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 10px;
+}
