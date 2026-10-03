@@ -41,3 +41,5 @@ out/
 
 ### EXTRA  ###
 Santoto-Design-Manual
+*.DS_Store
+logs/.DS_Store
