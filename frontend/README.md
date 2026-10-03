@@ -29,11 +29,11 @@ src/
 
 ### Rutas y páginas
 
-| Ruta | Página | Qué hace |
-|---|---|---|
-| `/` | `DashboardPage` | Indicadores de calidad (Módulos 1 y 2): evolución de matrícula, Saber Pro, distribución de formación docente, capacidad instalada y tasa de deserción, filtrables por facultad/periodo/cohorte. Incluye la descarga del reporte ejecutivo en PDF (`GET /api/reportes/ejecutivo`). |
-| `/carga` | `UploadPage` | Carga masiva de estudiantes o docentes desde un archivo CSV/Excel (`POST /api/{estudiantes,docentes}/archivos`), con el detalle de registros omitidos. |
-| `/encuestas` | `EncuestasPage` | Ponderación Likert y matriz radar de percepción por factor y estamento (Módulo 3), filtrables por periodo. |
+| Ruta         | Página          | Qué hace                                                                                                                                                                                                                                                                          |
+| ------------ | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`          | `DashboardPage` | Indicadores de calidad (Módulos 1 y 2): evolución de matrícula, Saber Pro, distribución de formación docente, capacidad instalada y tasa de deserción, filtrables por facultad/periodo/cohorte. Incluye la descarga del reporte ejecutivo en PDF (`GET /api/reportes/ejecutivo`). |
+| `/carga`     | `UploadPage`    | Carga masiva de estudiantes o docentes desde un archivo CSV/Excel (`POST /api/{estudiantes,docentes}/archivos`), con el detalle de registros omitidos.                                                                                                                            |
+| `/encuestas` | `EncuestasPage` | Ponderación Likert y matriz radar de percepción por factor y estamento (Módulo 3), filtrables por periodo.                                                                                                                                                                        |
 
 Los endpoints de registro/consulta individual (`POST/GET /api/estudiantes`, `/api/docentes`, `/api/encuestas`) son de uso interno del backend — la vía de entrada de datos desde el frontend es siempre la carga masiva por archivo en `/carga`.
 
@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-El servidor de desarrollo de Vite expone un proxy de `/api` hacia el backend (`vite.config.ts`), así que no hace falta configurar CORS: solo asegúrate de que el backend esté corriendo (por defecto en `http://localhost:8080`; puede sobreescribirse con la variable de entorno `VITE_BACKEND_URL`).
+El servidor de desarrollo de Vite expone un proxy de `/api` hacia el backend (`vite.config.ts`), así que no hace falta configurar CORS: solo asegúrate de levantar primero la base de datos (`docker compose up -d` en el repositorio del backend) y de que el backend esté corriendo (por defecto en `http://localhost:8080`; puede sobreescribirse con la variable de entorno `VITE_BACKEND_URL`).
 
 ```bash
 npm run build     # tsc -b && vite build
