@@ -46,5 +46,8 @@ Para ejecutar el análisis estático de código (requiere una instancia local de
 ./gradlew sonar -Dsonar.token="TU_TOKEN_AQUI"
 ```
 
+## Autoría y Metodología
+El código generado para el análisis de este proyecto fue escrito con **Claude Sonnet 5** (Anthropic) mediante Claude Code CLI.
+
 Licencia
 Distribuido bajo la Licencia MIT (Ver archivo LICENSE para más detalles).
