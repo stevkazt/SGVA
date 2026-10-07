@@ -43,3 +43,6 @@ Todos los commits deben seguir el formato **Conventional Commits** en español:
 
 ## Aviso de Registro Experimental
 - NO leer, analizar ni intentar actualizar `PROMPT_LOG.md`.
+
+## Restricción sobre la carpeta `docs/`
+- NO leer ni analizar ningún archivo dentro de la carpeta `docs/`, salvo que el usuario lo indique de forma explícita en el prompt.
