@@ -45,4 +45,39 @@ class NormalizadorDatosTest {
         assertThrows<NumberFormatException> { NormalizadorDatos.entero("") }
         assertThrows<NumberFormatException> { NormalizadorDatos.entero(null) }
     }
+
+    @Test
+    fun `el decimal opcional trata vacio y N A como ausente, sin distinguir mayusculas`() {
+        assertNull(NormalizadorDatos.decimalOpcional(""))
+        assertNull(NormalizadorDatos.decimalOpcional("   "))
+        assertNull(NormalizadorDatos.decimalOpcional(null))
+        assertNull(NormalizadorDatos.decimalOpcional("N/A"))
+        assertNull(NormalizadorDatos.decimalOpcional("n/a"))
+    }
+
+    @Test
+    fun `el decimal opcional admite coma o punto como separador decimal`() {
+        assertEquals(4.5, NormalizadorDatos.decimalOpcional("4.5"))
+        assertEquals(4.5, NormalizadorDatos.decimalOpcional("4,5"))
+        assertEquals(0.0, NormalizadorDatos.decimalOpcional("0"))
+    }
+
+    @Test
+    fun `el decimal opcional rechaza un valor no numerico`() {
+        assertThrows<NumberFormatException> { NormalizadorDatos.decimalOpcional("cuatro") }
+    }
+
+    @Test
+    fun `la lista de claves de enum se separa por coma, punto y coma o barra vertical`() {
+        assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("Estudiante;Profesor"))
+        assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("estudiante, profesor"))
+        assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("ESTUDIANTE|PROFESOR"))
+        assertEquals(listOf("ALIADO_ESTRATEGICO"), NormalizadorDatos.listaClavesEnum("Aliado Estratégico"))
+    }
+
+    @Test
+    fun `la lista de claves de enum de un valor vacio es una lista vacia`() {
+        assertEquals(emptyList(), NormalizadorDatos.listaClavesEnum(""))
+        assertEquals(emptyList(), NormalizadorDatos.listaClavesEnum(null))
+    }
 }

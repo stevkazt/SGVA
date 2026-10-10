@@ -95,6 +95,7 @@ class GenerarReporteEjecutivoUseCaseTest {
 
     private fun docente(id: String): Docente = Docente(
         id = id,
+        programa = "EGSTI",
         facultad = "Ingeniería",
         nivelFormacion = NivelFormacion.MAESTRIA,
         dedicacion = TipoDedicacion.TIEMPO_COMPLETO,

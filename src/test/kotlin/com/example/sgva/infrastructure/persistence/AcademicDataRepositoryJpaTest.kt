@@ -4,6 +4,7 @@ import com.example.sgva.domain.Docente
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.NivelFormacion
+import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
 import com.example.sgva.domain.TipoEstamento
@@ -66,6 +67,7 @@ class AcademicDataRepositoryJpaTest {
     fun `guarda y recupera un docente por id contra PostgreSQL`() {
         val docente = Docente(
             id = "JPA-D-001",
+            programa = "EGSTI",
             facultad = "Ingeniería",
             nivelFormacion = NivelFormacion.DOCTORADO,
             dedicacion = TipoDedicacion.TIEMPO_COMPLETO,
@@ -91,6 +93,41 @@ class AcademicDataRepositoryJpaTest {
 
         assertEquals(respuesta, repositorio.buscarRespuestaEncuestaPorId("JPA-R-001"))
         assertEquals(4, repositorio.listarRespuestasEncuesta().first { it.id == "JPA-R-001" }.calificacion)
+    }
+
+    @Test
+    fun `guarda y recupera un resultado de encuesta por pregunta por su clave natural contra PostgreSQL`() {
+        val resultado = ResultadoEncuestaPregunta(
+            programa = "JPA-EGSTI",
+            periodo = "20261",
+            codigoPregunta = "A2",
+            caracteristica = "1.1",
+            estamentos = setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR),
+            promedio = 4.5,
+        )
+
+        repositorio.guardarResultadoEncuestaPregunta(resultado)
+
+        assertEquals(resultado, repositorio.buscarResultadoEncuestaPregunta("JPA-EGSTI", "20261", "A2"))
+        assertNull(repositorio.buscarResultadoEncuestaPregunta("JPA-EGSTI", "20261", "NOEXISTE"))
+    }
+
+    @Test
+    fun `guarda y recupera un resultado de encuesta por pregunta con promedio ausente`() {
+        val resultado = ResultadoEncuestaPregunta(
+            programa = "JPA-EGSTI",
+            periodo = "20262",
+            codigoPregunta = "B1",
+            caracteristica = "2.1",
+            estamentos = setOf(TipoEstamento.ALIADO_ESTRATEGICO),
+            promedio = null,
+        )
+
+        repositorio.guardarResultadoEncuestaPregunta(resultado)
+
+        val recuperado = repositorio.buscarResultadoEncuestaPregunta("JPA-EGSTI", "20262", "B1")
+        assertEquals(resultado, recuperado)
+        assertNull(recuperado?.promedio)
     }
 
     private fun estudiante(id: String): Estudiante = Estudiante(

@@ -77,6 +77,7 @@ class CalcularCapacidadInstaladaUseCaseTest {
         repositorio.guardarDocente(
             Docente(
                 id = "D${contador++}",
+                programa = "EGSTI",
                 facultad = facultad,
                 nivelFormacion = NivelFormacion.MAESTRIA,
                 dedicacion = dedicacion,

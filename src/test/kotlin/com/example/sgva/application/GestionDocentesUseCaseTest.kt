@@ -58,6 +58,7 @@ class GestionDocentesUseCaseTest {
         nivelFormacion: NivelFormacion = NivelFormacion.MAESTRIA,
     ): Docente = Docente(
         id = id,
+        programa = "EGSTI",
         facultad = "Ingeniería",
         nivelFormacion = nivelFormacion,
         dedicacion = TipoDedicacion.TIEMPO_COMPLETO,

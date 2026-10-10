@@ -49,7 +49,7 @@ class DocenteControllerTest {
             post("/api/docentes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    """{"id":"D1","facultad":"Ingeniería","nivelFormacion":"DOCTORADO",
+                    """{"id":"D1","programa":"EGSTI","facultad":"Ingeniería","nivelFormacion":"DOCTORADO",
                         "dedicacion":"TIEMPO_COMPLETO","periodo":"20221"}
                     """.trimIndent(),
                 ),
@@ -71,7 +71,7 @@ class DocenteControllerTest {
             post("/api/docentes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    """{"id":"D1","facultad":"Ingeniería","nivelFormacion":"MAESTRIA",
+                    """{"id":"D1","programa":"EGSTI","facultad":"Ingeniería","nivelFormacion":"MAESTRIA",
                         "dedicacion":"TIEMPO_COMPLETO","periodo":"20221"}
                     """.trimIndent(),
                 ),
@@ -88,7 +88,7 @@ class DocenteControllerTest {
             post("/api/docentes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    """{"id":"D2","facultad":"Ingeniería","nivelFormacion":"MAESTRIA",
+                    """{"id":"D2","programa":"EGSTI","facultad":"Ingeniería","nivelFormacion":"MAESTRIA",
                         "dedicacion":"TIEMPO_COMPLETO","periodo":"2022-1"}
                     """.trimIndent(),
                 ),
@@ -134,9 +134,9 @@ class DocenteControllerTest {
     @Test
     fun `cargar un archivo csv valido registra los docentes y devuelve 201 con el resumen`() {
         val csv = """
-            id,facultad,nivelFormacion,dedicacion,periodo
-            D100,Ingeniería,DOCTORADO,TIEMPO_COMPLETO,20221
-            D101,Ingeniería,MAESTRIA,CATEDRA,20221
+            id,programa,facultad,nivelFormacion,dedicacion,periodo
+            D100,EGSTI,Ingeniería,DOCTORADO,TIEMPO_COMPLETO,20221
+            D101,EGSTI,Ingeniería,MAESTRIA,CATEDRA,20221
         """.trimIndent()
         val archivo = MockMultipartFile("archivo", "docentes.csv", "text/csv", csv.toByteArray())
 
@@ -166,6 +166,7 @@ class DocenteControllerTest {
         nivelFormacion: NivelFormacion = NivelFormacion.MAESTRIA,
     ): Docente = Docente(
         id = id,
+        programa = "EGSTI",
         facultad = "Ingeniería",
         nivelFormacion = nivelFormacion,
         dedicacion = TipoDedicacion.TIEMPO_COMPLETO,

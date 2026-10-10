@@ -42,15 +42,16 @@ class ExcelDocumentParserTest {
     @Test
     fun `ignora las filas totalmente vacias`() {
         val libro = xlsx(
-            listOf("id", "facultad", "nivelFormacion", "dedicacion", "periodo"),
-            listOf("D001", "Ingenieria", "DOCTORADO", "TIEMPO_COMPLETO", "2026-1"),
-            listOf("", "", "", "", ""),
+            listOf("id", "programa", "facultad", "nivelFormacion", "dedicacion", "periodo"),
+            listOf("D001", "EGSTI", "Ingenieria", "DOCTORADO", "TIEMPO_COMPLETO", "2026-1"),
+            listOf("", "", "", "", "", ""),
         )
 
         val docentes = parser.extraerDocentes("docentes.xlsx", libro)
 
         assertEquals(1, docentes.size)
         assertEquals("20261", docentes.first().periodo)
+        assertEquals("EGSTI", docentes.first().programa)
     }
 
     @Test
@@ -68,6 +69,23 @@ class ExcelDocumentParserTest {
         assertEquals(4, respuestas[0].calificacion)
         assertEquals("20261", respuestas[0].periodo)
         assertEquals(TipoEstamento.PROFESOR, respuestas[1].estamento)
+    }
+
+    @Test
+    fun `extrae resultados de encuesta por pregunta de un libro con celdas numericas y de texto`() {
+        val libro = xlsx(
+            listOf("programa", "periodo", "codigoPregunta", "caracteristica", "estamentos", "promedio"),
+            listOf("EGSTI", "2026-1", "A1", "1.1", "ESTUDIANTE;PROFESOR", 4.5),
+            listOf("EGSTI", "2026-1", "A2", "1.2", "DIRECTIVO", "N/A"),
+        )
+
+        val resultados = parser.extraerResultadosEncuestaPregunta("resultados.xlsx", libro)
+
+        assertEquals(2, resultados.size)
+        assertEquals("20261", resultados[0].periodo)
+        assertEquals(setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR), resultados[0].estamentos)
+        assertEquals(4.5, resultados[0].promedio)
+        assertNull(resultados[1].promedio)
     }
 
     @Test

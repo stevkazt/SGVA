@@ -176,6 +176,7 @@ class IndicadorControllerTest {
         repositorio.guardarDocente(
             Docente(
                 id = "D${contador++}",
+                programa = "EGSTI",
                 facultad = "Ingeniería",
                 nivelFormacion = nivelFormacion,
                 dedicacion = dedicacion,

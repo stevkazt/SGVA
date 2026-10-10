@@ -41,6 +41,7 @@ class CsvDocumentParserTest {
 
         assertEquals(4, docentes.size)
         assertTrue(docentes.all { it.periodo == "20261" })
+        assertTrue(docentes.all { it.programa == "EGSTI" })
         assertEquals(NivelFormacion.DOCTORADO, docentes.first().nivelFormacion)
         assertEquals(TipoDedicacion.MEDIO_TIEMPO, docentes.last().dedicacion)
     }
@@ -58,6 +59,60 @@ class CsvDocumentParserTest {
         assertEquals("Plan de Estudios", primera.factor)
         assertEquals(5, primera.calificacion)
         assertEquals(TipoEstamento.EMPLEADOR, respuestas.last().estamento)
+    }
+
+    @Test
+    fun `extrae los resultados de encuesta por pregunta del fixture, normaliza el periodo y trata N A como promedio ausente`() {
+        val resultados = parser.extraerResultadosEncuestaPregunta(
+            "datos_resultados_encuesta_pregunta_test.csv",
+            fixture("datos_resultados_encuesta_pregunta_test.csv"),
+        )
+
+        assertEquals(4, resultados.size)
+        assertTrue(resultados.all { it.periodo == "20261" })
+        assertTrue(resultados.all { it.programa == "EGSTI" })
+
+        val primero = resultados[0]
+        assertEquals(setOf(TipoEstamento.ESTUDIANTE), primero.estamentos)
+        assertEquals(4.5, primero.promedio)
+
+        val segundo = resultados[1]
+        assertEquals(setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR), segundo.estamentos)
+
+        val tercero = resultados[2]
+        assertNull(tercero.promedio)
+
+        val cuarto = resultados[3]
+        assertEquals(
+            setOf(TipoEstamento.DIRECTIVO, TipoEstamento.ADMINISTRATIVO, TipoEstamento.ALIADO_ESTRATEGICO),
+            cuarto.estamentos,
+        )
+    }
+
+    @Test
+    fun `rechaza un resultado de encuesta por pregunta con promedio igual a 0`() {
+        val csv = """
+            programa,periodo,codigoPregunta,caracteristica,estamentos,promedio
+            EGSTI,20261,A1,1.1,ESTUDIANTE,0
+        """.trimIndent().toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerResultadosEncuestaPregunta("datos.csv", csv)
+        }
+        assertTrue(error.message!!.contains("fila 2"))
+    }
+
+    @Test
+    fun `rechaza un resultado de encuesta por pregunta con un estamento no reconocible`() {
+        val csv = """
+            programa,periodo,codigoPregunta,caracteristica,estamentos,promedio
+            EGSTI,20261,A1,1.1,NO_EXISTE,4.5
+        """.trimIndent().toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerResultadosEncuestaPregunta("datos.csv", csv)
+        }
+        assertTrue(error.message!!.contains("estamentos"))
     }
 
     @Test

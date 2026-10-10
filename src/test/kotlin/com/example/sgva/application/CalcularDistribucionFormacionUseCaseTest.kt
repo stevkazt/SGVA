@@ -65,6 +65,7 @@ class CalcularDistribucionFormacionUseCaseTest {
         repositorio.guardarDocente(
             Docente(
                 id = "D${contador++}",
+                programa = "EGSTI",
                 facultad = facultad,
                 nivelFormacion = nivel,
                 dedicacion = TipoDedicacion.TIEMPO_COMPLETO,

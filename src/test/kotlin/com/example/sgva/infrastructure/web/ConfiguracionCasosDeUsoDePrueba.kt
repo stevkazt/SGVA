@@ -12,14 +12,17 @@ import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
+import com.example.sgva.usecases.ConsultarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ConsultarRespuestasEncuestaUseCase
 import com.example.sgva.usecases.GenerarMatrizRadarUseCase
 import com.example.sgva.usecases.GenerarReporteEjecutivoUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -119,6 +122,25 @@ class ConfiguracionCasosDeUsoDePrueba {
         registrarRespuestaEncuestaUseCase: RegistrarRespuestaEncuestaUseCase,
     ): ProcesarRespuestasEncuestasUseCase =
         ProcesarRespuestasEncuestasUseCase(parsers, registrarRespuestaEncuestaUseCase)
+
+    @Bean
+    fun registrarResultadoEncuestaPreguntaUseCase(
+        repositorio: AcademicDataRepository,
+    ): RegistrarResultadoEncuestaPreguntaUseCase =
+        RegistrarResultadoEncuestaPreguntaUseCase(repositorio)
+
+    @Bean
+    fun consultarResultadoEncuestaPreguntaUseCase(
+        repositorio: AcademicDataRepository,
+    ): ConsultarResultadoEncuestaPreguntaUseCase =
+        ConsultarResultadoEncuestaPreguntaUseCase(repositorio)
+
+    @Bean
+    fun procesarResultadosEncuestaPreguntaUseCase(
+        parsers: List<DocumentParserPort>,
+        registrarResultadoEncuestaPreguntaUseCase: RegistrarResultadoEncuestaPreguntaUseCase,
+    ): ProcesarResultadosEncuestaPreguntaUseCase =
+        ProcesarResultadosEncuestaPreguntaUseCase(parsers, registrarResultadoEncuestaPreguntaUseCase)
 
     @Bean
     fun calcularPonderacionLikertUseCase(repositorio: AcademicDataRepository): CalcularPonderacionLikertUseCase =

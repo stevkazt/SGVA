@@ -3,6 +3,7 @@ package com.example.sgva.application
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 
 /**
@@ -16,6 +17,7 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
     private val estudiantes = LinkedHashMap<String, Estudiante>()
     private val docentes = LinkedHashMap<String, Docente>()
     private val respuestasEncuesta = LinkedHashMap<String, RespuestaEncuesta>()
+    private val resultadosEncuestaPregunta = LinkedHashMap<String, ResultadoEncuestaPregunta>()
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante {
         estudiantes[estudiante.id] = estudiante
@@ -44,10 +46,29 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
 
     override fun listarRespuestasEncuesta(): List<RespuestaEncuesta> = respuestasEncuesta.values.toList()
 
-    /** Vacía los tres almacenes; útil para reutilizar la misma instancia entre pruebas. */
+    override fun guardarResultadoEncuestaPregunta(resultado: ResultadoEncuestaPregunta): ResultadoEncuestaPregunta {
+        resultadosEncuestaPregunta[claveDe(resultado.programa, resultado.periodo, resultado.codigoPregunta)] =
+            resultado
+        return resultado
+    }
+
+    override fun buscarResultadoEncuestaPregunta(
+        programa: String,
+        periodo: String,
+        codigoPregunta: String,
+    ): ResultadoEncuestaPregunta? = resultadosEncuestaPregunta[claveDe(programa, periodo, codigoPregunta)]
+
+    override fun listarResultadosEncuestaPregunta(): List<ResultadoEncuestaPregunta> =
+        resultadosEncuestaPregunta.values.toList()
+
+    private fun claveDe(programa: String, periodo: String, codigoPregunta: String): String =
+        "$programa|$periodo|$codigoPregunta"
+
+    /** Vacía los cuatro almacenes; útil para reutilizar la misma instancia entre pruebas. */
     fun limpiar() {
         estudiantes.clear()
         docentes.clear()
         respuestasEncuesta.clear()
+        resultadosEncuestaPregunta.clear()
     }
 }

@@ -4,9 +4,11 @@ import com.example.sgva.domain.FormatoArchivoInvalidoException
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -23,6 +25,8 @@ class ProcesarDatosArchivoUseCaseTest {
         ProcesarDatosDocentesUseCase(parsers, RegistrarDocenteUseCase(repositorio))
     private val procesarEncuestas =
         ProcesarRespuestasEncuestasUseCase(parsers, RegistrarRespuestaEncuestaUseCase(repositorio))
+    private val procesarResultadosEncuestaPregunta =
+        ProcesarResultadosEncuestaPreguntaUseCase(parsers, RegistrarResultadoEncuestaPreguntaUseCase(repositorio))
 
     @Test
     fun `carga el archivo de estudiantes y registra cada fila mediante el caso de uso de registro`() {
@@ -63,6 +67,37 @@ class ProcesarDatosArchivoUseCaseTest {
         assertEquals(5, resultado.registrados)
         assertTrue(resultado.omitidos.isEmpty())
         assertEquals(5, repositorio.listarRespuestasEncuesta().size)
+    }
+
+    @Test
+    fun `carga el archivo de resultados de encuesta por pregunta y registra cada fila mediante el caso de uso de registro`() {
+        val resultado = procesarResultadosEncuestaPregunta.ejecutar(
+            "datos_resultados_encuesta_pregunta_test.csv",
+            fixture("datos_resultados_encuesta_pregunta_test.csv"),
+        )
+
+        assertEquals(4, resultado.totalRegistrosLeidos)
+        assertEquals(4, resultado.registrados)
+        assertTrue(resultado.omitidos.isEmpty())
+        assertEquals(4, repositorio.listarResultadosEncuestaPregunta().size)
+    }
+
+    @Test
+    fun `una segunda carga del mismo archivo de resultados de encuesta por pregunta omite las claves ya registradas`() {
+        procesarResultadosEncuestaPregunta.ejecutar(
+            "datos_resultados_encuesta_pregunta_test.csv",
+            fixture("datos_resultados_encuesta_pregunta_test.csv"),
+        )
+
+        val resultado = procesarResultadosEncuestaPregunta.ejecutar(
+            "datos_resultados_encuesta_pregunta_test.csv",
+            fixture("datos_resultados_encuesta_pregunta_test.csv"),
+        )
+
+        assertEquals(0, resultado.registrados)
+        assertEquals(4, resultado.omitidos.size)
+        assertEquals(4, repositorio.listarResultadosEncuestaPregunta().size)
+        assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
     }
 
     @Test

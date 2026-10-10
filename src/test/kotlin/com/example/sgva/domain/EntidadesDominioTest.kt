@@ -97,6 +97,7 @@ class EntidadesDominioTest {
     fun `un docente valido se construye correctamente`() {
         val docente = Docente(
             id = "D001",
+            programa = "EGSTI",
             facultad = "Ingeniería",
             nivelFormacion = NivelFormacion.DOCTORADO,
             dedicacion = TipoDedicacion.TIEMPO_COMPLETO,
@@ -112,6 +113,7 @@ class EntidadesDominioTest {
         assertThrows<FormatoPeriodoInvalidoException> {
             Docente(
                 id = "D001",
+                programa = "EGSTI",
                 facultad = "Ingeniería",
                 nivelFormacion = NivelFormacion.MAESTRIA,
                 dedicacion = TipoDedicacion.CATEDRA,
@@ -125,7 +127,22 @@ class EntidadesDominioTest {
         assertThrows<CampoRequeridoVacioException> {
             Docente(
                 id = "D001",
+                programa = "EGSTI",
                 facultad = "",
+                nivelFormacion = NivelFormacion.MAESTRIA,
+                dedicacion = TipoDedicacion.MEDIO_TIEMPO,
+                periodo = "20261",
+            )
+        }
+    }
+
+    @Test
+    fun `un programa de docente en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            Docente(
+                id = "D001",
+                programa = "  ",
+                facultad = "Ingeniería",
                 nivelFormacion = NivelFormacion.MAESTRIA,
                 dedicacion = TipoDedicacion.MEDIO_TIEMPO,
                 periodo = "20261",
@@ -189,6 +206,90 @@ class EntidadesDominioTest {
                 factor = "  ",
                 calificacion = 3,
                 periodo = "20261",
+            )
+        }
+    }
+
+    // =========================================================================
+    // ResultadoEncuestaPregunta
+    // =========================================================================
+
+    @Test
+    fun `un resultado de encuesta por pregunta valido se construye correctamente`() {
+        val resultado = ResultadoEncuestaPregunta(
+            programa = "EGSTI",
+            periodo = "20261",
+            codigoPregunta = "A2",
+            caracteristica = "1.1",
+            estamentos = setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR),
+            promedio = 4.5,
+        )
+
+        assertEquals(4.5, resultado.promedio)
+        assertEquals(setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR), resultado.estamentos)
+    }
+
+    @Test
+    fun `un promedio ausente (null) es valido`() {
+        val resultado = resultadoConPromedio(null)
+
+        assertNull(resultado.promedio)
+    }
+
+    @Test
+    fun `los limites 1,0 y 5,0 del promedio son validos`() {
+        assertEquals(1.0, resultadoConPromedio(1.0).promedio)
+        assertEquals(5.0, resultadoConPromedio(5.0).promedio)
+    }
+
+    @Test
+    fun `un promedio de 0 es rechazado como dato invalido, no como ausente`() {
+        assertThrows<PromedioFueraDeRangoException> { resultadoConPromedio(0.0) }
+    }
+
+    @Test
+    fun `un promedio por encima de 5 es rechazado`() {
+        assertThrows<PromedioFueraDeRangoException> { resultadoConPromedio(5.1) }
+    }
+
+    @Test
+    fun `un periodo de resultado con formato invalido es rechazado`() {
+        assertThrows<FormatoPeriodoInvalidoException> {
+            ResultadoEncuestaPregunta(
+                programa = "EGSTI",
+                periodo = "2026-1",
+                codigoPregunta = "A2",
+                caracteristica = "1.1",
+                estamentos = setOf(TipoEstamento.ESTUDIANTE),
+                promedio = 4.0,
+            )
+        }
+    }
+
+    @Test
+    fun `un conjunto de estamentos vacio es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            ResultadoEncuestaPregunta(
+                programa = "EGSTI",
+                periodo = "20261",
+                codigoPregunta = "A2",
+                caracteristica = "1.1",
+                estamentos = emptySet(),
+                promedio = 4.0,
+            )
+        }
+    }
+
+    @Test
+    fun `un programa de resultado en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            ResultadoEncuestaPregunta(
+                programa = "  ",
+                periodo = "20261",
+                codigoPregunta = "A2",
+                caracteristica = "1.1",
+                estamentos = setOf(TipoEstamento.ESTUDIANTE),
+                promedio = 4.0,
             )
         }
     }
@@ -315,6 +416,16 @@ class EntidadesDominioTest {
             pesosFactores = mapOf("F1" to 1.0),
             pesoEncuestas = pesoEncuestas,
             pesoDocumental = pesoDocumental,
+        )
+
+    private fun resultadoConPromedio(promedio: Double?): ResultadoEncuestaPregunta =
+        ResultadoEncuestaPregunta(
+            programa = "EGSTI",
+            periodo = "20261",
+            codigoPregunta = "A2",
+            caracteristica = "1.1",
+            estamentos = setOf(TipoEstamento.ESTUDIANTE),
+            promedio = promedio,
         )
 
     private fun respuestaConCalificacion(calificacion: Int): RespuestaEncuesta =
