@@ -61,4 +61,20 @@ interface AcademicDataRepository {
 
     /** Devuelve todos los resultados de encuesta por pregunta registrados, en orden de inserción. */
     fun listarResultadosEncuestaPregunta(): List<ResultadoEncuestaPregunta>
+
+    /** Persiste [evaluacion] y la devuelve sin cambios. */
+    fun guardarEvaluacionDocumental(evaluacion: EvaluacionDocumental): EvaluacionDocumental
+
+    /**
+     * Devuelve la evaluación documental cuya clave natural es ([programa],
+     * [periodo], [caracteristica]), o `null` si no hay ninguna registrada.
+     */
+    fun buscarEvaluacionDocumental(
+        programa: String,
+        periodo: String,
+        caracteristica: String,
+    ): EvaluacionDocumental?
+
+    /** Devuelve todas las evaluaciones documentales registradas, en orden de inserción. */
+    fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental>
 }

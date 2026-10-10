@@ -61,6 +61,18 @@ class PromedioFueraDeRangoException(valor: Double) :
     )
 
 /**
+ * Se lanza cuando la `calificacion` de una [EvaluacionDocumental] está fuera
+ * del rango válido `1.0..5.0` inclusive de la escala institucional. A
+ * diferencia de [ResultadoEncuestaPregunta.promedio], este campo es
+ * obligatorio: `N/A` no es un valor válido (`DESIGN_SGVA.md` §0.1).
+ */
+class CalificacionDocumentalFueraDeRangoException(valor: Double) :
+    DominioException(
+        "La calificación documental debe estar entre ${EvaluacionDocumental.RANGO_CALIFICACION.start} y " +
+            "${EvaluacionDocumental.RANGO_CALIFICACION.endInclusive} inclusive; valor recibido: $valor.",
+    )
+
+/**
  * Se lanza al intentar registrar una entidad cuyo identificador ya existe en el
  * repositorio. El registro es una operación de alta: modificar un registro
  * existente queda fuera del alcance de esta versión.
