@@ -80,6 +80,19 @@ internal object NormalizadorDatos {
     }
 
     /**
+     * Interpreta un real obligatorio (mismas reglas de [decimalOpcional] para
+     * coma o punto decimal); a diferencia de aquel, una cadena vacía o
+     * `"N/A"` no son válidas en este campo (`DESIGN_SGVA.md` §0.1).
+     *
+     * @throws NumberFormatException si el valor está vacío, es `"N/A"` o no es un número real reconocible.
+     */
+    fun decimal(valor: String?): Double =
+        decimalOpcional(valor) ?: throw NumberFormatException("el valor es obligatorio y no puede estar vacío ni 'N/A'")
+
+    /** Recorta espacios y trata la cadena en blanco como ausente; `null` se conserva como `null`. */
+    fun textoOpcional(valor: String?): String? = texto(valor).ifBlank { null }
+
+    /**
      * Divide un valor con varios elementos separados por coma, punto y coma o
      * barra vertical (ej.: `"Estudiante, Profesor"`) y normaliza cada uno a su
      * clave de enum mediante [claveEnum]. Los elementos en blanco se descartan.

@@ -10,16 +10,19 @@ import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
+import com.example.sgva.usecases.ConsultarEvaluacionDocumentalUseCase
 import com.example.sgva.usecases.ConsultarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ConsultarRespuestasEncuestaUseCase
 import com.example.sgva.usecases.GenerarMatrizRadarUseCase
 import com.example.sgva.usecases.GenerarReporteEjecutivoUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarEvaluacionesDocumentalesUseCase
 import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarEvaluacionDocumentalUseCase
 import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.springframework.context.annotation.Bean
@@ -131,6 +134,25 @@ class ConfiguracionCasosDeUso {
         registrarResultadoEncuestaPreguntaUseCase: RegistrarResultadoEncuestaPreguntaUseCase,
     ): ProcesarResultadosEncuestaPreguntaUseCase =
         ProcesarResultadosEncuestaPreguntaUseCase(parsers, registrarResultadoEncuestaPreguntaUseCase)
+
+    @Bean
+    fun registrarEvaluacionDocumentalUseCase(
+        repositorio: AcademicDataRepository,
+    ): RegistrarEvaluacionDocumentalUseCase =
+        RegistrarEvaluacionDocumentalUseCase(repositorio)
+
+    @Bean
+    fun consultarEvaluacionDocumentalUseCase(
+        repositorio: AcademicDataRepository,
+    ): ConsultarEvaluacionDocumentalUseCase =
+        ConsultarEvaluacionDocumentalUseCase(repositorio)
+
+    @Bean
+    fun procesarEvaluacionesDocumentalesUseCase(
+        parsers: List<DocumentParserPort>,
+        registrarEvaluacionDocumentalUseCase: RegistrarEvaluacionDocumentalUseCase,
+    ): ProcesarEvaluacionesDocumentalesUseCase =
+        ProcesarEvaluacionesDocumentalesUseCase(parsers, registrarEvaluacionDocumentalUseCase)
 
     @Bean
     fun calcularPonderacionLikertUseCase(repositorio: AcademicDataRepository): CalcularPonderacionLikertUseCase =

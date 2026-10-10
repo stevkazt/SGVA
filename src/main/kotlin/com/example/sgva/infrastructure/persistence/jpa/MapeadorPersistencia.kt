@@ -2,6 +2,7 @@ package com.example.sgva.infrastructure.persistence.jpa
 
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoEstamento
@@ -97,4 +98,29 @@ internal fun ResultadoEncuestaPreguntaEntity.aDominio(): ResultadoEncuestaPregun
         caracteristica = caracteristica,
         estamentos = estamentos.split(",").filter(String::isNotBlank).map { TipoEstamento.valueOf(it) }.toSet(),
         promedio = promedio,
+    )
+
+/** Clave natural de [EvaluacionDocumental] usada como `id` técnico de [EvaluacionDocumentalEntity]. */
+internal fun claveEvaluacionDocumental(programa: String, periodo: String, caracteristica: String): String =
+    "$programa|$periodo|$caracteristica"
+
+internal fun EvaluacionDocumental.aEntidad(): EvaluacionDocumentalEntity =
+    EvaluacionDocumentalEntity(
+        id = claveEvaluacionDocumental(programa, periodo, caracteristica),
+        programa = programa,
+        caracteristica = caracteristica,
+        periodo = periodo,
+        calificacion = calificacion,
+        justificacion = justificacion,
+        sugerenciasMejora = sugerenciasMejora,
+    )
+
+internal fun EvaluacionDocumentalEntity.aDominio(): EvaluacionDocumental =
+    EvaluacionDocumental(
+        programa = programa,
+        caracteristica = caracteristica,
+        periodo = periodo,
+        calificacion = calificacion,
+        justificacion = justificacion,
+        sugerenciasMejora = sugerenciasMejora,
     )

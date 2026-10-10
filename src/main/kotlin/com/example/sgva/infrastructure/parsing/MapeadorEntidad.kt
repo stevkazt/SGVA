@@ -3,6 +3,7 @@ package com.example.sgva.infrastructure.parsing
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.NivelFormacion
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
@@ -82,6 +83,21 @@ internal object MapeadorResultadoEncuestaPregunta : MapeadorEntidad<ResultadoEnc
         caracteristica = NormalizadorDatos.texto(fila["caracteristica"]),
         estamentos = aConjuntoEnum<TipoEstamento>(fila["estamentos"], "estamentos"),
         promedio = NormalizadorDatos.decimalOpcional(fila["promedio"]),
+    )
+}
+
+internal object MapeadorEvaluacionDocumental : MapeadorEntidad<EvaluacionDocumental> {
+
+    override val columnasObligatorias =
+        setOf("programa", "caracteristica", "periodo", "calificacion")
+
+    override fun mapear(fila: Map<String, String>): EvaluacionDocumental = EvaluacionDocumental(
+        programa = NormalizadorDatos.texto(fila["programa"]),
+        caracteristica = NormalizadorDatos.texto(fila["caracteristica"]),
+        periodo = NormalizadorDatos.periodoAcademico(fila["periodo"]),
+        calificacion = NormalizadorDatos.decimal(fila["calificacion"]),
+        justificacion = NormalizadorDatos.textoOpcional(fila["justificacion"]),
+        sugerenciasMejora = NormalizadorDatos.textoOpcional(fila["sugerenciasMejora"]),
     )
 }
 

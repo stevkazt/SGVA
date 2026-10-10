@@ -3,10 +3,12 @@ package com.example.sgva.infrastructure.persistence
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.infrastructure.persistence.jpa.DocenteJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.EstudianteJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.EvaluacionDocumentalJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.ResultadoEncuestaPreguntaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.RespuestaEncuestaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.aDominio
@@ -28,6 +30,7 @@ internal class AcademicDataRepositoryJpa(
     private val docentes: DocenteJpaRepository,
     private val respuestasEncuesta: RespuestaEncuestaJpaRepository,
     private val resultadosEncuestaPregunta: ResultadoEncuestaPreguntaJpaRepository,
+    private val evaluacionesDocumentales: EvaluacionDocumentalJpaRepository,
 ) : AcademicDataRepository {
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante =
@@ -70,4 +73,18 @@ internal class AcademicDataRepositoryJpa(
 
     override fun listarResultadosEncuestaPregunta(): List<ResultadoEncuestaPregunta> =
         resultadosEncuestaPregunta.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
+
+    override fun guardarEvaluacionDocumental(evaluacion: EvaluacionDocumental): EvaluacionDocumental =
+        evaluacionesDocumentales.save(evaluacion.aEntidad()).aDominio()
+
+    override fun buscarEvaluacionDocumental(
+        programa: String,
+        periodo: String,
+        caracteristica: String,
+    ): EvaluacionDocumental? =
+        evaluacionesDocumentales.findByProgramaAndPeriodoAndCaracteristica(programa, periodo, caracteristica)
+            ?.aDominio()
+
+    override fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental> =
+        evaluacionesDocumentales.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
 }
