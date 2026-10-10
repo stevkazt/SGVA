@@ -194,8 +194,128 @@ class EntidadesDominioTest {
     }
 
     // =========================================================================
+    // Caracteristica
+    // =========================================================================
+
+    @Test
+    fun `una caracteristica valida se construye correctamente`() {
+        val caracteristica = Caracteristica(
+            id = "1.1",
+            nombre = "Coherencia con la misión",
+            factor = "F1",
+            ponderacion = 0.5,
+        )
+
+        assertEquals("F1", caracteristica.factor)
+        assertEquals(0.5, caracteristica.ponderacion)
+    }
+
+    @Test
+    fun `una ponderacion de caracteristica negativa es rechazada`() {
+        assertThrows<PonderacionNegativaException> {
+            Caracteristica(id = "1.1", nombre = "Coherencia con la misión", factor = "F1", ponderacion = -0.1)
+        }
+    }
+
+    @Test
+    fun `un id de caracteristica en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            Caracteristica(id = "  ", nombre = "Coherencia con la misión", factor = "F1", ponderacion = 0.5)
+        }
+    }
+
+    @Test
+    fun `un factor de caracteristica en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            Caracteristica(id = "1.1", nombre = "Coherencia con la misión", factor = "  ", ponderacion = 0.5)
+        }
+    }
+
+    // =========================================================================
+    // ConfiguracionPonderaciones
+    // =========================================================================
+
+    @Test
+    fun `una configuracion de ponderaciones valida se construye correctamente`() {
+        val configuracion = ConfiguracionPonderaciones(
+            caracteristicas = listOf(
+                Caracteristica(id = "1.1", nombre = "C1", factor = "F1", ponderacion = 0.6),
+                Caracteristica(id = "1.2", nombre = "C2", factor = "F1", ponderacion = 0.4),
+                Caracteristica(id = "2.1", nombre = "C3", factor = "F2", ponderacion = 1.0),
+            ),
+            pesosFactores = mapOf("F1" to 0.7, "F2" to 0.3),
+            pesoEncuestas = 0.4,
+            pesoDocumental = 0.6,
+        )
+
+        assertEquals(0.4, configuracion.pesoEncuestas)
+        assertEquals(0.6, configuracion.pesoDocumental)
+    }
+
+    @Test
+    fun `una tolerancia de 0,001 en la suma de pesos de factores es aceptada`() {
+        val configuracion = configuracionConPesosFactores(mapOf("F1" to 0.5005, "F2" to 0.4995))
+
+        assertEquals(1.0, configuracion.pesosFactores.values.sum(), 1e-9)
+    }
+
+    @Test
+    fun `los pesos de factores que no suman 1,0 son rechazados`() {
+        assertThrows<SumaPonderacionesInvalidaException> {
+            configuracionConPesosFactores(mapOf("F1" to 0.5, "F2" to 0.3))
+        }
+    }
+
+    @Test
+    fun `un peso de factor negativo es rechazado`() {
+        assertThrows<PonderacionNegativaException> {
+            configuracionConPesosFactores(mapOf("F1" to 1.3, "F2" to -0.3))
+        }
+    }
+
+    @Test
+    fun `las ponderaciones de caracteristicas de un mismo factor que no suman 1,0 son rechazadas`() {
+        assertThrows<SumaPonderacionesInvalidaException> {
+            ConfiguracionPonderaciones(
+                caracteristicas = listOf(
+                    Caracteristica(id = "1.1", nombre = "C1", factor = "F1", ponderacion = 0.6),
+                    Caracteristica(id = "1.2", nombre = "C2", factor = "F1", ponderacion = 0.3),
+                ),
+                pesosFactores = mapOf("F1" to 1.0),
+                pesoEncuestas = 0.4,
+                pesoDocumental = 0.6,
+            )
+        }
+    }
+
+    @Test
+    fun `un peso de la mezcla encuestas-documental negativo es rechazado`() {
+        assertThrows<PonderacionNegativaException> {
+            configuracionConMezcla(pesoEncuestas = -0.4, pesoDocumental = 0.6)
+        }
+    }
+
+    // =========================================================================
     // Helpers
     // =========================================================================
+
+    private fun configuracionConPesosFactores(pesosFactores: Map<String, Double>): ConfiguracionPonderaciones =
+        ConfiguracionPonderaciones(
+            caracteristicas = pesosFactores.keys.map { factor ->
+                Caracteristica(id = "$factor.1", nombre = "C-$factor", factor = factor, ponderacion = 1.0)
+            },
+            pesosFactores = pesosFactores,
+            pesoEncuestas = 0.4,
+            pesoDocumental = 0.6,
+        )
+
+    private fun configuracionConMezcla(pesoEncuestas: Double, pesoDocumental: Double): ConfiguracionPonderaciones =
+        ConfiguracionPonderaciones(
+            caracteristicas = listOf(Caracteristica(id = "1.1", nombre = "C1", factor = "F1", ponderacion = 1.0)),
+            pesosFactores = mapOf("F1" to 1.0),
+            pesoEncuestas = pesoEncuestas,
+            pesoDocumental = pesoDocumental,
+        )
 
     private fun respuestaConCalificacion(calificacion: Int): RespuestaEncuesta =
         RespuestaEncuesta(
