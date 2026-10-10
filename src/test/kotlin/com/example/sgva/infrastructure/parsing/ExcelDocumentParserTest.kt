@@ -89,6 +89,24 @@ class ExcelDocumentParserTest {
     }
 
     @Test
+    fun `extrae evaluaciones documentales de un libro con celdas numericas y de texto`() {
+        val libro = xlsx(
+            listOf("programa", "caracteristica", "periodo", "calificacion", "justificacion"),
+            listOf("EGSTI", "1.1", "2026-1", 4.7, "Evidencia documental consistente"),
+            listOf("EGSTI", "1.2", "20261", "3,5", ""),
+        )
+
+        val evaluaciones = parser.extraerEvaluacionesDocumentales("evaluaciones.xlsx", libro)
+
+        assertEquals(2, evaluaciones.size)
+        assertEquals("20261", evaluaciones[0].periodo)
+        assertEquals(4.7, evaluaciones[0].calificacion)
+        assertEquals("Evidencia documental consistente", evaluaciones[0].justificacion)
+        assertEquals(3.5, evaluaciones[1].calificacion)
+        assertNull(evaluaciones[1].justificacion)
+    }
+
+    @Test
     fun `rechaza un libro corrupto con una excepcion controlada`() {
         val error = assertThrows<FormatoArchivoInvalidoException> {
             parser.extraerEstudiantes("corrupto.xlsx", "esto no es un xlsx".toByteArray())

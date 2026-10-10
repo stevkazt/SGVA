@@ -4,10 +4,12 @@ import com.example.sgva.domain.FormatoArchivoInvalidoException
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
+import com.example.sgva.usecases.ProcesarEvaluacionesDocumentalesUseCase
 import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
+import com.example.sgva.usecases.RegistrarEvaluacionDocumentalUseCase
 import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.junit.jupiter.api.Test
@@ -27,6 +29,8 @@ class ProcesarDatosArchivoUseCaseTest {
         ProcesarRespuestasEncuestasUseCase(parsers, RegistrarRespuestaEncuestaUseCase(repositorio))
     private val procesarResultadosEncuestaPregunta =
         ProcesarResultadosEncuestaPreguntaUseCase(parsers, RegistrarResultadoEncuestaPreguntaUseCase(repositorio))
+    private val procesarEvaluacionesDocumentales =
+        ProcesarEvaluacionesDocumentalesUseCase(parsers, RegistrarEvaluacionDocumentalUseCase(repositorio))
 
     @Test
     fun `carga el archivo de estudiantes y registra cada fila mediante el caso de uso de registro`() {
@@ -97,6 +101,37 @@ class ProcesarDatosArchivoUseCaseTest {
         assertEquals(0, resultado.registrados)
         assertEquals(4, resultado.omitidos.size)
         assertEquals(4, repositorio.listarResultadosEncuestaPregunta().size)
+        assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
+    }
+
+    @Test
+    fun `carga el archivo de evaluaciones documentales y registra cada fila mediante el caso de uso de registro`() {
+        val resultado = procesarEvaluacionesDocumentales.ejecutar(
+            "datos_evaluaciones_documentales_test.csv",
+            fixture("datos_evaluaciones_documentales_test.csv"),
+        )
+
+        assertEquals(4, resultado.totalRegistrosLeidos)
+        assertEquals(4, resultado.registrados)
+        assertTrue(resultado.omitidos.isEmpty())
+        assertEquals(4, repositorio.listarEvaluacionesDocumentales().size)
+    }
+
+    @Test
+    fun `una segunda carga del mismo archivo de evaluaciones documentales omite las claves ya registradas`() {
+        procesarEvaluacionesDocumentales.ejecutar(
+            "datos_evaluaciones_documentales_test.csv",
+            fixture("datos_evaluaciones_documentales_test.csv"),
+        )
+
+        val resultado = procesarEvaluacionesDocumentales.ejecutar(
+            "datos_evaluaciones_documentales_test.csv",
+            fixture("datos_evaluaciones_documentales_test.csv"),
+        )
+
+        assertEquals(0, resultado.registrados)
+        assertEquals(4, resultado.omitidos.size)
+        assertEquals(4, repositorio.listarEvaluacionesDocumentales().size)
         assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
     }
 

@@ -295,6 +295,157 @@ class EntidadesDominioTest {
     }
 
     // =========================================================================
+    // EvaluacionDocumental
+    // =========================================================================
+
+    @Test
+    fun `una evaluacion documental valida se construye correctamente`() {
+        val evaluacion = EvaluacionDocumental(
+            programa = "EGSTI",
+            caracteristica = "1.1",
+            periodo = "20261",
+            calificacion = 4.7,
+            justificacion = "Evidencia documental consistente",
+            sugerenciasMejora = "Actualizar el PEP",
+        )
+
+        assertEquals(4.7, evaluacion.calificacion)
+        assertEquals("Evidencia documental consistente", evaluacion.justificacion)
+        assertEquals("Actualizar el PEP", evaluacion.sugerenciasMejora)
+    }
+
+    @Test
+    fun `la justificacion y las sugerencias de mejora son opcionales`() {
+        val evaluacion = evaluacionConCalificacion(4.0)
+
+        assertNull(evaluacion.justificacion)
+        assertNull(evaluacion.sugerenciasMejora)
+    }
+
+    @Test
+    fun `los limites 1,0 y 5,0 de la calificacion documental son validos`() {
+        assertEquals(1.0, evaluacionConCalificacion(1.0).calificacion)
+        assertEquals(5.0, evaluacionConCalificacion(5.0).calificacion)
+    }
+
+    @Test
+    fun `una calificacion documental de 0 es rechazada, a diferencia del promedio de encuesta`() {
+        assertThrows<CalificacionDocumentalFueraDeRangoException> { evaluacionConCalificacion(0.0) }
+    }
+
+    @Test
+    fun `una calificacion documental por encima de 5 es rechazada`() {
+        assertThrows<CalificacionDocumentalFueraDeRangoException> { evaluacionConCalificacion(5.1) }
+    }
+
+    @Test
+    fun `un periodo de evaluacion documental con formato invalido es rechazado`() {
+        assertThrows<FormatoPeriodoInvalidoException> {
+            EvaluacionDocumental(
+                programa = "EGSTI",
+                caracteristica = "1.1",
+                periodo = "2026-1",
+                calificacion = 4.0,
+            )
+        }
+    }
+
+    @Test
+    fun `un programa de evaluacion documental en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            EvaluacionDocumental(
+                programa = "  ",
+                caracteristica = "1.1",
+                periodo = "20261",
+                calificacion = 4.0,
+            )
+        }
+    }
+
+    @Test
+    fun `una caracteristica de evaluacion documental en blanco es rechazada`() {
+        assertThrows<CampoRequeridoVacioException> {
+            EvaluacionDocumental(
+                programa = "EGSTI",
+                caracteristica = "  ",
+                periodo = "20261",
+                calificacion = 4.0,
+            )
+        }
+    }
+
+    // =========================================================================
+    // ValoracionCualitativa
+    // =========================================================================
+
+    @Test
+    fun `una calificacion de 4,6 a 5,0 se cumple plenamente`() {
+        assertEquals(ValoracionCualitativa.SE_CUMPLE_PLENAMENTE, evaluacionConCalificacion(4.6).valoracionCualitativa)
+        assertEquals(ValoracionCualitativa.SE_CUMPLE_PLENAMENTE, evaluacionConCalificacion(5.0).valoracionCualitativa)
+    }
+
+    @Test
+    fun `una calificacion de 4,0 a 4,5 se cumple en alto grado`() {
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_EN_ALTO_GRADO,
+            evaluacionConCalificacion(4.0).valoracionCualitativa,
+        )
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_EN_ALTO_GRADO,
+            evaluacionConCalificacion(4.5).valoracionCualitativa,
+        )
+    }
+
+    @Test
+    fun `una calificacion de 3,0 a 3,9 se cumple aceptablemente`() {
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_ACEPTABLEMENTE,
+            evaluacionConCalificacion(3.0).valoracionCualitativa,
+        )
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_ACEPTABLEMENTE,
+            evaluacionConCalificacion(3.9).valoracionCualitativa,
+        )
+    }
+
+    @Test
+    fun `una calificacion de 2,0 a 2,9 se cumple insatisfactoriamente`() {
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_INSATISFACTORIAMENTE,
+            evaluacionConCalificacion(2.0).valoracionCualitativa,
+        )
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_INSATISFACTORIAMENTE,
+            evaluacionConCalificacion(2.9).valoracionCualitativa,
+        )
+    }
+
+    @Test
+    fun `una calificacion de 1,0 a 1,9 no se cumple`() {
+        assertEquals(ValoracionCualitativa.NO_SE_CUMPLE, evaluacionConCalificacion(1.0).valoracionCualitativa)
+        assertEquals(ValoracionCualitativa.NO_SE_CUMPLE, evaluacionConCalificacion(1.9).valoracionCualitativa)
+    }
+
+    @Test
+    fun `la calificacion se redondea a un decimal con la regla mitad hacia arriba antes de derivar la valoracion`() {
+        // 4,55 redondea a 4,6 (mitad hacia arriba): pasa de "alto grado" a "plenamente".
+        assertEquals(ValoracionCualitativa.SE_CUMPLE_PLENAMENTE, evaluacionConCalificacion(4.55).valoracionCualitativa)
+        // 4,45 redondea a 4,5: sigue en "alto grado".
+        assertEquals(
+            ValoracionCualitativa.SE_CUMPLE_EN_ALTO_GRADO,
+            evaluacionConCalificacion(4.45).valoracionCualitativa,
+        )
+    }
+
+    @Test
+    fun `la calificacion se almacena sin redondear, el redondeo solo se usa para la valoracion`() {
+        val evaluacion = evaluacionConCalificacion(4.4667)
+
+        assertEquals(4.4667, evaluacion.calificacion)
+        assertEquals(ValoracionCualitativa.SE_CUMPLE_EN_ALTO_GRADO, evaluacion.valoracionCualitativa)
+    }
+
+    // =========================================================================
     // Caracteristica
     // =========================================================================
 
@@ -416,6 +567,14 @@ class EntidadesDominioTest {
             pesosFactores = mapOf("F1" to 1.0),
             pesoEncuestas = pesoEncuestas,
             pesoDocumental = pesoDocumental,
+        )
+
+    private fun evaluacionConCalificacion(calificacion: Double): EvaluacionDocumental =
+        EvaluacionDocumental(
+            programa = "EGSTI",
+            caracteristica = "1.1",
+            periodo = "20261",
+            calificacion = calificacion,
         )
 
     private fun resultadoConPromedio(promedio: Double?): ResultadoEncuestaPregunta =

@@ -3,11 +3,13 @@ package com.example.sgva.infrastructure.persistence
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.NivelFormacion
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
 import com.example.sgva.domain.TipoEstamento
+import com.example.sgva.domain.ValoracionCualitativa
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
@@ -128,6 +130,42 @@ class AcademicDataRepositoryJpaTest {
         val recuperado = repositorio.buscarResultadoEncuestaPregunta("JPA-EGSTI", "20262", "B1")
         assertEquals(resultado, recuperado)
         assertNull(recuperado?.promedio)
+    }
+
+    @Test
+    fun `guarda y recupera una evaluacion documental por su clave natural contra PostgreSQL`() {
+        val evaluacion = EvaluacionDocumental(
+            programa = "JPA-EGSTI",
+            caracteristica = "1.1",
+            periodo = "20261",
+            calificacion = 4.7,
+            justificacion = "Evidencia documental consistente",
+            sugerenciasMejora = "Actualizar el acta",
+        )
+
+        repositorio.guardarEvaluacionDocumental(evaluacion)
+
+        val recuperada = repositorio.buscarEvaluacionDocumental("JPA-EGSTI", "20261", "1.1")
+        assertEquals(evaluacion, recuperada)
+        assertEquals(ValoracionCualitativa.SE_CUMPLE_PLENAMENTE, recuperada?.valoracionCualitativa)
+        assertNull(repositorio.buscarEvaluacionDocumental("JPA-EGSTI", "20261", "NOEXISTE"))
+    }
+
+    @Test
+    fun `guarda y recupera una evaluacion documental sin justificacion ni sugerencias de mejora`() {
+        val evaluacion = EvaluacionDocumental(
+            programa = "JPA-EGSTI",
+            caracteristica = "2.1",
+            periodo = "20262",
+            calificacion = 3.0,
+        )
+
+        repositorio.guardarEvaluacionDocumental(evaluacion)
+
+        val recuperada = repositorio.buscarEvaluacionDocumental("JPA-EGSTI", "20262", "2.1")
+        assertEquals(evaluacion, recuperada)
+        assertNull(recuperada?.justificacion)
+        assertNull(recuperada?.sugerenciasMejora)
     }
 
     private fun estudiante(id: String): Estudiante = Estudiante(

@@ -116,6 +116,66 @@ class CsvDocumentParserTest {
     }
 
     @Test
+    fun `extrae las evaluaciones documentales del fixture, normaliza el periodo y trata las columnas opcionales vacias como null`() {
+        val evaluaciones = parser.extraerEvaluacionesDocumentales(
+            "datos_evaluaciones_documentales_test.csv",
+            fixture("datos_evaluaciones_documentales_test.csv"),
+        )
+
+        assertEquals(4, evaluaciones.size)
+        assertTrue(evaluaciones.all { it.periodo == "20261" })
+        assertTrue(evaluaciones.all { it.programa == "EGSTI" })
+
+        val primera = evaluaciones[0]
+        assertEquals(4.7, primera.calificacion)
+        assertEquals("Evidencia documental consistente con el PEP", primera.justificacion)
+        assertEquals("Actualizar el acta de autoevaluación", primera.sugerenciasMejora)
+
+        val segunda = evaluaciones[1]
+        assertNull(segunda.justificacion)
+        assertEquals("Fortalecer el seguimiento estadístico", segunda.sugerenciasMejora)
+
+        val tercera = evaluaciones[2]
+        assertNull(tercera.sugerenciasMejora)
+    }
+
+    @Test
+    fun `rechaza una evaluacion documental con calificacion N A, a diferencia del promedio de encuesta`() {
+        val csv = """
+            programa,caracteristica,periodo,calificacion
+            EGSTI,1.1,20261,N/A
+        """.trimIndent().toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerEvaluacionesDocumentales("datos.csv", csv)
+        }
+        assertTrue(error.message!!.contains("fila 2"))
+    }
+
+    @Test
+    fun `rechaza una evaluacion documental con calificacion fuera de rango`() {
+        val csv = """
+            programa,caracteristica,periodo,calificacion
+            EGSTI,1.1,20261,5.5
+        """.trimIndent().toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerEvaluacionesDocumentales("datos.csv", csv)
+        }
+        assertTrue(error.message!!.contains("calificación documental"))
+    }
+
+    @Test
+    fun `rechaza un csv de evaluaciones documentales al que le falta la columna calificacion`() {
+        val csv = "programa,caracteristica,periodo\nEGSTI,1.1,20261\n".toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerEvaluacionesDocumentales("incompleto.csv", csv)
+        }
+        assertTrue(error.message!!.contains("calificacion"))
+    }
+
+    @Test
     fun `rechaza un csv al que le falta una columna obligatoria`() {
         val csv = "id,programa,facultad,estado\nE1,Sistemas,Ingeniería,MATRICULADO\n".toByteArray()
 

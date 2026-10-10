@@ -68,6 +68,23 @@ class NormalizadorDatosTest {
     }
 
     @Test
+    fun `el decimal obligatorio admite coma o punto decimal pero rechaza vacio y N A`() {
+        assertEquals(4.5, NormalizadorDatos.decimal("4.5"))
+        assertEquals(4.5, NormalizadorDatos.decimal("4,5"))
+        assertThrows<NumberFormatException> { NormalizadorDatos.decimal("") }
+        assertThrows<NumberFormatException> { NormalizadorDatos.decimal(null) }
+        assertThrows<NumberFormatException> { NormalizadorDatos.decimal("N/A") }
+    }
+
+    @Test
+    fun `el texto opcional trata la cadena en blanco como ausente`() {
+        assertNull(NormalizadorDatos.textoOpcional(""))
+        assertNull(NormalizadorDatos.textoOpcional("   "))
+        assertNull(NormalizadorDatos.textoOpcional(null))
+        assertEquals("Observación relevante", NormalizadorDatos.textoOpcional("  Observación relevante  "))
+    }
+
+    @Test
     fun `la lista de claves de enum se separa por coma, punto y coma o barra vertical`() {
         assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("Estudiante;Profesor"))
         assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("estudiante, profesor"))

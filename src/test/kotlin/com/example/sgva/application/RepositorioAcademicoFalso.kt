@@ -3,6 +3,7 @@ package com.example.sgva.application
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 
@@ -18,6 +19,7 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
     private val docentes = LinkedHashMap<String, Docente>()
     private val respuestasEncuesta = LinkedHashMap<String, RespuestaEncuesta>()
     private val resultadosEncuestaPregunta = LinkedHashMap<String, ResultadoEncuestaPregunta>()
+    private val evaluacionesDocumentales = LinkedHashMap<String, EvaluacionDocumental>()
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante {
         estudiantes[estudiante.id] = estudiante
@@ -64,11 +66,27 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
     private fun claveDe(programa: String, periodo: String, codigoPregunta: String): String =
         "$programa|$periodo|$codigoPregunta"
 
-    /** Vacía los cuatro almacenes; útil para reutilizar la misma instancia entre pruebas. */
+    override fun guardarEvaluacionDocumental(evaluacion: EvaluacionDocumental): EvaluacionDocumental {
+        evaluacionesDocumentales[claveDe(evaluacion.programa, evaluacion.periodo, evaluacion.caracteristica)] =
+            evaluacion
+        return evaluacion
+    }
+
+    override fun buscarEvaluacionDocumental(
+        programa: String,
+        periodo: String,
+        caracteristica: String,
+    ): EvaluacionDocumental? = evaluacionesDocumentales[claveDe(programa, periodo, caracteristica)]
+
+    override fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental> =
+        evaluacionesDocumentales.values.toList()
+
+    /** Vacía los cinco almacenes; útil para reutilizar la misma instancia entre pruebas. */
     fun limpiar() {
         estudiantes.clear()
         docentes.clear()
         respuestasEncuesta.clear()
         resultadosEncuestaPregunta.clear()
+        evaluacionesDocumentales.clear()
     }
 }
