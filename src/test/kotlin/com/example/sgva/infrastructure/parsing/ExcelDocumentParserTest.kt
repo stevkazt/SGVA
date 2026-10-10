@@ -107,6 +107,33 @@ class ExcelDocumentParserTest {
     }
 
     @Test
+    fun `omite una o mas filas de titulo antes del encabezado`() {
+        val libro = XSSFWorkbook().use { libro ->
+            val hoja = libro.createSheet("datos")
+            hoja.createRow(0).also { it.createCell(0).setCellValue("UNIVERSIDAD EJEMPLO") }
+            hoja.createRow(1).also { it.createCell(0).setCellValue("INFORME DE ESTUDIANTES - 2026-1") }
+            hoja.createRow(2).also { fila ->
+                listOf("id", "programa", "facultad", "cohorte", "estado", "puntajeSaberPro")
+                    .forEachIndexed { i, titulo -> fila.createCell(i).setCellValue(titulo) }
+            }
+            hoja.createRow(3).also { fila ->
+                listOf("2021101", "Ingeniería de Sistemas", "Ingeniería", "2023-1", "MATRICULADO", "210")
+                    .forEachIndexed { i, valor -> fila.createCell(i).setCellValue(valor) }
+            }
+            ByteArrayOutputStream().use { salida ->
+                libro.write(salida)
+                salida.toByteArray()
+            }
+        }
+
+        val estudiantes = parser.extraerEstudiantes("estudiantes.xlsx", libro)
+
+        assertEquals(1, estudiantes.size)
+        assertEquals("2021101", estudiantes[0].id)
+        assertEquals("20231", estudiantes[0].cohorte)
+    }
+
+    @Test
     fun `rechaza un libro corrupto con una excepcion controlada`() {
         val error = assertThrows<FormatoArchivoInvalidoException> {
             parser.extraerEstudiantes("corrupto.xlsx", "esto no es un xlsx".toByteArray())

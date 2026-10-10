@@ -186,6 +186,65 @@ class CsvDocumentParserTest {
     }
 
     @Test
+    fun `lee un csv real de las areas con separador punto y coma, coma decimal, N A, ISO-8859-1 y filas de titulo`() {
+        val texto = """
+            UNIVERSIDAD EJEMPLO
+            INFORME DE EVALUACIÓN DOCUMENTAL - PERIODO 2026-1
+            programa;caracteristica;periodo;calificacion;justificacion;sugerenciasMejora
+            EGSTI;1.1;2026-1;4,7;Evidencia documental consistente con el PEP;N/A
+            EGSTI;1.2;2026-1;3,5;N/A;Fortalecer el seguimiento estadístico
+        """.trimIndent()
+        val csv = texto.toByteArray(Charsets.ISO_8859_1)
+
+        val evaluaciones = parser.extraerEvaluacionesDocumentales("real_areas.csv", csv)
+
+        assertEquals(2, evaluaciones.size)
+        assertEquals(4.7, evaluaciones[0].calificacion)
+        assertEquals("Evidencia documental consistente con el PEP", evaluaciones[0].justificacion)
+        assertNull(evaluaciones[0].sugerenciasMejora)
+        assertEquals(3.5, evaluaciones[1].calificacion)
+        assertNull(evaluaciones[1].justificacion)
+        assertEquals("Fortalecer el seguimiento estadístico", evaluaciones[1].sugerenciasMejora)
+    }
+
+    @Test
+    fun `lee resultados de encuesta con separador punto y coma usando coma para la lista de estamentos`() {
+        val csv = """
+            programa;periodo;codigoPregunta;caracteristica;estamentos;promedio
+            EGSTI;2026-1;A1;1.1;ESTUDIANTE,PROFESOR;4,5
+        """.trimIndent().toByteArray()
+
+        val resultados = parser.extraerResultadosEncuestaPregunta("areas.csv", csv)
+
+        assertEquals(1, resultados.size)
+        assertEquals(setOf(TipoEstamento.ESTUDIANTE, TipoEstamento.PROFESOR), resultados[0].estamentos)
+        assertEquals(4.5, resultados[0].promedio)
+    }
+
+    @Test
+    fun `la numeracion de fila en el error considera las filas de titulo antes del encabezado`() {
+        val csv = """
+            UNIVERSIDAD EJEMPLO
+            id;programa;facultad;cohorte;estado;puntajeSaberPro
+            E1;Sistemas;Ingenieria;20231;MATRICULADO;
+            E2;Sistemas;Ingenieria;20231;ESTADO_INEXISTENTE;
+        """.trimIndent().toByteArray()
+
+        val error = assertThrows<FormatoArchivoInvalidoException> {
+            parser.extraerEstudiantes("datos.csv", csv)
+        }
+        assertTrue(error.message!!.contains("fila 4"))
+    }
+
+    @Test
+    fun `los archivos vigentes en UTF-8 con separador coma siguen cargando sin cambios`() {
+        val estudiantes = parser.extraerEstudiantes("datos_estudiantes_test.csv", fixture("datos_estudiantes_test.csv"))
+
+        assertEquals(10, estudiantes.size)
+        assertEquals("Ingeniería de Telecomunicaciones", estudiantes.first().programa)
+    }
+
+    @Test
     fun `rechaza un csv con un enum no reconocible senalando la fila`() {
         val csv = buildString {
             append("id,programa,facultad,cohorte,estado,puntajeSaberPro\n")

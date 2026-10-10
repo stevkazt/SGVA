@@ -85,6 +85,13 @@ class NormalizadorDatosTest {
     }
 
     @Test
+    fun `el texto opcional trata N A como ausente, sin distinguir mayusculas`() {
+        assertNull(NormalizadorDatos.textoOpcional("N/A"))
+        assertNull(NormalizadorDatos.textoOpcional("n/a"))
+        assertNull(NormalizadorDatos.textoOpcional("  N/A  "))
+    }
+
+    @Test
     fun `la lista de claves de enum se separa por coma, punto y coma o barra vertical`() {
         assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("Estudiante;Profesor"))
         assertEquals(listOf("ESTUDIANTE", "PROFESOR"), NormalizadorDatos.listaClavesEnum("estudiante, profesor"))
