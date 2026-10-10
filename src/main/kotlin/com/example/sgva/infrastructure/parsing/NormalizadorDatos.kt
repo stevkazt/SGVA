@@ -14,6 +14,7 @@ internal object NormalizadorDatos {
 
     private val ACENTOS = Regex("\\p{M}+")
     private val SEPARADORES_CLAVE = Regex("[\\s\\-/_]+")
+    private val SEPARADORES_LISTA = Regex("[,;|]")
 
     /** Recorta espacios; `null` se trata como cadena vacía. */
     fun texto(valor: String?): String = valor?.trim().orEmpty()
@@ -62,4 +63,29 @@ internal object NormalizadorDatos {
      */
     fun entero(valor: String?): Int =
         enteroOpcional(valor) ?: throw NumberFormatException("el valor es obligatorio y no puede estar vacío")
+
+    /**
+     * Interpreta un real opcional: la cadena vacía o `"N/A"` (sin distinguir
+     * mayúsculas) es `null`; admite coma o punto como separador decimal
+     * (`DESIGN_SGVA.md` §5.3).
+     *
+     * @throws NumberFormatException si el valor no es un número real reconocible.
+     */
+    fun decimalOpcional(valor: String?): Double? {
+        val limpio = texto(valor)
+        if (limpio.isEmpty() || limpio.equals("N/A", ignoreCase = true)) return null
+
+        return limpio.replace(",", ".").toDoubleOrNull()
+            ?: throw NumberFormatException("'$limpio' no es un número real válido")
+    }
+
+    /**
+     * Divide un valor con varios elementos separados por coma, punto y coma o
+     * barra vertical (ej.: `"Estudiante, Profesor"`) y normaliza cada uno a su
+     * clave de enum mediante [claveEnum]. Los elementos en blanco se descartan.
+     */
+    fun listaClavesEnum(valor: String?): List<String> =
+        texto(valor).split(SEPARADORES_LISTA)
+            .map(::claveEnum)
+            .filter(String::isNotEmpty)
 }

@@ -3,9 +3,11 @@ package com.example.sgva.infrastructure.persistence
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.infrastructure.persistence.jpa.DocenteJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.EstudianteJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.ResultadoEncuestaPreguntaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.RespuestaEncuestaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.aDominio
 import com.example.sgva.infrastructure.persistence.jpa.aEntidad
@@ -25,6 +27,7 @@ internal class AcademicDataRepositoryJpa(
     private val estudiantes: EstudianteJpaRepository,
     private val docentes: DocenteJpaRepository,
     private val respuestasEncuesta: RespuestaEncuestaJpaRepository,
+    private val resultadosEncuestaPregunta: ResultadoEncuestaPreguntaJpaRepository,
 ) : AcademicDataRepository {
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante =
@@ -53,4 +56,18 @@ internal class AcademicDataRepositoryJpa(
 
     override fun listarRespuestasEncuesta(): List<RespuestaEncuesta> =
         respuestasEncuesta.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
+
+    override fun guardarResultadoEncuestaPregunta(resultado: ResultadoEncuestaPregunta): ResultadoEncuestaPregunta =
+        resultadosEncuestaPregunta.save(resultado.aEntidad()).aDominio()
+
+    override fun buscarResultadoEncuestaPregunta(
+        programa: String,
+        periodo: String,
+        codigoPregunta: String,
+    ): ResultadoEncuestaPregunta? =
+        resultadosEncuestaPregunta.findByProgramaAndPeriodoAndCodigoPregunta(programa, periodo, codigoPregunta)
+            ?.aDominio()
+
+    override fun listarResultadosEncuestaPregunta(): List<ResultadoEncuestaPregunta> =
+        resultadosEncuestaPregunta.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
 }

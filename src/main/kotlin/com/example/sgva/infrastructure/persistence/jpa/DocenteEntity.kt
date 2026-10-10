@@ -20,6 +20,7 @@ import java.time.Instant
 internal class DocenteEntity(
     @field:Id
     val id: String,
+    val programa: String,
     val facultad: String,
     @field:Enumerated(EnumType.STRING)
     val nivelFormacion: NivelFormacion,

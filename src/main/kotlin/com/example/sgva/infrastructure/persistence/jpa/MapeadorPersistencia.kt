@@ -2,7 +2,9 @@ package com.example.sgva.infrastructure.persistence.jpa
 
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
+import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
+import com.example.sgva.domain.TipoEstamento
 
 /**
  * Traducción entre las entidades de dominio y las entidades JPA de
@@ -37,6 +39,7 @@ internal fun EstudianteEntity.aDominio(): Estudiante =
 internal fun Docente.aEntidad(): DocenteEntity =
     DocenteEntity(
         id = id,
+        programa = programa,
         facultad = facultad,
         nivelFormacion = nivelFormacion,
         dedicacion = dedicacion,
@@ -46,6 +49,7 @@ internal fun Docente.aEntidad(): DocenteEntity =
 internal fun DocenteEntity.aDominio(): Docente =
     Docente(
         id = id,
+        programa = programa,
         facultad = facultad,
         nivelFormacion = nivelFormacion,
         dedicacion = dedicacion,
@@ -68,4 +72,29 @@ internal fun RespuestaEncuestaEntity.aDominio(): RespuestaEncuesta =
         factor = factor,
         calificacion = calificacion,
         periodo = periodo,
+    )
+
+/** Clave natural de [ResultadoEncuestaPregunta] usada como `id` técnico de [ResultadoEncuestaPreguntaEntity]. */
+internal fun claveResultadoEncuestaPregunta(programa: String, periodo: String, codigoPregunta: String): String =
+    "$programa|$periodo|$codigoPregunta"
+
+internal fun ResultadoEncuestaPregunta.aEntidad(): ResultadoEncuestaPreguntaEntity =
+    ResultadoEncuestaPreguntaEntity(
+        id = claveResultadoEncuestaPregunta(programa, periodo, codigoPregunta),
+        programa = programa,
+        periodo = periodo,
+        codigoPregunta = codigoPregunta,
+        caracteristica = caracteristica,
+        estamentos = estamentos.joinToString(",") { it.name },
+        promedio = promedio,
+    )
+
+internal fun ResultadoEncuestaPreguntaEntity.aDominio(): ResultadoEncuestaPregunta =
+    ResultadoEncuestaPregunta(
+        programa = programa,
+        periodo = periodo,
+        codigoPregunta = codigoPregunta,
+        caracteristica = caracteristica,
+        estamentos = estamentos.split(",").filter(String::isNotBlank).map { TipoEstamento.valueOf(it) }.toSet(),
+        promedio = promedio,
     )

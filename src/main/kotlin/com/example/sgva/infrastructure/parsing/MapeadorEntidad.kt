@@ -4,6 +4,7 @@ import com.example.sgva.domain.Docente
 import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.NivelFormacion
+import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
 import com.example.sgva.domain.TipoEstamento
@@ -43,10 +44,11 @@ internal object MapeadorEstudiante : MapeadorEntidad<Estudiante> {
 internal object MapeadorDocente : MapeadorEntidad<Docente> {
 
     override val columnasObligatorias =
-        setOf("id", "facultad", "nivelFormacion", "dedicacion", "periodo")
+        setOf("id", "programa", "facultad", "nivelFormacion", "dedicacion", "periodo")
 
     override fun mapear(fila: Map<String, String>): Docente = Docente(
         id = NormalizadorDatos.texto(fila["id"]),
+        programa = NormalizadorDatos.texto(fila["programa"]),
         facultad = NormalizadorDatos.texto(fila["facultad"]),
         nivelFormacion = aEnum<NivelFormacion>(fila["nivelFormacion"], "nivelFormacion"),
         dedicacion = aEnum<TipoDedicacion>(fila["dedicacion"], "dedicacion"),
@@ -68,6 +70,21 @@ internal object MapeadorRespuestaEncuesta : MapeadorEntidad<RespuestaEncuesta> {
     )
 }
 
+internal object MapeadorResultadoEncuestaPregunta : MapeadorEntidad<ResultadoEncuestaPregunta> {
+
+    override val columnasObligatorias =
+        setOf("programa", "periodo", "codigoPregunta", "caracteristica", "estamentos", "promedio")
+
+    override fun mapear(fila: Map<String, String>): ResultadoEncuestaPregunta = ResultadoEncuestaPregunta(
+        programa = NormalizadorDatos.texto(fila["programa"]),
+        periodo = NormalizadorDatos.periodoAcademico(fila["periodo"]),
+        codigoPregunta = NormalizadorDatos.texto(fila["codigoPregunta"]),
+        caracteristica = NormalizadorDatos.texto(fila["caracteristica"]),
+        estamentos = aConjuntoEnum<TipoEstamento>(fila["estamentos"], "estamentos"),
+        promedio = NormalizadorDatos.decimalOpcional(fila["promedio"]),
+    )
+}
+
 private inline fun <reified E : Enum<E>> aEnum(valor: String?, campo: String): E {
     val clave = NormalizadorDatos.claveEnum(valor)
     val valores = enumValues<E>()
@@ -76,4 +93,17 @@ private inline fun <reified E : Enum<E>> aEnum(valor: String?, campo: String): E
             "el valor '${NormalizadorDatos.texto(valor)}' no corresponde a ningún $campo válido " +
                 "(${valores.joinToString(", ") { it.name }})",
         )
+}
+
+private inline fun <reified E : Enum<E>> aConjuntoEnum(valor: String?, campo: String): Set<E> {
+    val claves = NormalizadorDatos.listaClavesEnum(valor)
+    val valores = enumValues<E>()
+
+    return claves.map { clave ->
+        valores.firstOrNull { it.name == clave }
+            ?: throw IllegalArgumentException(
+                "el valor '$clave' no corresponde a ningún $campo válido " +
+                    "(${valores.joinToString(", ") { it.name }})",
+            )
+    }.toSet()
 }
