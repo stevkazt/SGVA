@@ -13,8 +13,11 @@ import com.example.sgva.domain.RespuestaEncuesta
  * *Protocolo de Validación en Origen* (`DESIGN_SGVA.md` §5):
  *
  *  1. Cada adaptador concreto solo se encarga de leer el archivo a una
- *     [TablaCruda] (encabezados + filas de texto) según su formato físico.
- *  2. Esta base verifica que estén todas las columnas obligatorias de la entidad.
+ *     [TablaCruda] (todas sus filas de texto, sin distinguir encabezado) según
+ *     su formato físico.
+ *  2. Esta base localiza la fila de encabezado y verifica que estén todas las
+ *     columnas obligatorias de la entidad, descartando las filas de título
+ *     que la preceden.
  *  3. Mapea y normaliza fila por fila; cualquier fallo se envuelve en
  *     [FormatoArchivoInvalidoException] indicando el archivo y la fila, sin dejar
  *     escapar excepciones técnicas de la librería de parseo.
@@ -52,11 +55,14 @@ internal abstract class ParserDocumentalBase : DocumentParserPort {
         mapeador: MapeadorEntidad<T>,
     ): List<T> {
         val tabla = leerTablaControlada(nombreArchivo, contenido)
-        exigirColumnas(nombreArchivo, tabla.encabezados, mapeador.columnasObligatorias)
+        val indiceEncabezado = localizarEncabezado(nombreArchivo, tabla.filas, mapeador.columnasObligatorias)
+        val encabezados = tabla.filas[indiceEncabezado].map(String::trim)
 
-        return tabla.filas.mapIndexed { indice, valores ->
-            val numeroFila = indice + 2 // +1 por el encabezado, +1 para numeración en base 1
-            val fila = tabla.encabezados.zip(valores).toMap()
+        return tabla.filas.drop(indiceEncabezado + 1).mapIndexed { posicion, valores ->
+            // +1 por el encabezado, +1 para numeración en base 1; indiceEncabezado desplaza
+            // la cuenta cuando el archivo trae filas de título antes del encabezado.
+            val numeroFila = indiceEncabezado + posicion + 2
+            val fila = encabezados.zip(valores).toMap()
             try {
                 mapeador.mapear(fila)
             } catch (datoInvalido: IllegalArgumentException) {
@@ -81,17 +87,27 @@ internal abstract class ParserDocumentalBase : DocumentParserPort {
             )
         }
 
-    private fun exigirColumnas(
+    /**
+     * Localiza la fila de encabezado como la primera que contiene todas las
+     * columnas obligatorias de la entidad; las filas anteriores son títulos
+     * del área y se descartan (`DESIGN_SGVA.md` §4, "Robustez de lectura V5").
+     * Si ninguna fila las contiene todas, se señalan como faltantes las que
+     * no aparecen en la fila con más coincidencias.
+     */
+    private fun localizarEncabezado(
         nombreArchivo: String,
-        encabezados: List<String>,
+        filas: List<List<String>>,
         obligatorias: Set<String>,
-    ) {
-        val presentes = encabezados.map { it.trim() }.toSet()
-        val faltantes = (obligatorias - presentes).sorted()
-        if (faltantes.isNotEmpty()) {
+    ): Int {
+        val coincidencias = filas.map { fila -> fila.map(String::trim).toSet().intersect(obligatorias) }
+        val indiceCandidato = coincidencias.indices.maxBy { coincidencias[it].size }
+
+        if (coincidencias[indiceCandidato].size < obligatorias.size) {
+            val faltantes = (obligatorias - coincidencias[indiceCandidato]).sorted()
             throw FormatoArchivoInvalidoException(
                 "Al archivo '$nombreArchivo' le faltan columnas obligatorias: ${faltantes.joinToString(", ")}.",
             )
         }
+        return indiceCandidato
     }
 }

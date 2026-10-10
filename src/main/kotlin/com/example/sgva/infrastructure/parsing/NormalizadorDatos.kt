@@ -89,8 +89,15 @@ internal object NormalizadorDatos {
     fun decimal(valor: String?): Double =
         decimalOpcional(valor) ?: throw NumberFormatException("el valor es obligatorio y no puede estar vacío ni 'N/A'")
 
-    /** Recorta espacios y trata la cadena en blanco como ausente; `null` se conserva como `null`. */
-    fun textoOpcional(valor: String?): String? = texto(valor).ifBlank { null }
+    /**
+     * Recorta espacios y trata como ausente tanto la cadena en blanco como
+     * `N/A` (sin distinguir mayúsculas), habitual en los campos de texto
+     * opcionales de los archivos de las áreas (`DESIGN_SGVA.md` §5.3).
+     */
+    fun textoOpcional(valor: String?): String? {
+        val limpio = texto(valor)
+        return if (limpio.isBlank() || limpio.equals("N/A", ignoreCase = true)) null else limpio
+    }
 
     /**
      * Divide un valor con varios elementos separados por coma, punto y coma o

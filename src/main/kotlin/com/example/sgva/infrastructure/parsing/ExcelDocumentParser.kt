@@ -12,9 +12,12 @@ import java.io.ByteArrayInputStream
  * Adaptador de [com.example.sgva.domain.DocumentParserPort] para archivos `.xlsx`,
  * implementado sobre Apache POI (`DESIGN_SGVA.md` §4, adaptador «ApachePoiExcelParser»).
  *
- * Se procesa la primera hoja del libro: la primera fila es el encabezado y el
- * resto son datos. Las celdas numéricas se convierten a texto sin el `.0` que
- * añade Excel a los enteros; la normalización final la aplica [ParserDocumentalBase].
+ * Se procesa la primera hoja del libro; todas las filas no vacías se entregan
+ * en bruto a [ParserDocumentalBase], que localiza cuál es el encabezado (los
+ * archivos de las áreas traen una o más filas de título antes, `DESIGN_SGVA.md`
+ * §4, "Robustez de lectura V5"). Las celdas numéricas se convierten a texto sin
+ * el `.0` que añade Excel a los enteros; la normalización final la aplica
+ * [ParserDocumentalBase].
  */
 @Component
 internal class ExcelDocumentParser : ParserDocumentalBase() {
@@ -33,21 +36,18 @@ internal class ExcelDocumentParser : ParserDocumentalBase() {
                 throw FormatoArchivoInvalidoException("La primera hoja del archivo Excel está vacía.")
             }
 
-            val encabezados = leerFila(filas.first()).map(String::trim)
+            val columnas = filas.maxOf { it.lastCellNum.toInt() }
             TablaCruda(
-                encabezados = encabezados,
-                filas = filas.drop(1)
-                    .map { leerFila(it, encabezados.size) }
+                filas = filas
+                    .map { leerFila(it, columnas) }
                     .filter { valores -> valores.any { it.isNotBlank() } },
             )
         }
 
-    private fun leerFila(fila: Row, columnasMinimas: Int = 0): List<String> {
-        val columnas = maxOf(fila.lastCellNum.toInt(), columnasMinimas)
-        return (0 until columnas).map { indice ->
+    private fun leerFila(fila: Row, columnas: Int): List<String> =
+        (0 until columnas).map { indice ->
             valorComoTexto(fila.getCell(indice, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL))
         }
-    }
 
     private fun valorComoTexto(celda: Cell?): String = when {
         celda == null -> ""
