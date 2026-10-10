@@ -44,6 +44,12 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	// SgvaApplicationTests carga el contexto completo de Spring, que desde la
+	// implementación del cálculo de autoevaluación requiere esta propiedad
+	// (sin valor por defecto en producción, ver application.properties). Se
+	// apunta al archivo de ejemplo del modelo 2025 de los fixtures de
+	// prueba, no a datos reales de producción.
+	environment("SGVA_PONDERACIONES_ARCHIVO", "src/test/resources/fixtures/modelo2025/ponderaciones_modelo_2025.csv")
 }
 
 // SonarQube Local Configuration
