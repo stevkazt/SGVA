@@ -45,4 +45,20 @@ interface AcademicDataRepository {
 
     /** Devuelve todas las respuestas de encuesta registradas, en orden de inserción. */
     fun listarRespuestasEncuesta(): List<RespuestaEncuesta>
+
+    /** Persiste [resultado] y lo devuelve sin cambios. */
+    fun guardarResultadoEncuestaPregunta(resultado: ResultadoEncuestaPregunta): ResultadoEncuestaPregunta
+
+    /**
+     * Devuelve el resultado de encuesta por pregunta cuya clave natural es
+     * ([programa], [periodo], [codigoPregunta]), o `null` si no hay ninguno registrado.
+     */
+    fun buscarResultadoEncuestaPregunta(
+        programa: String,
+        periodo: String,
+        codigoPregunta: String,
+    ): ResultadoEncuestaPregunta?
+
+    /** Devuelve todos los resultados de encuesta por pregunta registrados, en orden de inserción. */
+    fun listarResultadosEncuestaPregunta(): List<ResultadoEncuestaPregunta>
 }

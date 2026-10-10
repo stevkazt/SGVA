@@ -34,6 +34,20 @@ internal object ReglasDeFormato {
         return valor
     }
 
+    /**
+     * Verifica que [valor] contenga al menos un elemento y lo devuelve sin
+     * cambios. Aplica a los conjuntos obligatorios de la entidad (ej.
+     * `ResultadoEncuestaPregunta.estamentos`).
+     *
+     * @throws CampoRequeridoVacioException si el conjunto está vacío.
+     */
+    fun <T> exigirNoVacio(valor: Set<T>, campo: String): Set<T> {
+        if (valor.isEmpty()) {
+            throw CampoRequeridoVacioException(campo)
+        }
+        return valor
+    }
+
     /** Tolerancia numérica para las sumas de ponderaciones (`DESIGN_SGVA.md` §0.1). */
     const val TOLERANCIA_SUMA_PONDERACIONES: Double = 0.001
 

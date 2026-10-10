@@ -9,6 +9,8 @@ package com.example.sgva.domain
  * incumpla no puede existir como instancia de `Docente`.
  *
  * @property id identificador único del docente.
+ * @property programa identificador corto y estable del programa al que está
+ *   adscrito el docente (ej.: "EGSTI"; agregado en V5, ver `DESIGN_SGVA.md` §0.1).
  * @property facultad facultad a la que está adscrito.
  * @property nivelFormacion máximo nivel de formación académica alcanzado.
  * @property dedicacion tipo de dedicación contractual con la institución.
@@ -16,6 +18,7 @@ package com.example.sgva.domain
  */
 data class Docente(
     val id: String,
+    val programa: String,
     val facultad: String,
     val nivelFormacion: NivelFormacion,
     val dedicacion: TipoDedicacion,
@@ -23,6 +26,7 @@ data class Docente(
 ) {
     init {
         ReglasDeFormato.exigirNoVacio(id, "id")
+        ReglasDeFormato.exigirNoVacio(programa, "programa")
         ReglasDeFormato.exigirNoVacio(facultad, "facultad")
         ReglasDeFormato.exigirPeriodoAcademico(periodo, "periodo")
     }

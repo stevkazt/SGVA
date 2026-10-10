@@ -46,4 +46,12 @@ interface DocumentParserPort {
      *   alguna fila contiene datos que no pueden normalizarse a una entidad válida.
      */
     fun extraerRespuestasEncuestas(nombreArchivo: String, contenido: ByteArray): List<RespuestaEncuesta>
+
+    /**
+     * Extrae y normaliza los resultados de encuesta por pregunta contenidos en [contenido].
+     *
+     * @throws FormatoArchivoInvalidoException si faltan columnas obligatorias o
+     *   alguna fila contiene datos que no pueden normalizarse a una entidad válida.
+     */
+    fun extraerResultadosEncuestaPregunta(nombreArchivo: String, contenido: ByteArray): List<ResultadoEncuestaPregunta>
 }
