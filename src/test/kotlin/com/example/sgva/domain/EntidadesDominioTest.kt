@@ -548,6 +548,66 @@ class EntidadesDominioTest {
     }
 
     // =========================================================================
+    // ResultadoAutoevaluacion
+    // =========================================================================
+
+    @Test
+    fun `un resultado de autoevaluacion valido se construye correctamente`() {
+        val resultado = ResultadoAutoevaluacion(
+            programa = "EGSTI",
+            periodo = "20261",
+            promediosPorCaracteristica = mapOf("1.1" to 4.5, "1.2" to null),
+            promediosPorFactor = mapOf("F1" to 4.5),
+            promedioGlobal = 4.5,
+        )
+
+        assertEquals(4.5, resultado.promediosPorCaracteristica["1.1"])
+        assertNull(resultado.promediosPorCaracteristica["1.2"])
+        assertEquals(4.5, resultado.promedioGlobal)
+    }
+
+    @Test
+    fun `los tres niveles del resultado de autoevaluacion pueden ser ausentes a la vez`() {
+        val resultado = ResultadoAutoevaluacion(
+            programa = "EGSTI",
+            periodo = "20261",
+            promediosPorCaracteristica = mapOf("1.1" to null),
+            promediosPorFactor = mapOf("F1" to null),
+            promedioGlobal = null,
+        )
+
+        assertNull(resultado.promediosPorCaracteristica["1.1"])
+        assertNull(resultado.promediosPorFactor["F1"])
+        assertNull(resultado.promedioGlobal)
+    }
+
+    @Test
+    fun `un periodo de resultado de autoevaluacion con formato invalido es rechazado`() {
+        assertThrows<FormatoPeriodoInvalidoException> {
+            ResultadoAutoevaluacion(
+                programa = "EGSTI",
+                periodo = "2026-1",
+                promediosPorCaracteristica = emptyMap(),
+                promediosPorFactor = emptyMap(),
+                promedioGlobal = null,
+            )
+        }
+    }
+
+    @Test
+    fun `un programa de resultado de autoevaluacion en blanco es rechazado`() {
+        assertThrows<CampoRequeridoVacioException> {
+            ResultadoAutoevaluacion(
+                programa = "  ",
+                periodo = "20261",
+                promediosPorCaracteristica = emptyMap(),
+                promediosPorFactor = emptyMap(),
+                promedioGlobal = null,
+            )
+        }
+    }
+
+    // =========================================================================
     // Helpers
     // =========================================================================
 
