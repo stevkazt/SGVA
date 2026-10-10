@@ -89,3 +89,25 @@ class ValorIndicadorInvalidoException(nombre: String, valor: Double) :
  * puntaje Saber Pro presentado.
  */
 class DatosInsuficientesException(mensaje: String) : DominioException(mensaje)
+
+/**
+ * Se lanza cuando un peso del modelo de ponderaciones (de un factor, de una
+ * característica dentro de su factor, o de la mezcla encuestas/documental)
+ * es negativo. Las ponderaciones se reciben siempre desde una fuente de
+ * configuración externa y nunca se hardcodean en el dominio
+ * (`DESIGN_SGVA.md` §0.1).
+ */
+class PonderacionNegativaException(contexto: String, valor: Double) :
+    DominioException("El peso de '$contexto' no puede ser negativo; valor recibido: $valor.")
+
+/**
+ * Se lanza cuando una suma de pesos que debe totalizar `1,0` (los pesos de
+ * los factores en el global, o los pesos de las características dentro de
+ * un mismo factor) se aleja de ese valor más allá de la tolerancia definida
+ * en `DESIGN_SGVA.md` §0.1 (`0,001`).
+ */
+class SumaPonderacionesInvalidaException(contexto: String, suma: Double) :
+    DominioException(
+        "La suma de los pesos de '$contexto' debe ser 1,0 (tolerancia " +
+            "${ReglasDeFormato.TOLERANCIA_SUMA_PONDERACIONES}); suma recibida: $suma.",
+    )

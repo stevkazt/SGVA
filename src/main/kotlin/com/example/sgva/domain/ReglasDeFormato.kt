@@ -33,4 +33,34 @@ internal object ReglasDeFormato {
         }
         return valor
     }
+
+    /** Tolerancia numérica para las sumas de ponderaciones (`DESIGN_SGVA.md` §0.1). */
+    const val TOLERANCIA_SUMA_PONDERACIONES: Double = 0.001
+
+    /**
+     * Verifica que [valor] no sea negativo y lo devuelve sin cambios. Aplica a
+     * todo peso del modelo de ponderaciones (factores, características y
+     * mezcla encuestas/documental; `DESIGN_SGVA.md` §0.1).
+     *
+     * @throws PonderacionNegativaException si [valor] es negativo.
+     */
+    fun exigirPonderacionNoNegativa(valor: Double, contexto: String): Double {
+        if (valor < 0.0) {
+            throw PonderacionNegativaException(contexto, valor)
+        }
+        return valor
+    }
+
+    /**
+     * Verifica que [suma] sea igual a `1.0` dentro de
+     * [TOLERANCIA_SUMA_PONDERACIONES] y la devuelve sin cambios.
+     *
+     * @throws SumaPonderacionesInvalidaException si [suma] se aleja de `1.0` más que la tolerancia.
+     */
+    fun exigirSumaUno(suma: Double, contexto: String): Double {
+        if (kotlin.math.abs(suma - 1.0) > TOLERANCIA_SUMA_PONDERACIONES) {
+            throw SumaPonderacionesInvalidaException(contexto, suma)
+        }
+        return suma
+    }
 }
