@@ -10,8 +10,11 @@ package com.example.sgva.domain
  *
  * @property indicadores indicadores de calidad calculados para el reporte.
  * @property respuestasEncuesta respuestas de encuesta de percepción ya registradas en el sistema.
+ * @property resultadoAutoevaluacion resultado de autoevaluación del programa indicado (Módulo 4),
+ *   o ausente si no se indicó un programa o no hay datos suficientes para calcularlo.
  */
 data class ReporteEjecutivo(
     val indicadores: List<IndicadorCalidad>,
     val respuestasEncuesta: List<RespuestaEncuesta>,
+    val resultadoAutoevaluacion: ResultadoAutoevaluacion? = null,
 )
