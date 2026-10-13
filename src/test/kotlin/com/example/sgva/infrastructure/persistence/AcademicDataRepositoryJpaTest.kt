@@ -1,15 +1,26 @@
 package com.example.sgva.infrastructure.persistence
 
+import com.example.sgva.domain.ActividadCiclo
+import com.example.sgva.domain.CicloAutoevaluacion
 import com.example.sgva.domain.Docente
+import com.example.sgva.domain.EstadoActividad
 import com.example.sgva.domain.EstadoEstudiante
+import com.example.sgva.domain.EstadoProyecto
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.EvaluacionDocumental
+import com.example.sgva.domain.FaseCiclo
+import com.example.sgva.domain.GrupoEvaluador
 import com.example.sgva.domain.NivelFormacion
+import com.example.sgva.domain.OrigenProyecto
+import com.example.sgva.domain.ParticipacionActor
+import com.example.sgva.domain.PreevaluacionEvaluador
+import com.example.sgva.domain.ProyectoMejoramiento
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
 import com.example.sgva.domain.TipoEstamento
 import com.example.sgva.domain.ValoracionCualitativa
+import java.time.LocalDate
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
@@ -166,6 +177,115 @@ class AcademicDataRepositoryJpaTest {
         assertEquals(evaluacion, recuperada)
         assertNull(recuperada?.justificacion)
         assertNull(recuperada?.sugerenciasMejora)
+    }
+
+    @Test
+    fun `guarda y recupera un ciclo de autoevaluacion por su clave natural contra PostgreSQL`() {
+        val ciclo = CicloAutoevaluacion(id = "JPA-CICLO-001", programa = "JPA-EGSTI", periodo = "20261")
+
+        repositorio.guardarCiclo(ciclo)
+
+        assertEquals(ciclo, repositorio.buscarCicloPorId("JPA-CICLO-001"))
+        assertEquals(ciclo, repositorio.buscarCicloPorProgramaYPeriodo("JPA-EGSTI", "20261"))
+        assertNull(repositorio.buscarCicloPorProgramaYPeriodo("JPA-EGSTI", "20262"))
+    }
+
+    @Test
+    fun `guarda y recupera las fases de un ciclo contra PostgreSQL`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "JPA-CICLO-002", programa = "JPA-EGSTI", periodo = "20262"))
+        val fase = FaseCiclo(ciclo = "JPA-CICLO-002", numero = 1, nombre = "Apropiación")
+
+        repositorio.guardarFase(fase)
+
+        assertEquals(listOf(fase), repositorio.listarFasesPorCiclo("JPA-CICLO-002"))
+    }
+
+    @Test
+    fun `guarda y recupera una actividad de ciclo contra PostgreSQL`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "JPA-CICLO-003", programa = "JPA-EGSTI", periodo = "20251"))
+        val actividad = ActividadCiclo(
+            id = "1.1",
+            ciclo = "JPA-CICLO-003",
+            fase = 1,
+            descripcion = "Sensibilización del proceso",
+            responsable = "Comité de aseguramiento de la calidad",
+            fechaInicioPlanificada = LocalDate.of(2026, 1, 1),
+            fechaFinPlanificada = LocalDate.of(2026, 2, 1),
+            estado = EstadoActividad.EN_CURSO,
+        )
+
+        repositorio.guardarActividad(actividad)
+
+        assertEquals(listOf(actividad), repositorio.listarActividadesPorCiclo("JPA-CICLO-003"))
+    }
+
+    @Test
+    fun `guarda y recupera un grupo evaluador por ciclo y taller contra PostgreSQL`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "JPA-CICLO-004", programa = "JPA-EGSTI", periodo = "20252"))
+        val grupo = GrupoEvaluador(
+            ciclo = "JPA-CICLO-004",
+            factores = setOf("F5", "F9"),
+            taller = 1,
+            fechaTaller = LocalDate.of(2026, 3, 1),
+        )
+
+        repositorio.guardarGrupoEvaluador(grupo)
+
+        assertEquals(grupo, repositorio.buscarGrupoEvaluador("JPA-CICLO-004", 1))
+        assertNull(repositorio.buscarGrupoEvaluador("JPA-CICLO-004", 2))
+    }
+
+    @Test
+    fun `guarda y recupera una preevaluacion por su clave natural contra PostgreSQL`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "JPA-CICLO-005", programa = "JPA-EGSTI", periodo = "20241"))
+        val preevaluacion = PreevaluacionEvaluador(
+            ciclo = "JPA-CICLO-005",
+            caracteristica = "1.1",
+            evaluador = "EVAL-01",
+            calificacion = 4.5,
+            fortaleza = "Buen soporte documental",
+        )
+
+        repositorio.guardarPreevaluacion(preevaluacion)
+
+        assertEquals(preevaluacion, repositorio.buscarPreevaluacion("JPA-CICLO-005", "1.1", "EVAL-01"))
+    }
+
+    @Test
+    fun `guarda y recupera una participacion de actor por su clave natural contra PostgreSQL`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "JPA-CICLO-006", programa = "JPA-EGSTI", periodo = "20242"))
+        val participacion = ParticipacionActor(
+            ciclo = "JPA-CICLO-006",
+            actor = "Estudiantes",
+            poblacion = 500,
+            muestra = 200,
+            respuestas = 160,
+        )
+
+        repositorio.guardarParticipacion(participacion)
+
+        val recuperada = repositorio.buscarParticipacion("JPA-CICLO-006", "Estudiantes")
+        assertEquals(participacion, recuperada)
+        assertEquals(0.8, recuperada?.porcentajeDiligenciado)
+    }
+
+    @Test
+    fun `guarda y recupera un proyecto de mejoramiento por id contra PostgreSQL`() {
+        val proyecto = ProyectoMejoramiento(
+            id = "JPA-PM-001",
+            programa = "JPA-EGSTI",
+            nombre = "Fortalecimiento docente",
+            aspectosMejora = listOf("Formación docente, de posgrado", "Producción académica"),
+            origen = OrigenProyecto.AUTOEVALUACION,
+            objetivo = "Aumentar el nivel de formación de los docentes",
+            actividades = listOf("Convocatoria de becas"),
+            factores = setOf("F3"),
+            estado = EstadoProyecto.EN_EJECUCION,
+        )
+
+        repositorio.guardarProyecto(proyecto)
+
+        assertEquals(proyecto, repositorio.buscarProyectoPorId("JPA-PM-001"))
     }
 
     private fun estudiante(id: String): Estudiante = Estudiante(

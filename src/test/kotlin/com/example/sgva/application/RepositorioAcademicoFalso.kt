@@ -1,9 +1,16 @@
 package com.example.sgva.application
 
 import com.example.sgva.domain.AcademicDataRepository
+import com.example.sgva.domain.ActividadCiclo
+import com.example.sgva.domain.CicloAutoevaluacion
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.EvaluacionDocumental
+import com.example.sgva.domain.FaseCiclo
+import com.example.sgva.domain.GrupoEvaluador
+import com.example.sgva.domain.ParticipacionActor
+import com.example.sgva.domain.PreevaluacionEvaluador
+import com.example.sgva.domain.ProyectoMejoramiento
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 
@@ -81,12 +88,99 @@ class RepositorioAcademicoFalso : AcademicDataRepository {
     override fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental> =
         evaluacionesDocumentales.values.toList()
 
-    /** Vacía los cinco almacenes; útil para reutilizar la misma instancia entre pruebas. */
+    // ===== Módulo 5 — Seguimiento del proceso institucional (V6) =====
+
+    private val ciclos = LinkedHashMap<String, CicloAutoevaluacion>()
+    private val fases = LinkedHashMap<String, FaseCiclo>()
+    private val actividades = LinkedHashMap<String, ActividadCiclo>()
+    private val gruposEvaluadores = LinkedHashMap<String, GrupoEvaluador>()
+    private val preevaluaciones = LinkedHashMap<String, PreevaluacionEvaluador>()
+    private val participaciones = LinkedHashMap<String, ParticipacionActor>()
+    private val proyectos = LinkedHashMap<String, ProyectoMejoramiento>()
+
+    override fun guardarCiclo(ciclo: CicloAutoevaluacion): CicloAutoevaluacion {
+        ciclos[ciclo.id] = ciclo
+        return ciclo
+    }
+
+    override fun buscarCicloPorId(id: String): CicloAutoevaluacion? = ciclos[id]
+
+    override fun buscarCicloPorProgramaYPeriodo(programa: String, periodo: String): CicloAutoevaluacion? =
+        ciclos.values.firstOrNull { it.programa == programa && it.periodo == periodo }
+
+    override fun listarCiclos(): List<CicloAutoevaluacion> = ciclos.values.toList()
+
+    override fun guardarFase(fase: FaseCiclo): FaseCiclo {
+        fases["${fase.ciclo}|${fase.numero}"] = fase
+        return fase
+    }
+
+    override fun listarFasesPorCiclo(ciclo: String): List<FaseCiclo> = fases.values.filter { it.ciclo == ciclo }
+
+    override fun guardarActividad(actividad: ActividadCiclo): ActividadCiclo {
+        actividades["${actividad.ciclo}|${actividad.id}"] = actividad
+        return actividad
+    }
+
+    override fun listarActividadesPorCiclo(ciclo: String): List<ActividadCiclo> =
+        actividades.values.filter { it.ciclo == ciclo }
+
+    override fun guardarGrupoEvaluador(grupo: GrupoEvaluador): GrupoEvaluador {
+        gruposEvaluadores["${grupo.ciclo}|${grupo.taller}"] = grupo
+        return grupo
+    }
+
+    override fun buscarGrupoEvaluador(ciclo: String, taller: Int): GrupoEvaluador? =
+        gruposEvaluadores["$ciclo|$taller"]
+
+    override fun listarGruposEvaluadorPorCiclo(ciclo: String): List<GrupoEvaluador> =
+        gruposEvaluadores.values.filter { it.ciclo == ciclo }
+
+    override fun guardarPreevaluacion(preevaluacion: PreevaluacionEvaluador): PreevaluacionEvaluador {
+        preevaluaciones["${preevaluacion.ciclo}|${preevaluacion.caracteristica}|${preevaluacion.evaluador}"] =
+            preevaluacion
+        return preevaluacion
+    }
+
+    override fun buscarPreevaluacion(ciclo: String, caracteristica: String, evaluador: String): PreevaluacionEvaluador? =
+        preevaluaciones["$ciclo|$caracteristica|$evaluador"]
+
+    override fun listarPreevaluacionesPorCiclo(ciclo: String): List<PreevaluacionEvaluador> =
+        preevaluaciones.values.filter { it.ciclo == ciclo }
+
+    override fun guardarParticipacion(participacion: ParticipacionActor): ParticipacionActor {
+        participaciones["${participacion.ciclo}|${participacion.actor}"] = participacion
+        return participacion
+    }
+
+    override fun buscarParticipacion(ciclo: String, actor: String): ParticipacionActor? =
+        participaciones["$ciclo|$actor"]
+
+    override fun listarParticipacionPorCiclo(ciclo: String): List<ParticipacionActor> =
+        participaciones.values.filter { it.ciclo == ciclo }
+
+    override fun guardarProyecto(proyecto: ProyectoMejoramiento): ProyectoMejoramiento {
+        proyectos[proyecto.id] = proyecto
+        return proyecto
+    }
+
+    override fun buscarProyectoPorId(id: String): ProyectoMejoramiento? = proyectos[id]
+
+    override fun listarProyectos(): List<ProyectoMejoramiento> = proyectos.values.toList()
+
+    /** Vacía todos los almacenes; útil para reutilizar la misma instancia entre pruebas. */
     fun limpiar() {
         estudiantes.clear()
         docentes.clear()
         respuestasEncuesta.clear()
         resultadosEncuestaPregunta.clear()
         evaluacionesDocumentales.clear()
+        ciclos.clear()
+        fases.clear()
+        actividades.clear()
+        gruposEvaluadores.clear()
+        preevaluaciones.clear()
+        participaciones.clear()
+        proyectos.clear()
     }
 }

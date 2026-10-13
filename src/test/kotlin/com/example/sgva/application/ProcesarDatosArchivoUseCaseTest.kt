@@ -1,15 +1,20 @@
 package com.example.sgva.application
 
+import com.example.sgva.domain.CicloAutoevaluacion
 import com.example.sgva.domain.FormatoArchivoInvalidoException
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
 import com.example.sgva.usecases.ProcesarEvaluacionesDocumentalesUseCase
+import com.example.sgva.usecases.ProcesarParticipacionActorUseCase
+import com.example.sgva.usecases.ProcesarPreevaluacionesUseCase
 import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
 import com.example.sgva.usecases.RegistrarEvaluacionDocumentalUseCase
+import com.example.sgva.usecases.RegistrarParticipacionActorUseCase
+import com.example.sgva.usecases.RegistrarPreevaluacionUseCase
 import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.junit.jupiter.api.Test
@@ -31,6 +36,10 @@ class ProcesarDatosArchivoUseCaseTest {
         ProcesarResultadosEncuestaPreguntaUseCase(parsers, RegistrarResultadoEncuestaPreguntaUseCase(repositorio))
     private val procesarEvaluacionesDocumentales =
         ProcesarEvaluacionesDocumentalesUseCase(parsers, RegistrarEvaluacionDocumentalUseCase(repositorio))
+    private val procesarPreevaluaciones =
+        ProcesarPreevaluacionesUseCase(parsers, RegistrarPreevaluacionUseCase(repositorio))
+    private val procesarParticipacionActor =
+        ProcesarParticipacionActorUseCase(parsers, RegistrarParticipacionActorUseCase(repositorio))
 
     @Test
     fun `carga el archivo de estudiantes y registra cada fila mediante el caso de uso de registro`() {
@@ -133,6 +142,51 @@ class ProcesarDatosArchivoUseCaseTest {
         assertEquals(4, resultado.omitidos.size)
         assertEquals(4, repositorio.listarEvaluacionesDocumentales().size)
         assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
+    }
+
+    @Test
+    fun `carga el archivo de preevaluaciones y registra cada fila mediante el caso de uso de registro`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "EGSTI-20261", programa = "EGSTI", periodo = "20261"))
+
+        val resultado = procesarPreevaluaciones.ejecutar(
+            "datos_preevaluaciones_test.csv",
+            fixture("datos_preevaluaciones_test.csv"),
+        )
+
+        assertEquals(4, resultado.totalRegistrosLeidos)
+        assertEquals(4, resultado.registrados)
+        assertTrue(resultado.omitidos.isEmpty())
+        assertEquals(4, repositorio.listarPreevaluacionesPorCiclo("EGSTI-20261").size)
+    }
+
+    @Test
+    fun `una segunda carga del mismo archivo de preevaluaciones omite las claves ya registradas`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "EGSTI-20261", programa = "EGSTI", periodo = "20261"))
+        procesarPreevaluaciones.ejecutar("datos_preevaluaciones_test.csv", fixture("datos_preevaluaciones_test.csv"))
+
+        val resultado = procesarPreevaluaciones.ejecutar(
+            "datos_preevaluaciones_test.csv",
+            fixture("datos_preevaluaciones_test.csv"),
+        )
+
+        assertEquals(0, resultado.registrados)
+        assertEquals(4, resultado.omitidos.size)
+        assertTrue(resultado.omitidos.all { it.motivo.contains("Ya existe") })
+    }
+
+    @Test
+    fun `carga el archivo de participacion de actores y registra cada fila mediante el caso de uso de registro`() {
+        repositorio.guardarCiclo(CicloAutoevaluacion(id = "EGSTI-20261", programa = "EGSTI", periodo = "20261"))
+
+        val resultado = procesarParticipacionActor.ejecutar(
+            "datos_participacion_actores_test.csv",
+            fixture("datos_participacion_actores_test.csv"),
+        )
+
+        assertEquals(4, resultado.totalRegistrosLeidos)
+        assertEquals(4, resultado.registrados)
+        assertTrue(resultado.omitidos.isEmpty())
+        assertEquals(4, repositorio.listarParticipacionPorCiclo("EGSTI-20261").size)
     }
 
     @Test

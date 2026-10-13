@@ -4,18 +4,27 @@ import com.example.sgva.application.RepositorioAcademicoFalso
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Caracteristica
 import com.example.sgva.domain.ConfiguracionPonderaciones
+import com.example.sgva.domain.ConfiguracionSeguimiento
 import com.example.sgva.domain.DocumentParserPort
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
+import com.example.sgva.usecases.CalcularAvanceCicloUseCase
 import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
 import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
 import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
 import com.example.sgva.usecases.CalcularResultadoAutoevaluacionUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
+import com.example.sgva.usecases.CompararResultadosEntreCiclosUseCase
+import com.example.sgva.usecases.ConsolidarPreevaluacionesUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
+import com.example.sgva.usecases.ConsultarCicloAutoevaluacionUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
 import com.example.sgva.usecases.ConsultarEvaluacionDocumentalUseCase
+import com.example.sgva.usecases.ConsultarGrupoEvaluadorUseCase
+import com.example.sgva.usecases.ConsultarParticipacionActorUseCase
+import com.example.sgva.usecases.ConsultarPreevaluacionUseCase
+import com.example.sgva.usecases.ConsultarProyectoMejoramientoUseCase
 import com.example.sgva.usecases.ConsultarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ConsultarRespuestasEncuestaUseCase
 import com.example.sgva.usecases.GenerarMatrizRadarUseCase
@@ -23,11 +32,19 @@ import com.example.sgva.usecases.GenerarReporteEjecutivoUseCase
 import com.example.sgva.usecases.ProcesarDatosDocentesUseCase
 import com.example.sgva.usecases.ProcesarDatosEstudiantesUseCase
 import com.example.sgva.usecases.ProcesarEvaluacionesDocumentalesUseCase
+import com.example.sgva.usecases.ProcesarParticipacionActorUseCase
+import com.example.sgva.usecases.ProcesarPreevaluacionesUseCase
 import com.example.sgva.usecases.ProcesarResultadosEncuestaPreguntaUseCase
 import com.example.sgva.usecases.ProcesarRespuestasEncuestasUseCase
+import com.example.sgva.usecases.RegistrarActividadCicloUseCase
+import com.example.sgva.usecases.RegistrarCicloAutoevaluacionUseCase
 import com.example.sgva.usecases.RegistrarDocenteUseCase
 import com.example.sgva.usecases.RegistrarEstudianteUseCase
 import com.example.sgva.usecases.RegistrarEvaluacionDocumentalUseCase
+import com.example.sgva.usecases.RegistrarGrupoEvaluadorUseCase
+import com.example.sgva.usecases.RegistrarParticipacionActorUseCase
+import com.example.sgva.usecases.RegistrarPreevaluacionUseCase
+import com.example.sgva.usecases.RegistrarProyectoMejoramientoUseCase
 import com.example.sgva.usecases.RegistrarResultadoEncuestaPreguntaUseCase
 import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.springframework.boot.test.context.TestConfiguration
@@ -222,4 +239,97 @@ class ConfiguracionCasosDeUsoDePrueba {
         configuracionPonderaciones: ConfiguracionPonderaciones,
     ): CalcularResultadoAutoevaluacionUseCase =
         CalcularResultadoAutoevaluacionUseCase(repositorio, configuracionPonderaciones)
+
+    /** Umbrales sintéticos del semáforo de participación (mismos valores por defecto de producción). */
+    @Bean
+    fun configuracionSeguimiento(): ConfiguracionSeguimiento =
+        ConfiguracionSeguimiento(umbralRojoNaranja = 0.6, umbralNaranjaVerde = 0.8, diasProximaAVencer = 7)
+
+    @Bean
+    fun registrarCicloAutoevaluacionUseCase(
+        repositorio: AcademicDataRepository,
+    ): RegistrarCicloAutoevaluacionUseCase =
+        RegistrarCicloAutoevaluacionUseCase(repositorio)
+
+    @Bean
+    fun registrarActividadCicloUseCase(repositorio: AcademicDataRepository): RegistrarActividadCicloUseCase =
+        RegistrarActividadCicloUseCase(repositorio)
+
+    @Bean
+    fun consultarCicloAutoevaluacionUseCase(
+        repositorio: AcademicDataRepository,
+    ): ConsultarCicloAutoevaluacionUseCase =
+        ConsultarCicloAutoevaluacionUseCase(repositorio)
+
+    @Bean
+    fun registrarGrupoEvaluadorUseCase(repositorio: AcademicDataRepository): RegistrarGrupoEvaluadorUseCase =
+        RegistrarGrupoEvaluadorUseCase(repositorio)
+
+    @Bean
+    fun consultarGrupoEvaluadorUseCase(repositorio: AcademicDataRepository): ConsultarGrupoEvaluadorUseCase =
+        ConsultarGrupoEvaluadorUseCase(repositorio)
+
+    @Bean
+    fun registrarPreevaluacionUseCase(repositorio: AcademicDataRepository): RegistrarPreevaluacionUseCase =
+        RegistrarPreevaluacionUseCase(repositorio)
+
+    @Bean
+    fun consultarPreevaluacionUseCase(repositorio: AcademicDataRepository): ConsultarPreevaluacionUseCase =
+        ConsultarPreevaluacionUseCase(repositorio)
+
+    @Bean
+    fun procesarPreevaluacionesUseCase(
+        parsers: List<DocumentParserPort>,
+        registrarPreevaluacionUseCase: RegistrarPreevaluacionUseCase,
+    ): ProcesarPreevaluacionesUseCase =
+        ProcesarPreevaluacionesUseCase(parsers, registrarPreevaluacionUseCase)
+
+    @Bean
+    fun consolidarPreevaluacionesUseCase(repositorio: AcademicDataRepository): ConsolidarPreevaluacionesUseCase =
+        ConsolidarPreevaluacionesUseCase(repositorio)
+
+    @Bean
+    fun registrarParticipacionActorUseCase(
+        repositorio: AcademicDataRepository,
+    ): RegistrarParticipacionActorUseCase =
+        RegistrarParticipacionActorUseCase(repositorio)
+
+    @Bean
+    fun consultarParticipacionActorUseCase(
+        repositorio: AcademicDataRepository,
+    ): ConsultarParticipacionActorUseCase =
+        ConsultarParticipacionActorUseCase(repositorio)
+
+    @Bean
+    fun procesarParticipacionActorUseCase(
+        parsers: List<DocumentParserPort>,
+        registrarParticipacionActorUseCase: RegistrarParticipacionActorUseCase,
+    ): ProcesarParticipacionActorUseCase =
+        ProcesarParticipacionActorUseCase(parsers, registrarParticipacionActorUseCase)
+
+    @Bean
+    fun registrarProyectoMejoramientoUseCase(
+        repositorio: AcademicDataRepository,
+    ): RegistrarProyectoMejoramientoUseCase =
+        RegistrarProyectoMejoramientoUseCase(repositorio)
+
+    @Bean
+    fun consultarProyectoMejoramientoUseCase(
+        repositorio: AcademicDataRepository,
+    ): ConsultarProyectoMejoramientoUseCase =
+        ConsultarProyectoMejoramientoUseCase(repositorio)
+
+    @Bean
+    fun calcularAvanceCicloUseCase(
+        repositorio: AcademicDataRepository,
+        configuracionPonderaciones: ConfiguracionPonderaciones,
+        configuracionSeguimiento: ConfiguracionSeguimiento,
+    ): CalcularAvanceCicloUseCase =
+        CalcularAvanceCicloUseCase(repositorio, configuracionPonderaciones, configuracionSeguimiento)
+
+    @Bean
+    fun compararResultadosEntreCiclosUseCase(
+        calcularResultadoAutoevaluacionUseCase: CalcularResultadoAutoevaluacionUseCase,
+    ): CompararResultadosEntreCiclosUseCase =
+        CompararResultadosEntreCiclosUseCase(calcularResultadoAutoevaluacionUseCase)
 }
