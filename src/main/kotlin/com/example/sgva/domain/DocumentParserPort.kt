@@ -62,4 +62,22 @@ interface DocumentParserPort {
      *   alguna fila contiene datos que no pueden normalizarse a una entidad válida.
      */
     fun extraerEvaluacionesDocumentales(nombreArchivo: String, contenido: ByteArray): List<EvaluacionDocumental>
+
+    /**
+     * Extrae y normaliza las preevaluaciones por evaluador contenidas en
+     * [contenido] (`DESIGN_SGVA.md` §5.5, V6).
+     *
+     * @throws FormatoArchivoInvalidoException si faltan columnas obligatorias o
+     *   alguna fila contiene datos que no pueden normalizarse a una entidad válida.
+     */
+    fun extraerPreevaluaciones(nombreArchivo: String, contenido: ByteArray): List<PreevaluacionEvaluador>
+
+    /**
+     * Extrae y normaliza la participación de actores contenida en
+     * [contenido] (`DESIGN_SGVA.md` §5.5, V6).
+     *
+     * @throws FormatoArchivoInvalidoException si faltan columnas obligatorias o
+     *   alguna fila contiene datos que no pueden normalizarse a una entidad válida.
+     */
+    fun extraerParticipacionActores(nombreArchivo: String, contenido: ByteArray): List<ParticipacionActor>
 }

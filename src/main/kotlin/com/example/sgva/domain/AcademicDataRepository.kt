@@ -77,4 +77,75 @@ interface AcademicDataRepository {
 
     /** Devuelve todas las evaluaciones documentales registradas, en orden de inserción. */
     fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental>
+
+    // ===== Módulo 5 — Seguimiento del proceso institucional (V6) =====
+
+    /** Persiste [ciclo] y lo devuelve sin cambios. */
+    fun guardarCiclo(ciclo: CicloAutoevaluacion): CicloAutoevaluacion
+
+    /** Devuelve el ciclo con [id], o `null` si no hay ninguno registrado. */
+    fun buscarCicloPorId(id: String): CicloAutoevaluacion?
+
+    /** Devuelve el ciclo cuya clave natural es ([programa], [periodo]), o `null` si no hay ninguno registrado. */
+    fun buscarCicloPorProgramaYPeriodo(programa: String, periodo: String): CicloAutoevaluacion?
+
+    /** Devuelve todos los ciclos registrados, en orden de inserción. */
+    fun listarCiclos(): List<CicloAutoevaluacion>
+
+    /** Persiste [fase] y la devuelve sin cambios. */
+    fun guardarFase(fase: FaseCiclo): FaseCiclo
+
+    /** Devuelve las fases del [ciclo], en orden de inserción. */
+    fun listarFasesPorCiclo(ciclo: String): List<FaseCiclo>
+
+    /** Persiste [actividad] y la devuelve sin cambios. */
+    fun guardarActividad(actividad: ActividadCiclo): ActividadCiclo
+
+    /** Devuelve las actividades del [ciclo], en orden de inserción. */
+    fun listarActividadesPorCiclo(ciclo: String): List<ActividadCiclo>
+
+    /** Persiste [grupo] y lo devuelve sin cambios. */
+    fun guardarGrupoEvaluador(grupo: GrupoEvaluador): GrupoEvaluador
+
+    /**
+     * Devuelve el grupo evaluador cuya clave natural es ([ciclo], [taller]),
+     * o `null` si no hay ninguno registrado.
+     */
+    fun buscarGrupoEvaluador(ciclo: String, taller: Int): GrupoEvaluador?
+
+    /** Devuelve los grupos evaluadores del [ciclo], en orden de inserción. */
+    fun listarGruposEvaluadorPorCiclo(ciclo: String): List<GrupoEvaluador>
+
+    /** Persiste [preevaluacion] y la devuelve sin cambios. */
+    fun guardarPreevaluacion(preevaluacion: PreevaluacionEvaluador): PreevaluacionEvaluador
+
+    /**
+     * Devuelve la preevaluación cuya clave natural es ([ciclo],
+     * [caracteristica], [evaluador]), o `null` si no hay ninguna registrada.
+     */
+    fun buscarPreevaluacion(ciclo: String, caracteristica: String, evaluador: String): PreevaluacionEvaluador?
+
+    /** Devuelve las preevaluaciones del [ciclo], en orden de inserción. */
+    fun listarPreevaluacionesPorCiclo(ciclo: String): List<PreevaluacionEvaluador>
+
+    /** Persiste [participacion] y la devuelve sin cambios. */
+    fun guardarParticipacion(participacion: ParticipacionActor): ParticipacionActor
+
+    /**
+     * Devuelve la participación cuya clave natural es ([ciclo], [actor]), o
+     * `null` si no hay ninguna registrada.
+     */
+    fun buscarParticipacion(ciclo: String, actor: String): ParticipacionActor?
+
+    /** Devuelve las participaciones del [ciclo], en orden de inserción. */
+    fun listarParticipacionPorCiclo(ciclo: String): List<ParticipacionActor>
+
+    /** Persiste [proyecto] y lo devuelve sin cambios. */
+    fun guardarProyecto(proyecto: ProyectoMejoramiento): ProyectoMejoramiento
+
+    /** Devuelve el proyecto con [id], o `null` si no hay ninguno registrado. */
+    fun buscarProyectoPorId(id: String): ProyectoMejoramiento?
+
+    /** Devuelve todos los proyectos de mejoramiento registrados, en orden de inserción. */
+    fun listarProyectos(): List<ProyectoMejoramiento>
 }

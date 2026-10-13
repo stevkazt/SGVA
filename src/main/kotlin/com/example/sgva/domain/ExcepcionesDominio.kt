@@ -100,6 +100,85 @@ class FormatoArchivoInvalidoException(mensaje: String, causa: Throwable? = null)
     DominioException(mensaje, causa)
 
 /**
+ * Se lanza cuando la calificación de una [PreevaluacionEvaluador] está fuera
+ * del rango válido `1.0..5.0` inclusive, la misma escala de
+ * [EvaluacionDocumental] (`DESIGN_SGVA.md` §0.1, V6). `N/A` no es un valor
+ * válido en este campo.
+ */
+class CalificacionPreevaluacionFueraDeRangoException(valor: Double) :
+    DominioException(
+        "La calificación de la preevaluación debe estar entre " +
+            "${EvaluacionDocumental.RANGO_CALIFICACION.start} y " +
+            "${EvaluacionDocumental.RANGO_CALIFICACION.endInclusive} inclusive; valor recibido: $valor.",
+    )
+
+/**
+ * Se lanza cuando el número de taller de un [GrupoEvaluador] no es positivo
+ * (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class NumeroTallerInvalidoException(valor: Int) :
+    DominioException("El número de taller debe ser mayor que cero; valor recibido: $valor.")
+
+/**
+ * Se lanza cuando un campo de cantidad (población, muestra o respuestas de
+ * [ParticipacionActor]) es negativo (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class CantidadNegativaException(campo: String, valor: Int) :
+    DominioException("El campo '$campo' no puede ser negativo; valor recibido: $valor.")
+
+/**
+ * Se lanza cuando las cantidades de un [ParticipacionActor] no cumplen la
+ * relación `respuestas <= muestra <= población` (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class ParticipacionInconsistenteException(mensaje: String) : DominioException(mensaje)
+
+/**
+ * Se lanza cuando el número de fase de una [ActividadCiclo] o [FaseCiclo] no
+ * está entre 1 y 4 inclusive, las cuatro fases fijas del proceso
+ * institucional de autoevaluación (`DESIGN_SGVA.md` §0 y §0.1, V6).
+ */
+class FaseInvalidaException(valor: Int) :
+    DominioException("El número de fase debe estar entre 1 y 4 inclusive; valor recibido: $valor.")
+
+/**
+ * Se lanza cuando la fecha de inicio planificada de una [ActividadCiclo] es
+ * posterior a su fecha de fin planificada (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class FechasActividadInvalidasException(inicio: java.time.LocalDate, fin: java.time.LocalDate) :
+    DominioException(
+        "La fecha de inicio planificada ($inicio) no puede ser posterior a la fecha de fin planificada ($fin).",
+    )
+
+/**
+ * Se lanza cuando los umbrales del semáforo de participación de
+ * [ConfiguracionSeguimiento] no cumplen
+ * `0 <= umbralRojoNaranja < umbralNaranjaVerde <= 1` (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class UmbralesSemaforoInvalidosException(mensaje: String) : DominioException(mensaje)
+
+/**
+ * Se lanza cuando el número de días para considerar una actividad "próxima a
+ * vencer" ([ConfiguracionSeguimiento]) es negativo (`DESIGN_SGVA.md` §0.1, V6).
+ */
+class DiasProximaAVencerInvalidoException(valor: Int) :
+    DominioException("El número de días para 'próxima a vencer' no puede ser negativo; valor recibido: $valor.")
+
+/**
+ * Se lanza cuando una entidad de la V6 hace referencia a un ciclo, fase o
+ * característica con los que no es consistente (p. ej. una [ActividadCiclo]
+ * cuyo `ciclo` no coincide con el [CicloAutoevaluacion] que se está
+ * registrando).
+ */
+class ReferenciaInconsistenteException(mensaje: String) : DominioException(mensaje)
+
+/**
+ * Se lanza cuando no existe el [CicloAutoevaluacion] referenciado por una
+ * operación del Módulo 5 (`DESIGN_SGVA.md` §2, V6).
+ */
+class CicloNoEncontradoException(ciclo: String) :
+    DominioException("No existe ningún ciclo de autoevaluación registrado con id '$ciclo'.")
+
+/**
  * Se lanza cuando el cálculo de un [IndicadorCalidad] produce un valor que no es
  * un número finito (`NaN` o infinito), señal de una división por cero o de datos
  * corruptos que no se filtraron antes del cálculo.
