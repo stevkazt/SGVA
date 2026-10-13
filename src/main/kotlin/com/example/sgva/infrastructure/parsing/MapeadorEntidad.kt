@@ -5,6 +5,8 @@ import com.example.sgva.domain.EstadoEstudiante
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.NivelFormacion
+import com.example.sgva.domain.ParticipacionActor
+import com.example.sgva.domain.PreevaluacionEvaluador
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoDedicacion
@@ -98,6 +100,38 @@ internal object MapeadorEvaluacionDocumental : MapeadorEntidad<EvaluacionDocumen
         calificacion = NormalizadorDatos.decimal(fila["calificacion"]),
         justificacion = NormalizadorDatos.textoOpcional(fila["justificacion"]),
         sugerenciasMejora = NormalizadorDatos.textoOpcional(fila["sugerenciasMejora"]),
+    )
+}
+
+/** Columnas obligatorias de la carga masiva de preevaluaciones (`DESIGN_SGVA.md` §5.5, V6). */
+internal object MapeadorPreevaluacion : MapeadorEntidad<PreevaluacionEvaluador> {
+
+    override val columnasObligatorias =
+        setOf("ciclo", "caracteristica", "evaluador", "calificacion")
+
+    override fun mapear(fila: Map<String, String>): PreevaluacionEvaluador = PreevaluacionEvaluador(
+        ciclo = NormalizadorDatos.texto(fila["ciclo"]),
+        caracteristica = NormalizadorDatos.texto(fila["caracteristica"]),
+        evaluador = NormalizadorDatos.texto(fila["evaluador"]),
+        calificacion = NormalizadorDatos.decimal(fila["calificacion"]),
+        justificacion = NormalizadorDatos.textoOpcional(fila["justificacion"]),
+        fortaleza = NormalizadorDatos.textoOpcional(fila["fortaleza"]),
+        oportunidadMejora = NormalizadorDatos.textoOpcional(fila["oportunidadMejora"]),
+    )
+}
+
+/** Columnas obligatorias de la carga masiva de participación de actores (`DESIGN_SGVA.md` §5.5, V6). */
+internal object MapeadorParticipacionActor : MapeadorEntidad<ParticipacionActor> {
+
+    override val columnasObligatorias =
+        setOf("ciclo", "actor", "poblacion", "muestra", "respuestas")
+
+    override fun mapear(fila: Map<String, String>): ParticipacionActor = ParticipacionActor(
+        ciclo = NormalizadorDatos.texto(fila["ciclo"]),
+        actor = NormalizadorDatos.texto(fila["actor"]),
+        poblacion = NormalizadorDatos.entero(fila["poblacion"]),
+        muestra = NormalizadorDatos.entero(fila["muestra"]),
+        respuestas = NormalizadorDatos.entero(fila["respuestas"]),
     )
 }
 

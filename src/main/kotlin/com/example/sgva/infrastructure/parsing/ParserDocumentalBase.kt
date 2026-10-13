@@ -5,6 +5,8 @@ import com.example.sgva.domain.DocumentParserPort
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.FormatoArchivoInvalidoException
+import com.example.sgva.domain.ParticipacionActor
+import com.example.sgva.domain.PreevaluacionEvaluador
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
 
@@ -48,6 +50,16 @@ internal abstract class ParserDocumentalBase : DocumentParserPort {
         nombreArchivo: String,
         contenido: ByteArray,
     ): List<EvaluacionDocumental> = transformar(nombreArchivo, contenido, MapeadorEvaluacionDocumental)
+
+    final override fun extraerPreevaluaciones(
+        nombreArchivo: String,
+        contenido: ByteArray,
+    ): List<PreevaluacionEvaluador> = transformar(nombreArchivo, contenido, MapeadorPreevaluacion)
+
+    final override fun extraerParticipacionActores(
+        nombreArchivo: String,
+        contenido: ByteArray,
+    ): List<ParticipacionActor> = transformar(nombreArchivo, contenido, MapeadorParticipacionActor)
 
     private fun <T> transformar(
         nombreArchivo: String,

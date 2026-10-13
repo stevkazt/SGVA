@@ -1,14 +1,28 @@
 package com.example.sgva.infrastructure.persistence
 
 import com.example.sgva.domain.AcademicDataRepository
+import com.example.sgva.domain.ActividadCiclo
+import com.example.sgva.domain.CicloAutoevaluacion
 import com.example.sgva.domain.Docente
 import com.example.sgva.domain.Estudiante
 import com.example.sgva.domain.EvaluacionDocumental
+import com.example.sgva.domain.FaseCiclo
+import com.example.sgva.domain.GrupoEvaluador
+import com.example.sgva.domain.ParticipacionActor
+import com.example.sgva.domain.PreevaluacionEvaluador
+import com.example.sgva.domain.ProyectoMejoramiento
 import com.example.sgva.domain.ResultadoEncuestaPregunta
 import com.example.sgva.domain.RespuestaEncuesta
+import com.example.sgva.infrastructure.persistence.jpa.ActividadCicloJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.CicloAutoevaluacionJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.DocenteJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.EstudianteJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.EvaluacionDocumentalJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.FaseCicloJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.GrupoEvaluadorJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.ParticipacionActorJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.PreevaluacionEvaluadorJpaRepository
+import com.example.sgva.infrastructure.persistence.jpa.ProyectoMejoramientoJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.ResultadoEncuestaPreguntaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.RespuestaEncuestaJpaRepository
 import com.example.sgva.infrastructure.persistence.jpa.aDominio
@@ -31,6 +45,13 @@ internal class AcademicDataRepositoryJpa(
     private val respuestasEncuesta: RespuestaEncuestaJpaRepository,
     private val resultadosEncuestaPregunta: ResultadoEncuestaPreguntaJpaRepository,
     private val evaluacionesDocumentales: EvaluacionDocumentalJpaRepository,
+    private val ciclos: CicloAutoevaluacionJpaRepository,
+    private val fases: FaseCicloJpaRepository,
+    private val actividades: ActividadCicloJpaRepository,
+    private val gruposEvaluadores: GrupoEvaluadorJpaRepository,
+    private val preevaluaciones: PreevaluacionEvaluadorJpaRepository,
+    private val participaciones: ParticipacionActorJpaRepository,
+    private val proyectos: ProyectoMejoramientoJpaRepository,
 ) : AcademicDataRepository {
 
     override fun guardarEstudiante(estudiante: Estudiante): Estudiante =
@@ -87,4 +108,68 @@ internal class AcademicDataRepositoryJpa(
 
     override fun listarEvaluacionesDocumentales(): List<EvaluacionDocumental> =
         evaluacionesDocumentales.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
+
+    // ===== Módulo 5 — Seguimiento del proceso institucional (V6) =====
+
+    override fun guardarCiclo(ciclo: CicloAutoevaluacion): CicloAutoevaluacion =
+        ciclos.save(ciclo.aEntidad()).aDominio()
+
+    override fun buscarCicloPorId(id: String): CicloAutoevaluacion? = ciclos.findById(id).orElse(null)?.aDominio()
+
+    override fun buscarCicloPorProgramaYPeriodo(programa: String, periodo: String): CicloAutoevaluacion? =
+        ciclos.findByProgramaAndPeriodo(programa, periodo)?.aDominio()
+
+    override fun listarCiclos(): List<CicloAutoevaluacion> =
+        ciclos.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
+
+    override fun guardarFase(fase: FaseCiclo): FaseCiclo = fases.save(fase.aEntidad()).aDominio()
+
+    override fun listarFasesPorCiclo(ciclo: String): List<FaseCiclo> =
+        fases.findByCicloOrderByCreadoEnAsc(ciclo).map { it.aDominio() }
+
+    override fun guardarActividad(actividad: ActividadCiclo): ActividadCiclo =
+        actividades.save(actividad.aEntidad()).aDominio()
+
+    override fun listarActividadesPorCiclo(ciclo: String): List<ActividadCiclo> =
+        actividades.findByCicloOrderByCreadoEnAsc(ciclo).map { it.aDominio() }
+
+    override fun guardarGrupoEvaluador(grupo: GrupoEvaluador): GrupoEvaluador =
+        gruposEvaluadores.save(grupo.aEntidad()).aDominio()
+
+    override fun buscarGrupoEvaluador(ciclo: String, taller: Int): GrupoEvaluador? =
+        gruposEvaluadores.findByCicloAndTaller(ciclo, taller)?.aDominio()
+
+    override fun listarGruposEvaluadorPorCiclo(ciclo: String): List<GrupoEvaluador> =
+        gruposEvaluadores.findByCicloOrderByCreadoEnAsc(ciclo).map { it.aDominio() }
+
+    override fun guardarPreevaluacion(preevaluacion: PreevaluacionEvaluador): PreevaluacionEvaluador =
+        preevaluaciones.save(preevaluacion.aEntidad()).aDominio()
+
+    override fun buscarPreevaluacion(
+        ciclo: String,
+        caracteristica: String,
+        evaluador: String,
+    ): PreevaluacionEvaluador? =
+        preevaluaciones.findByCicloAndCaracteristicaAndEvaluador(ciclo, caracteristica, evaluador)?.aDominio()
+
+    override fun listarPreevaluacionesPorCiclo(ciclo: String): List<PreevaluacionEvaluador> =
+        preevaluaciones.findByCicloOrderByCreadoEnAsc(ciclo).map { it.aDominio() }
+
+    override fun guardarParticipacion(participacion: ParticipacionActor): ParticipacionActor =
+        participaciones.save(participacion.aEntidad()).aDominio()
+
+    override fun buscarParticipacion(ciclo: String, actor: String): ParticipacionActor? =
+        participaciones.findByCicloAndActor(ciclo, actor)?.aDominio()
+
+    override fun listarParticipacionPorCiclo(ciclo: String): List<ParticipacionActor> =
+        participaciones.findByCicloOrderByCreadoEnAsc(ciclo).map { it.aDominio() }
+
+    override fun guardarProyecto(proyecto: ProyectoMejoramiento): ProyectoMejoramiento =
+        proyectos.save(proyecto.aEntidad()).aDominio()
+
+    override fun buscarProyectoPorId(id: String): ProyectoMejoramiento? =
+        proyectos.findById(id).orElse(null)?.aDominio()
+
+    override fun listarProyectos(): List<ProyectoMejoramiento> =
+        proyectos.findAllByOrderByCreadoEnAsc().map { it.aDominio() }
 }
