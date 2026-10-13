@@ -23,7 +23,7 @@ El modelo se caracteriza por:
 - **7 actores en la encuesta**: estudiantes, profesores, directivos, administrativos, egresados, empleadores y aliados estratégicos.
 - Los datos de encuesta disponibles son **promedios por pregunta** (de 1 a 5), no respuestas individuales.
 
-Alcance de la V5: calcular los tres niveles de resultado para un programa y un periodo, a partir de (a) los `ResultadoEncuestaPregunta` y (b) las `EvaluacionDocumental` cargadas, usando `ConfiguracionPonderaciones`. Esto incluye lo necesario para operar de punta a punta (carga masiva, REST, reporte PDF).
+Alcance de la V5: calcular los tres niveles de resultado para un programa y un periodo, a partir de (a) los `ResultadoEncuestaPregunta` y (b) las `EvaluacionDocumental` cargadas, usando `ConfiguracionPonderaciones`. Esto incluye lo necesario para operar de punta a punta (carga masiva, REST, reporte PDF). El **seguimiento del proceso** (ciclos, fases, grupos evaluadores, plan de mejoramiento) no pertenece a V5.
 
 Los factores sin entidad propia participan en el cálculo únicamente a través de su calificación documental y de los resultados de encuesta de sus características. El sistema no modela su evidencia subyacente.
 
@@ -52,11 +52,27 @@ No se define una fuente para el promedio nacional de referencia en `ConsolidarPu
 
 No todo vacío en este documento es una decisión de negocio pendiente. Algunas decisiones (ej. en qué paquete vive una excepción de dominio como `FormatoArchivoInvalidoException`, cómo se nombra una clase auxiliar, dónde se ubica el objeto de configuración de ponderaciones, cómo se nombran los valores de la valoración cualitativa) son derivables directamente de las restricciones ya fijadas en `CLAUDE.md` (aislamiento del dominio, convenciones de nombres) sin requerir conocimiento de negocio. Estas se dejan intencionalmente abiertas: es responsabilidad de Claude CLI resolverlas de forma consistente con las reglas arquitectónicas existentes, y su comportamiento ante estos vacíos es en sí mismo un dato de interés para la investigación.
 
+### Seguimiento del proceso institucional (Versión 6)
+
+La Versión 6 permite hacer seguimiento al proceso anual con el que la universidad obtiene el resultado de autoevaluación. El proceso se organiza en cuatro fases: (1) apropiación; (2) planeación y desarrollo (instrumentos, encuestas, evidencias, talleres de grupos evaluadores, consolidación); (3) emisión de juicios de valor y plan de mejoramiento; (4) aprobación de resultados.
+
+Alcance de la V6:
+
+- **Ciclo de autoevaluación** de un programa en un periodo, con sus fases y las actividades de cada fase (responsable, fechas planificadas y estado).
+- **Grupos evaluadores** por conjunto de factores y la **preevaluación documental** que cada evaluador hace por característica. La calificación consolidada de una característica alimenta la `EvaluacionDocumental` de la V5.
+- **Participación de los actores** en las encuestas del ciclo (población, muestra, respuestas, porcentaje diligenciado y semáforo).
+- **Plan de mejoramiento**: proyectos con sus aspectos de mejora, origen, objetivo, actividades, factores asociados y estado.
+- **Seguimiento del avance** de un ciclo y **comparación del resultado** de autoevaluación de un programa entre ciclos.
+
+Los identificadores de factor y característica siguen recibiéndose por configuración (V5). El identificador de programa es un identificador corto y estable (ej. `EGSTI`); los ciclos de ediciones anteriores del mismo programa (2023, 2024), aunque los documentos antiguos lo nombren de otra forma («Gestión de Redes de Datos»), se registran con ese mismo identificador.
+
 ### Qué queda fuera de alcance
 
 - La evidencia documental (actas, PEP, convenios, manuales, matriz de evidencias): no se digitaliza. Solo se admite su **calificación consolidada** como `EvaluacionDocumental`.
 - La generación del informe narrativo de autoevaluación.
 - Entidades como `GrupoInvestigacion`, `Convenio` o `Movilidad`.
+- _(V6)_ La matriz de evidencias A/B/C (existencia, coherencia y actualización de aspectos), el plan de comunicaciones y las actas: son documentos de gestión sin estructura de datos.
+- _(V6)_ Los datos personales de docentes y evaluadores (cédula, celular, correo, nombres): el sistema identifica a los evaluadores con un identificador opaco y no los usa como insumo ni como fixture.
 
 ### Datos de prueba derivados de documentos institucionales
 
@@ -107,6 +123,24 @@ Estas reglas deben aplicarse en la capa de dominio o casos de uso (nunca delegar
 4. **Promedio global** = promedio ponderado de los promedios de los factores que no son ausentes, usando los pesos de la configuración **reponderados** entre los factores presentes. Si ningún factor es calculable, el global es **ausente**.
 5. Cuando todas las características y factores tienen dato, la reponderación no cambia ningún valor.
 6. Un valor ausente se representa como `null` y **nunca** como `0`. Un `N/A` leído desde archivo se representa como `null`.
+
+### Reglas del seguimiento del proceso (Versión 6)
+
+- **Ciclo**: un programa tiene como máximo un ciclo por periodo (`AAAAS`). Cada ciclo tiene las cuatro fases, numeradas de 1 a 4.
+- **Actividad**: la fecha de inicio planificada no puede ser posterior a la de fin. El responsable es un rol (ej. comité de aseguramiento de la calidad, decano, DAC), no una persona. El estado es uno de `PLANIFICADA`, `EN_CURSO` o `COMPLETADA`. Las actividades se registran **libremente en cada ciclo**; no existe un catálogo fijo, porque varían entre ediciones.
+- **Grupo evaluador**: un factor puede aparecer en más de un taller del mismo ciclo (la fuente 2025 repite los factores 5, 9 y 10 en talleres distintos). La fecha del taller es opcional, porque la fuente tiene un taller sin fecha. El evaluador se identifica con un identificador opaco.
+- **Preevaluación por evaluador**: calificación de 1 a 5 inclusive (la misma escala de `EvaluacionDocumental`); fuera de ese rango se rechaza y `N/A` no es válido. La clave es ciclo + característica + evaluador.
+- **Consolidación**: la calificación consolidada de una característica es el **promedio simple** de las calificaciones de sus preevaluaciones, almacenado **sin redondear**. El redondeo a un decimal solo se aplica para derivar la valoración cualitativa (regla de V5). Si no hay preevaluaciones, no hay calificación consolidada (ausente, nunca `0`). Ejemplo de la fuente: notas parciales 5, 4,4 y 4 dan 4,4667 (el modelo registra 4,5 por redondeo manual).
+- **Participación**: población, muestra y respuestas son enteros no negativos, con respuestas ≤ muestra ≤ población. El **porcentaje diligenciado** es respuestas ÷ muestra; si la muestra es `0`, es ausente. El actor es un texto abierto: la fuente agrupa actores de forma distinta a los siete estamentos (por ejemplo, empleadores y aliados estratégicos juntos, y graduados con más de una fila).
+- **Semáforo de participación** (criterio del investigador, no regla de la fuente, que solo muestra «Naranja» con 66,7 % y «Rojo» con 35 % y 50 %): menor que 60 % es **Rojo**; desde 60 % hasta menos de 80 % es **Naranja**; 80 % o más es **Verde**. Si el porcentaje es ausente, el semáforo es ausente. Los dos umbrales se reciben por **configuración** y no se fijan en el código; deben cumplir 0 ≤ umbral rojo/naranja < umbral naranja/verde ≤ 1.
+- **Plan de mejoramiento**: el origen es `AUTOEVALUACION` o `RECOMENDACION_CNA`; el estado es `PLANIFICADO`, `EN_EJECUCION` o `CERRADO`; un proyecto está asociado a uno o más factores.
+- **Actividad vencida**: su fecha de fin planificada es anterior a la fecha de referencia y su estado no es `COMPLETADA`.
+- **Actividad próxima a vencer**: no está completada, no está vencida y su fecha de fin planificada cae dentro de los próximos 7 días a partir de la fecha de referencia. El número de días se recibe por configuración.
+- **Fase completa**: todas sus actividades están `COMPLETADA`; una fase sin actividades no está completa.
+- **Avance de una fase** = actividades completadas ÷ actividades totales; ausente si la fase no tiene actividades. El avance del ciclo es el promedio de los avances de sus fases que no son ausentes.
+- **Factor con preevaluación pendiente**: factor asignado a un grupo evaluador del ciclo para el cual alguna de sus características no tiene ninguna preevaluación.
+- **Fecha de referencia**: se recibe siempre como parámetro; ni el dominio ni los casos de uso la leen del reloj del sistema.
+- **Comparación entre ciclos**: para un programa, compara el resultado de autoevaluación (por factor y global, ver reglas de cálculo) de dos o más periodos; una diferencia con un valor ausente es ausente, nunca `0`.
 
 ---
 
@@ -206,6 +240,68 @@ Salida de `CalcularResultadoAutoevaluacionUseCase` para un programa y un periodo
 - **promedioGlobal**: Double? (puede ser ausente)
 - Los valores no calculables se representan como ausentes, nunca como `0` (ver §0.1).
 
+### CicloAutoevaluacion _(nueva en V6)_
+
+Edición anual del proceso de autoevaluación de un programa.
+
+- **id**: String
+- **programa**: String (identificador corto y estable, ej. `EGSTI`)
+- **periodo**: String (`AAAAS`, sin separadores, ej. `20252`)
+
+### FaseCiclo _(nueva en V6)_
+
+- **ciclo**: String (identificador del ciclo)
+- **numero**: Int (1 a 4)
+- **nombre**: String
+
+### ActividadCiclo _(nueva en V6)_
+
+- **id**: String (ej. `2.3`: número de fase, punto y orden dentro de la fase)
+- **ciclo**: String
+- **fase**: Int (1 a 4)
+- **descripcion**: String
+- **responsable**: String (rol, no persona)
+- **fechaInicioPlanificada**, **fechaFinPlanificada**: fechas, con inicio ≤ fin
+- **estado**: `PLANIFICADA`, `EN_CURSO` o `COMPLETADA`
+
+### GrupoEvaluador _(nueva en V6)_
+
+- **ciclo**: String
+- **factores**: conjunto de identificadores de factor que evalúa el grupo
+- **taller**: Int (número del taller dentro del ciclo)
+- **fechaTaller**: fecha del taller del grupo; opcional
+
+### PreevaluacionEvaluador _(nueva en V6)_
+
+Calificación documental de un evaluador para una característica.
+
+- **ciclo**: String
+- **caracteristica**: String (identificador de la `Caracteristica`)
+- **evaluador**: String (identificador opaco)
+- **calificacion**: Double (de 1 a 5)
+- **justificacion**, **fortaleza**, **oportunidadMejora**: String? (opcionales)
+- Clave: ciclo + característica + evaluador. La calificación consolidada se obtiene según §0.1 y alimenta la `EvaluacionDocumental`.
+
+### ParticipacionActor _(nueva en V6)_
+
+- **ciclo**: String
+- **actor**: String (texto abierto, ver §0.1)
+- **poblacion**, **muestra**, **respuestas**: Int
+- **porcentajeDiligenciado**: Double? (derivado)
+- **semaforo**: derivado según los umbrales de configuración (§0.1)
+
+### ProyectoMejoramiento _(nueva en V6)_
+
+- **id**: String
+- **programa**: String
+- **nombre**: String
+- **aspectosMejora**: lista de textos
+- **origen**: `AUTOEVALUACION` o `RECOMENDACION_CNA`
+- **objetivo**: String
+- **actividades**: lista de textos
+- **factores**: conjunto de identificadores de factor
+- **estado**: `PLANIFICADO`, `EN_EJECUCION` o `CERRADO`
+
 ---
 
 ## 2. Capa de Casos de Uso (Lógica de Negocio)
@@ -239,6 +335,16 @@ Clases que implementan las reglas específicas de la aplicación y orquestan el 
 - **ConsultarEvaluacionDocumentalUseCase**: recupera los registros de evaluación documental, filtrables por programa y periodo.
 - **CalcularResultadoAutoevaluacionUseCase**: para un programa y un periodo, calcula el promedio por característica, por factor y global, usando `ConfiguracionPonderaciones` y aplicando exactamente las reglas de cálculo de §0.1.
 
+### Módulo 5: Seguimiento del Proceso de Autoevaluación _(nuevo en V6)_
+
+- **RegistrarCicloAutoevaluacionUseCase**: valida y registra un `CicloAutoevaluacion` con sus cuatro fases, y sus `ActividadCiclo`, aplicando las reglas de §0.1. **ConsultarCicloAutoevaluacionUseCase** recupera ciclos, fases y actividades, filtrables por programa y periodo.
+- **RegistrarGrupoEvaluadorUseCase** y **RegistrarPreevaluacionUseCase**: registran los grupos evaluadores de un ciclo y las preevaluaciones por evaluador, individualmente o en carga masiva.
+- **ConsolidarPreevaluacionesUseCase**: obtiene la calificación consolidada de cada característica según §0.1 y la incorpora como `EvaluacionDocumental`, sin alterar el comportamiento de `CalcularResultadoAutoevaluacionUseCase`.
+- **RegistrarParticipacionActorUseCase**: registra la participación de los actores de un ciclo, individualmente o en carga masiva, y calcula porcentaje y semáforo según los umbrales de configuración.
+- **RegistrarProyectoMejoramientoUseCase** y **ConsultarProyectoMejoramientoUseCase**: registran y recuperan los proyectos del plan de mejoramiento de un programa.
+- **CalcularAvanceCicloUseCase**: para un ciclo y una fecha de referencia, calcula el avance por fase, las actividades vencidas y próximas a vencer, los factores con preevaluación pendiente y la participación de los actores, con las reglas de §0.1.
+- **CompararResultadosEntreCiclosUseCase**: compara el resultado de autoevaluación de un programa entre ciclos, por factor y global, con las reglas de §0.1.
+
 ---
 
 ## 3. Interfaces de la Aplicación (Puertos)
@@ -253,6 +359,8 @@ Interfaces que definen los límites por los cuales la lógica de negocio se comu
 
 - **AcademicDataRepository**: interfaz para persistir o recuperar las entidades de dominio procesadas. Desde la V5 se extiende para almacenar y consultar `ResultadoEncuestaPregunta` y `EvaluacionDocumental`; el dominio no depende de JPA.
 - **DocumentParserPort**: interfaz para delegar la extracción física de datos según el tipo de archivo (.csv / .xlsx). Desde la V5 también extrae resultados de encuesta por pregunta y evaluación documental, y representa `N/A` como dato faltante. _(Renombrado desde `DocumentParser` para cumplir la convención de sufijos `Repository`/`Port` de `CLAUDE.md`.)_
+
+- _(V6)_ `IngestarArchivoUseCase` cubre además la carga masiva de preevaluaciones y de participación de actores. `AcademicDataRepository` se extiende para almacenar y consultar las entidades de la V6; el dominio sigue sin depender de JPA.
 
 ---
 
@@ -272,6 +380,8 @@ Implementaciones técnicas expuestas al cambio tecnológico. El Dominio y las in
 - **Adaptador PostgreSQL**: repositorio de persistencia relacional, extendido en V5 para registrar `ResultadoEncuestaPregunta` y `EvaluacionDocumental` y el nuevo campo `programa` de `Docente`, sin que el dominio dependa de JPA.
 - **Carga de configuración de ponderaciones**: obtiene los pesos desde una fuente externa entregada por el investigador, construida a partir de la hoja «1. Ponderación» del modelo 2025, y construye `ConfiguracionPonderaciones`. El formato y la ubicación concretos se resuelven en infraestructura.
 
+- _(V6)_ Los controladores exponen el registro y la consulta de ciclos, fases y actividades, grupos evaluadores, preevaluaciones, participación y plan de mejoramiento, la carga masiva de preevaluaciones y participación, el seguimiento del avance y la comparación entre ciclos. El reporte PDF incorpora una sección con el estado del ciclo y la comparación con ciclos anteriores, omitida si no hay datos suficientes. Los umbrales del semáforo y los días de «próxima a vencer» se reciben por configuración. El cronograma de actividades (una cuadrícula de semanas) no se carga de forma masiva; se registra actividad por actividad.
+
 ---
 
 ## 5. Protocolo de Validación en Origen
@@ -282,6 +392,7 @@ Para asegurar la estabilidad del sistema ante errores del usuario, todo adaptado
 2. Emitir una excepción controlada (ej. `FormatoArchivoInvalidoException`) si existen tipos de datos corruptos o cabeceras faltantes, garantizando alertas claras sin romper la ejecución de la aplicación. Los mensajes deben indicar archivo y fila.
 3. Tratar `N/A` como dato faltante válido **únicamente** en el campo `promedio` de `ResultadoEncuestaPregunta` y en los campos opcionales de texto. En cualquier otro campo obligatorio, `N/A` sigue siendo un dato inválido.
 4. Rechazar un `promedio` igual a `0` en `ResultadoEncuestaPregunta` como dato inválido.
+5. _(V6)_ En los archivos de preevaluación, exigir las columnas ciclo, característica, evaluador y calificación (justificación, fortaleza y oportunidad de mejora son opcionales); en los de participación, ciclo, actor, población, muestra y respuestas. `N/A` no es válido en la calificación, la población, la muestra ni las respuestas.
 
 ---
 
