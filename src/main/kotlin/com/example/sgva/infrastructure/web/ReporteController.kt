@@ -30,8 +30,9 @@ class ReporteController(
         @RequestParam periodo: String?,
         @RequestParam facultad: String?,
         @RequestParam cohorte: String?,
+        @RequestParam programa: String?,
     ): ResponseEntity<ByteArray> {
-        val reporte = generarReporteEjecutivo.ejecutar(periodo, facultad, cohorte)
+        val reporte = generarReporteEjecutivo.ejecutar(periodo, facultad, cohorte, programa)
         val pdf = generadorReportePdf.generar(reporte)
 
         val nombreArchivo = periodo?.trim()?.takeIf { it.isNotEmpty() }

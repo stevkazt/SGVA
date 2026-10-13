@@ -55,6 +55,24 @@ class GeneradorReportePdf {
                 )
             }
 
+            reporte.resultadoAutoevaluacion?.let { resultado ->
+                lienzo.seccion("Resultado de Autoevaluación")
+                lienzo.linea("Programa: ${resultado.programa} - Periodo: ${resultado.periodo}")
+                lienzo.tabla(
+                    encabezados = listOf("Nivel", "Identificador", "Promedio"),
+                    anchos = listOf(110f, 150f, 90f),
+                    filas = buildList {
+                        add(listOf("Global", "-", formatoPromedio(resultado.promedioGlobal)))
+                        resultado.promediosPorFactor.forEach { (factor, promedio) ->
+                            add(listOf("Factor", factor, formatoPromedio(promedio)))
+                        }
+                        resultado.promediosPorCaracteristica.forEach { (caracteristica, promedio) ->
+                            add(listOf("Característica", caracteristica, formatoPromedio(promedio)))
+                        }
+                    },
+                )
+            }
+
             lienzo.cerrar()
 
             return ByteArrayOutputStream().use { salida ->
@@ -63,6 +81,8 @@ class GeneradorReportePdf {
             }
         }
     }
+
+    private fun formatoPromedio(valor: Double?): String = valor?.let { "%.2f".format(it) } ?: "Sin datos"
 
     companion object {
         private val FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")

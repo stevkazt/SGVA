@@ -176,6 +176,7 @@ class ConfiguracionCasosDeUso {
         calcularDistribucionFormacionUseCase: CalcularDistribucionFormacionUseCase,
         calcularCapacidadInstaladaUseCase: CalcularCapacidadInstaladaUseCase,
         consultarRespuestasEncuestaUseCase: ConsultarRespuestasEncuestaUseCase,
+        calcularResultadoAutoevaluacionUseCase: CalcularResultadoAutoevaluacionUseCase,
     ): GenerarReporteEjecutivoUseCase =
         GenerarReporteEjecutivoUseCase(
             calcularEvolucionMatriculaUseCase,
@@ -184,6 +185,7 @@ class ConfiguracionCasosDeUso {
             calcularDistribucionFormacionUseCase,
             calcularCapacidadInstaladaUseCase,
             consultarRespuestasEncuestaUseCase,
+            calcularResultadoAutoevaluacionUseCase,
         )
 
     @Bean
