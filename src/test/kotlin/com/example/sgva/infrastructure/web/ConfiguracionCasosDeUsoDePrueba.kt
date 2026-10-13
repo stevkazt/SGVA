@@ -2,12 +2,15 @@ package com.example.sgva.infrastructure.web
 
 import com.example.sgva.application.RepositorioAcademicoFalso
 import com.example.sgva.domain.AcademicDataRepository
+import com.example.sgva.domain.Caracteristica
+import com.example.sgva.domain.ConfiguracionPonderaciones
 import com.example.sgva.domain.DocumentParserPort
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
 import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
 import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
+import com.example.sgva.usecases.CalcularResultadoAutoevaluacionUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
@@ -191,4 +194,30 @@ class ConfiguracionCasosDeUsoDePrueba {
             calcularCapacidadInstaladaUseCase,
             consultarRespuestasEncuestaUseCase,
         )
+
+    /**
+     * Catálogo sintético de ponderaciones (mismo usado en
+     * `CalcularResultadoAutoevaluacionUseCaseTest`): dos factores (F1 con
+     * C1/C2, F2 con C3/C4) y una mezcla encuestas/documental de 40 %/60 %. No
+     * corresponde al modelo 2025 real.
+     */
+    @Bean
+    fun configuracionPonderaciones(): ConfiguracionPonderaciones = ConfiguracionPonderaciones(
+        caracteristicas = listOf(
+            Caracteristica(id = "C1", nombre = "Característica 1", factor = "F1", ponderacion = 0.5),
+            Caracteristica(id = "C2", nombre = "Característica 2", factor = "F1", ponderacion = 0.5),
+            Caracteristica(id = "C3", nombre = "Característica 3", factor = "F2", ponderacion = 0.3),
+            Caracteristica(id = "C4", nombre = "Característica 4", factor = "F2", ponderacion = 0.7),
+        ),
+        pesosFactores = mapOf("F1" to 0.6, "F2" to 0.4),
+        pesoEncuestas = 0.4,
+        pesoDocumental = 0.6,
+    )
+
+    @Bean
+    fun calcularResultadoAutoevaluacionUseCase(
+        repositorio: AcademicDataRepository,
+        configuracionPonderaciones: ConfiguracionPonderaciones,
+    ): CalcularResultadoAutoevaluacionUseCase =
+        CalcularResultadoAutoevaluacionUseCase(repositorio, configuracionPonderaciones)
 }
