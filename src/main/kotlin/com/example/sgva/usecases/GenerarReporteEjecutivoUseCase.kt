@@ -1,8 +1,10 @@
 package com.example.sgva.usecases
 
 import com.example.sgva.domain.DatosInsuficientesException
+import com.example.sgva.domain.FormatoPeriodoInvalidoException
 import com.example.sgva.domain.IndicadorCalidad
 import com.example.sgva.domain.ReporteEjecutivo
+import com.example.sgva.domain.ResultadoAutoevaluacion
 
 /**
  * Consolida el reporte ejecutivo (Fase 4 del anteproyecto — integración de
@@ -22,6 +24,7 @@ class GenerarReporteEjecutivoUseCase(
     private val calcularDistribucionFormacion: CalcularDistribucionFormacionUseCase,
     private val calcularCapacidadInstalada: CalcularCapacidadInstaladaUseCase,
     private val consultarRespuestasEncuesta: ConsultarRespuestasEncuestaUseCase,
+    private val calcularResultadoAutoevaluacion: CalcularResultadoAutoevaluacionUseCase,
 ) {
 
     /**
@@ -29,8 +32,16 @@ class GenerarReporteEjecutivoUseCase(
      *   demás indicadores, esa cohorte es obligatoria en su caso de uso
      *   (`DESIGN_SGVA.md` §2) y no tiene un valor por defecto razonable para
      *   un reporte sin cohorte específica — se incluye solo cuando se indica.
+     * @param programa programa para el resultado de autoevaluación (Módulo
+     *   4); al igual que la cohorte, no tiene un valor por defecto razonable
+     *   y se incluye solo cuando se indica junto con [periodo].
      */
-    fun ejecutar(periodo: String? = null, facultad: String? = null, cohorte: String? = null): ReporteEjecutivo {
+    fun ejecutar(
+        periodo: String? = null,
+        facultad: String? = null,
+        cohorte: String? = null,
+        programa: String? = null,
+    ): ReporteEjecutivo {
         val indicadores = mutableListOf<IndicadorCalidad>()
         indicadores += calcularEvolucionMatricula.ejecutar(facultad)
         indicadores += sinDatosInsuficientes { consolidarSaberPro.ejecutar(facultad) }
@@ -44,7 +55,32 @@ class GenerarReporteEjecutivoUseCase(
         return ReporteEjecutivo(
             indicadores = indicadores.toList(),
             respuestasEncuesta = consultarRespuestasEncuesta.listarTodas(),
+            resultadoAutoevaluacion = resultadoAutoevaluacion(programa, periodo),
         )
+    }
+
+    /**
+     * El resultado de autoevaluación solo se incluye cuando se indican tanto
+     * el programa como el periodo, y se omite si el periodo no tiene el
+     * formato `AAAAS` esperado o si no hay ningún dato calculable para esa
+     * combinación (todos los promedios ausentes), igual que las demás
+     * secciones del reporte.
+     */
+    private fun resultadoAutoevaluacion(programa: String?, periodo: String?): ResultadoAutoevaluacion? {
+        val programaIndicado = programa?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val periodoIndicado = periodo?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+
+        val resultado = try {
+            calcularResultadoAutoevaluacion.ejecutar(programaIndicado, periodoIndicado)
+        } catch (formatoInvalido: FormatoPeriodoInvalidoException) {
+            return null
+        }
+
+        val hayDatos = resultado.promedioGlobal != null ||
+            resultado.promediosPorFactor.values.any { it != null } ||
+            resultado.promediosPorCaracteristica.values.any { it != null }
+
+        return resultado.takeIf { hayDatos }
     }
 
     /**
