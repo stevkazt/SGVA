@@ -15,7 +15,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
 
 # Versión del experimento (V1, V2, V3, V4...). Configúrala así antes de iniciar
 # Claude Code en cada fase: export SGVA_LOG_VERSION=V2
-VERSION="${SGVA_LOG_VERSION:-V1}"
+VERSION="${SGVA_LOG_VERSION:-V6}"
 
 LOG_DIR="logs/${VERSION}"
 mkdir -p "$LOG_DIR"
