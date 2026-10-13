@@ -1,9 +1,12 @@
 package com.example.sgva.infrastructure.web
 
 import com.example.sgva.application.RepositorioAcademicoFalso
+import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoEstamento
 import com.example.sgva.infrastructure.reporting.GeneradorReportePdf
+import org.apache.pdfbox.Loader
+import org.apache.pdfbox.text.PDFTextStripper
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,4 +63,37 @@ class ReporteControllerTest {
             .andExpect(status().isOk)
             .andExpect(header().string("Content-Disposition", containsString("reporte-ejecutivo-20261.pdf")))
     }
+
+    @Test
+    fun `incluye el resultado de autoevaluacion cuando se indican programa y periodo con datos`() {
+        repositorio.guardarEvaluacionDocumental(
+            EvaluacionDocumental(programa = "EGSTI", caracteristica = "C1", periodo = "20261", calificacion = 4.0),
+        )
+        repositorio.guardarEvaluacionDocumental(
+            EvaluacionDocumental(programa = "EGSTI", caracteristica = "C2", periodo = "20261", calificacion = 5.0),
+        )
+
+        val resultado = mockMvc.perform(
+            get("/api/reportes/ejecutivo").param("periodo", "20261").param("programa", "EGSTI"),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val texto = extraerTexto(resultado.response.contentAsByteArray)
+        assertTrue(texto.contains("Resultado de Autoevaluación"))
+        assertTrue(texto.contains("EGSTI"))
+    }
+
+    @Test
+    fun `omite el resultado de autoevaluacion cuando no se indica un programa`() {
+        val resultado = mockMvc.perform(get("/api/reportes/ejecutivo").param("periodo", "20261"))
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val texto = extraerTexto(resultado.response.contentAsByteArray)
+        assertTrue(!texto.contains("Resultado de Autoevaluación"))
+    }
+
+    private fun extraerTexto(pdf: ByteArray): String =
+        Loader.loadPDF(pdf).use { documento -> PDFTextStripper().getText(documento) }
 }

@@ -2,6 +2,7 @@ package com.example.sgva.infrastructure.reporting
 
 import com.example.sgva.domain.IndicadorCalidad
 import com.example.sgva.domain.ReporteEjecutivo
+import com.example.sgva.domain.ResultadoAutoevaluacion
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoEstamento
 import org.apache.pdfbox.Loader
@@ -45,6 +46,40 @@ class GeneradorReportePdfTest {
 
         assertTrue(texto.contains("No hay indicadores disponibles."))
         assertTrue(texto.contains("No hay respuestas de encuesta registradas."))
+    }
+
+    @Test
+    fun `incluye el resultado de autoevaluacion con sus promedios por caracteristica, factor y global`() {
+        val reporte = ReporteEjecutivo(
+            indicadores = emptyList(),
+            respuestasEncuesta = emptyList(),
+            resultadoAutoevaluacion = ResultadoAutoevaluacion(
+                programa = "EGSTI",
+                periodo = "20261",
+                promediosPorCaracteristica = mapOf("C1" to 4.0, "C2" to null),
+                promediosPorFactor = mapOf("F1" to 4.5),
+                promedioGlobal = 4.5,
+            ),
+        )
+
+        val texto = extraerTexto(generador.generar(reporte))
+
+        assertTrue(texto.contains("Resultado de Autoevaluación"))
+        assertTrue(texto.contains("EGSTI"))
+        assertTrue(texto.contains("20261"))
+        assertTrue(texto.contains("C1"))
+        assertTrue(texto.contains("4.00"))
+        assertTrue(texto.contains("F1"))
+        assertTrue(texto.contains("Sin datos"))
+    }
+
+    @Test
+    fun `omite la seccion de resultado de autoevaluacion cuando no hay datos suficientes`() {
+        val reporte = ReporteEjecutivo(indicadores = emptyList(), respuestasEncuesta = emptyList())
+
+        val texto = extraerTexto(generador.generar(reporte))
+
+        assertTrue(!texto.contains("Resultado de Autoevaluación"))
     }
 
     @Test

@@ -185,6 +185,7 @@ class ConfiguracionCasosDeUsoDePrueba {
         calcularDistribucionFormacionUseCase: CalcularDistribucionFormacionUseCase,
         calcularCapacidadInstaladaUseCase: CalcularCapacidadInstaladaUseCase,
         consultarRespuestasEncuestaUseCase: ConsultarRespuestasEncuestaUseCase,
+        calcularResultadoAutoevaluacionUseCase: CalcularResultadoAutoevaluacionUseCase,
     ): GenerarReporteEjecutivoUseCase =
         GenerarReporteEjecutivoUseCase(
             calcularEvolucionMatriculaUseCase,
@@ -193,6 +194,7 @@ class ConfiguracionCasosDeUsoDePrueba {
             calcularDistribucionFormacionUseCase,
             calcularCapacidadInstaladaUseCase,
             consultarRespuestasEncuestaUseCase,
+            calcularResultadoAutoevaluacionUseCase,
         )
 
     /**
