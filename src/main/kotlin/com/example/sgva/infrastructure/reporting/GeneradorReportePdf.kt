@@ -1,5 +1,7 @@
 package com.example.sgva.infrastructure.reporting
 
+import com.example.sgva.domain.EstadoCicloAutoevaluacion
+import com.example.sgva.domain.FaseCiclo
 import com.example.sgva.domain.ReporteEjecutivo
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -73,6 +75,8 @@ class GeneradorReportePdf {
                 )
             }
 
+            reporte.estadoCiclo?.let { seccionEstadoCiclo(lienzo, it) }
+
             lienzo.cerrar()
 
             return ByteArrayOutputStream().use { salida ->
@@ -82,7 +86,71 @@ class GeneradorReportePdf {
         }
     }
 
+    /**
+     * Sección "Estado del Ciclo de Autoevaluación" (Módulo 5, V6,
+     * `DESIGN_SGVA.md` §4): avance por fase y global, participación de los
+     * actores, estado del plan de mejoramiento y comparación con el ciclo
+     * inmediatamente anterior del mismo programa, si existe.
+     */
+    private fun seccionEstadoCiclo(lienzo: LienzoReporte, estado: EstadoCicloAutoevaluacion) {
+        lienzo.seccion("Estado del Ciclo de Autoevaluación")
+        lienzo.linea("Programa: ${estado.ciclo.programa} - Periodo: ${estado.ciclo.periodo}")
+        lienzo.linea("Avance del ciclo: " + formatoPorcentaje(estado.avance.avanceCiclo))
+
+        lienzo.tabla(
+            encabezados = listOf("Fase", "Avance"),
+            anchos = listOf(300f, 100f),
+            filas = FaseCiclo.NOMBRES.toSortedMap().map { (numero, nombre) ->
+                listOf(nombre, formatoPorcentaje(estado.avance.avancePorFase[numero]))
+            },
+        )
+
+        lienzo.linea("Participación de los actores:")
+        if (estado.avance.participacionActores.isEmpty()) {
+            lienzo.linea("No hay participación de actores registrada.")
+        } else {
+            lienzo.tabla(
+                encabezados = listOf("Actor", "Población", "Muestra", "Respuestas", "% Diligenciado", "Semáforo"),
+                anchos = listOf(150f, 70f, 70f, 80f, 90f, 80f),
+                filas = estado.avance.participacionActores.map { participacionConSemaforo ->
+                    val participacion = participacionConSemaforo.participacion
+                    listOf(
+                        participacion.actor,
+                        participacion.poblacion.toString(),
+                        participacion.muestra.toString(),
+                        participacion.respuestas.toString(),
+                        formatoPorcentaje(participacion.porcentajeDiligenciado),
+                        participacionConSemaforo.semaforo?.name ?: "Sin datos",
+                    )
+                },
+            )
+        }
+
+        lienzo.linea("Plan de mejoramiento:")
+        if (estado.proyectosMejoramiento.isEmpty()) {
+            lienzo.linea("No hay proyectos de mejoramiento registrados.")
+        } else {
+            lienzo.tabla(
+                encabezados = listOf("Proyecto", "Estado", "Factores"),
+                anchos = listOf(220f, 100f, 150f),
+                filas = estado.proyectosMejoramiento.map {
+                    listOf(it.nombre, it.estado.name, it.factores.joinToString(", "))
+                },
+            )
+        }
+
+        estado.comparacionCicloAnterior?.let { comparacion ->
+            lienzo.linea(
+                "Comparación con el ciclo ${comparacion.cicloAnterior.periodo}: avance anterior " +
+                    formatoPorcentaje(comparacion.avanceAnterior.avanceCiclo) + ", diferencia " +
+                    formatoPorcentaje(comparacion.diferencia.diferenciaAvanceCiclo),
+            )
+        }
+    }
+
     private fun formatoPromedio(valor: Double?): String = valor?.let { "%.2f".format(it) } ?: "Sin datos"
+
+    private fun formatoPorcentaje(valor: Double?): String = valor?.let { "%.1f%%".format(it * 100) } ?: "Sin datos"
 
     companion object {
         private val FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
