@@ -12,9 +12,12 @@ package com.example.sgva.domain
  * @property respuestasEncuesta respuestas de encuesta de percepción ya registradas en el sistema.
  * @property resultadoAutoevaluacion resultado de autoevaluación del programa indicado (Módulo 4),
  *   o ausente si no se indicó un programa o no hay datos suficientes para calcularlo.
+ * @property estadoCiclo estado del ciclo de autoevaluación del programa y periodo indicados
+ *   (Módulo 5, V6), o ausente si no se indicaron ambos o no hay ningún ciclo registrado con esa clave.
  */
 data class ReporteEjecutivo(
     val indicadores: List<IndicadorCalidad>,
     val respuestasEncuesta: List<RespuestaEncuesta>,
     val resultadoAutoevaluacion: ResultadoAutoevaluacion? = null,
+    val estadoCiclo: EstadoCicloAutoevaluacion? = null,
 )
