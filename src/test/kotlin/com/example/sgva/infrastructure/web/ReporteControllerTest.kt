@@ -1,9 +1,11 @@
 package com.example.sgva.infrastructure.web
 
 import com.example.sgva.application.RepositorioAcademicoFalso
+import com.example.sgva.domain.CicloAutoevaluacion
 import com.example.sgva.domain.EvaluacionDocumental
 import com.example.sgva.domain.RespuestaEncuesta
 import com.example.sgva.domain.TipoEstamento
+import com.example.sgva.usecases.RegistrarCicloAutoevaluacionUseCase
 import com.example.sgva.infrastructure.reporting.GeneradorReportePdf
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.text.PDFTextStripper
@@ -92,6 +94,34 @@ class ReporteControllerTest {
 
         val texto = extraerTexto(resultado.response.contentAsByteArray)
         assertTrue(!texto.contains("Resultado de Autoevaluación"))
+    }
+
+    @Test
+    fun `incluye el estado del ciclo cuando se indican programa y periodo con un ciclo registrado`() {
+        RegistrarCicloAutoevaluacionUseCase(repositorio).ejecutar(
+            CicloAutoevaluacion(id = "EGSTI-20261", programa = "EGSTI", periodo = "20261"),
+        )
+
+        val resultado = mockMvc.perform(
+            get("/api/reportes/ejecutivo").param("periodo", "20261").param("programa", "EGSTI"),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val texto = extraerTexto(resultado.response.contentAsByteArray)
+        assertTrue(texto.contains("Estado del Ciclo de Autoevaluación"))
+    }
+
+    @Test
+    fun `omite el estado del ciclo cuando no hay un ciclo registrado para el programa y periodo indicados`() {
+        val resultado = mockMvc.perform(
+            get("/api/reportes/ejecutivo").param("periodo", "20261").param("programa", "EGSTI"),
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        val texto = extraerTexto(resultado.response.contentAsByteArray)
+        assertTrue(!texto.contains("Estado del Ciclo de Autoevaluación"))
     }
 
     private fun extraerTexto(pdf: ByteArray): String =

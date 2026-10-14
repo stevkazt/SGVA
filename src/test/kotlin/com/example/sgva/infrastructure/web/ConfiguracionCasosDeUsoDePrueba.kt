@@ -20,6 +20,7 @@ import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarCicloAutoevaluacionUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
+import com.example.sgva.usecases.ConsultarEstadoCicloAutoevaluacionUseCase
 import com.example.sgva.usecases.ConsultarEvaluacionDocumentalUseCase
 import com.example.sgva.usecases.ConsultarGrupoEvaluadorUseCase
 import com.example.sgva.usecases.ConsultarParticipacionActorUseCase
@@ -203,6 +204,8 @@ class ConfiguracionCasosDeUsoDePrueba {
         calcularCapacidadInstaladaUseCase: CalcularCapacidadInstaladaUseCase,
         consultarRespuestasEncuestaUseCase: ConsultarRespuestasEncuestaUseCase,
         calcularResultadoAutoevaluacionUseCase: CalcularResultadoAutoevaluacionUseCase,
+        consultarEstadoCicloAutoevaluacionUseCase: ConsultarEstadoCicloAutoevaluacionUseCase,
+        reloj: Clock,
     ): GenerarReporteEjecutivoUseCase =
         GenerarReporteEjecutivoUseCase(
             calcularEvolucionMatriculaUseCase,
@@ -212,6 +215,8 @@ class ConfiguracionCasosDeUsoDePrueba {
             calcularCapacidadInstaladaUseCase,
             consultarRespuestasEncuestaUseCase,
             calcularResultadoAutoevaluacionUseCase,
+            consultarEstadoCicloAutoevaluacionUseCase,
+            reloj,
         )
 
     /**
@@ -332,4 +337,16 @@ class ConfiguracionCasosDeUsoDePrueba {
         calcularResultadoAutoevaluacionUseCase: CalcularResultadoAutoevaluacionUseCase,
     ): CompararResultadosEntreCiclosUseCase =
         CompararResultadosEntreCiclosUseCase(calcularResultadoAutoevaluacionUseCase)
+
+    @Bean
+    fun consultarEstadoCicloAutoevaluacionUseCase(
+        consultarCicloAutoevaluacionUseCase: ConsultarCicloAutoevaluacionUseCase,
+        calcularAvanceCicloUseCase: CalcularAvanceCicloUseCase,
+        consultarProyectoMejoramientoUseCase: ConsultarProyectoMejoramientoUseCase,
+    ): ConsultarEstadoCicloAutoevaluacionUseCase =
+        ConsultarEstadoCicloAutoevaluacionUseCase(
+            consultarCicloAutoevaluacionUseCase,
+            calcularAvanceCicloUseCase,
+            consultarProyectoMejoramientoUseCase,
+        )
 }
