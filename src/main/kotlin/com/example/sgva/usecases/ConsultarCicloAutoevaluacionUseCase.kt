@@ -24,4 +24,19 @@ class ConsultarCicloAutoevaluacionUseCase(
             actividades = repositorio.listarActividadesPorCiclo(id),
         )
     }
+
+    /** Devuelve el ciclo cuya clave natural es ([programa], [periodo]), o `null` si no hay ninguno registrado. */
+    fun buscarPorProgramaYPeriodo(programa: String, periodo: String): CicloAutoevaluacion? =
+        repositorio.buscarCicloPorProgramaYPeriodo(programa, periodo)
+
+    /**
+     * Devuelve el ciclo inmediatamente anterior del [programa] al [periodo]
+     * dado —el de mayor periodo estrictamente anterior—, o `null` si no hay
+     * ninguno registrado. El periodo tiene formato `AAAAS`: al tener ancho
+     * fijo, el orden lexicográfico de cadenas coincide con el orden cronológico.
+     */
+    fun buscarCicloAnterior(programa: String, periodo: String): CicloAutoevaluacion? =
+        repositorio.listarCiclos()
+            .filter { it.programa == programa && it.periodo < periodo }
+            .maxByOrNull { it.periodo }
 }

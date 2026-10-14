@@ -1,10 +1,13 @@
 package com.example.sgva.usecases
 
 import com.example.sgva.domain.DatosInsuficientesException
+import com.example.sgva.domain.EstadoCicloAutoevaluacion
 import com.example.sgva.domain.FormatoPeriodoInvalidoException
 import com.example.sgva.domain.IndicadorCalidad
 import com.example.sgva.domain.ReporteEjecutivo
 import com.example.sgva.domain.ResultadoAutoevaluacion
+import java.time.Clock
+import java.time.LocalDate
 
 /**
  * Consolida el reporte ejecutivo (Fase 4 del anteproyecto — integración de
@@ -25,6 +28,8 @@ class GenerarReporteEjecutivoUseCase(
     private val calcularCapacidadInstalada: CalcularCapacidadInstaladaUseCase,
     private val consultarRespuestasEncuesta: ConsultarRespuestasEncuestaUseCase,
     private val calcularResultadoAutoevaluacion: CalcularResultadoAutoevaluacionUseCase,
+    private val consultarEstadoCicloAutoevaluacion: ConsultarEstadoCicloAutoevaluacionUseCase,
+    private val reloj: Clock,
 ) {
 
     /**
@@ -56,6 +61,7 @@ class GenerarReporteEjecutivoUseCase(
             indicadores = indicadores.toList(),
             respuestasEncuesta = consultarRespuestasEncuesta.listarTodas(),
             resultadoAutoevaluacion = resultadoAutoevaluacion(programa, periodo),
+            estadoCiclo = estadoCiclo(programa, periodo),
         )
     }
 
@@ -81,6 +87,20 @@ class GenerarReporteEjecutivoUseCase(
             resultado.promediosPorCaracteristica.values.any { it != null }
 
         return resultado.takeIf { hayDatos }
+    }
+
+    /**
+     * El estado del ciclo solo se incluye cuando se indican tanto el
+     * programa como el periodo y existe un ciclo registrado con esa clave
+     * (Módulo 5, V6); se omite en cualquier otro caso, igual que las demás
+     * secciones del reporte. La comparación con el ciclo anterior, si existe,
+     * queda embebida en [EstadoCicloAutoevaluacion.comparacionCicloAnterior].
+     */
+    private fun estadoCiclo(programa: String?, periodo: String?): EstadoCicloAutoevaluacion? {
+        val programaIndicado = programa?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val periodoIndicado = periodo?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+
+        return consultarEstadoCicloAutoevaluacion.ejecutar(programaIndicado, periodoIndicado, LocalDate.now(reloj))
     }
 
     /**
