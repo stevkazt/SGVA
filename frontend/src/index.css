@@ -356,3 +356,61 @@ th {
   gap: 14px;
   margin-bottom: 10px;
 }
+
+.insignia {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.insignia--bueno {
+  color: var(--success-text);
+  background: rgba(12, 163, 12, 0.1);
+}
+
+.insignia--alerta {
+  color: #8a5a00;
+  background: rgba(250, 178, 25, 0.16);
+}
+
+.insignia--critico {
+  color: var(--status-critical);
+  background: rgba(208, 59, 59, 0.08);
+}
+
+.insignia--neutro {
+  color: var(--text-secondary);
+  background: var(--page-plane);
+}
+
+.fila-vencida td {
+  background: rgba(208, 59, 59, 0.05);
+}
+
+.lista-enlazada a {
+  color: var(--brand-navy);
+  font-weight: 600;
+}
+
+.stack-card {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.stack-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
