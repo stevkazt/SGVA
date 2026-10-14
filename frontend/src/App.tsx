@@ -2,6 +2,7 @@ import { NavLink, Route, HashRouter, Routes } from 'react-router-dom'
 import santotoLogo from './assets/santoto-logo.png'
 import { DashboardPage } from './pages/DashboardPage'
 import { EncuestasPage } from './pages/EncuestasPage'
+import { ResultadoAutoevaluacionPage } from './pages/ResultadoAutoevaluacionPage'
 import { UploadPage } from './pages/UploadPage'
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
             <NavLink to="/encuestas" className={({ isActive }) => (isActive ? 'active' : '')}>
               Encuestas
             </NavLink>
+            <NavLink to="/autoevaluacion" className={({ isActive }) => (isActive ? 'active' : '')}>
+              Autoevaluación
+            </NavLink>
           </div>
         </nav>
         <main>
@@ -30,6 +34,7 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/carga" element={<UploadPage />} />
             <Route path="/encuestas" element={<EncuestasPage />} />
+            <Route path="/autoevaluacion" element={<ResultadoAutoevaluacionPage />} />
           </Routes>
         </main>
       </div>

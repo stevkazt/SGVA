@@ -2,6 +2,7 @@ import type {
   IndicadorCalidad,
   MatrizRadar,
   PonderacionLikert,
+  ResultadoAutoevaluacion,
   ResultadoIngesta,
   TipoCarga,
 } from './types'
@@ -104,6 +105,11 @@ export const encuestas = {
 
   matrizRadar: (periodo?: string) =>
     peticion<MatrizRadar>(conParametros('/api/encuestas/matriz-radar', { periodo })),
+}
+
+export const resultadosAutoevaluacion = {
+  obtener: (programa: string, periodo: string) =>
+    peticion<ResultadoAutoevaluacion>(conParametros('/api/resultados-autoevaluacion', { programa, periodo })),
 }
 
 async function peticionArchivo(ruta: string): Promise<{ blob: Blob; nombreArchivo: string }> {

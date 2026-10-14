@@ -49,6 +49,14 @@ export interface MatrizRadar {
   series: SerieRadar[]
 }
 
+export interface ResultadoAutoevaluacion {
+  programa: string
+  periodo: string
+  promediosPorCaracteristica: Record<string, number | null>
+  promediosPorFactor: Record<string, number | null>
+  promedioGlobal: number | null
+}
+
 export interface ErrorRespuesta {
   mensaje: string
 }
