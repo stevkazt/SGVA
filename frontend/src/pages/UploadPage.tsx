@@ -33,7 +33,7 @@ export function UploadPage() {
     <div>
       <h1>Carga de datos</h1>
       <p className="page-subtitle">
-        Sube un archivo CSV o Excel con registros de estudiantes o docentes. El backend valida cada fila y
+        Sube un archivo CSV o Excel con registros de estudiantes, docentes, resultados de encuesta por pregunta o evaluación documental. El backend valida cada fila y
         reporta cuáles se registraron y cuáles se omitieron.
       </p>
 
@@ -48,6 +48,8 @@ export function UploadPage() {
             >
               <option value="estudiantes">Estudiantes</option>
               <option value="docentes">Docentes</option>
+              <option value="resultados-encuesta-pregunta">Resultados de encuesta por pregunta</option>
+              <option value="evaluaciones-documentales">Evaluación documental</option>
             </select>
           </div>
 

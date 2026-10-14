@@ -1,4 +1,10 @@
-import type { IndicadorCalidad, MatrizRadar, PonderacionLikert, ResultadoIngesta, TipoCarga } from './types'
+import type {
+  IndicadorCalidad,
+  MatrizRadar,
+  PonderacionLikert,
+  ResultadoIngesta,
+  TipoCarga,
+} from './types'
 
 /** Error tipado para fallos de red (backend no responde, DNS, CORS, etc.). */
 export class ErrorDeRed extends Error {
@@ -53,6 +59,8 @@ function conParametros(ruta: string, parametros: Record<string, string | undefin
 const RUTA_CARGA: Record<TipoCarga, string> = {
   estudiantes: '/api/estudiantes/archivos',
   docentes: '/api/docentes/archivos',
+  'resultados-encuesta-pregunta': '/api/resultados-encuesta-pregunta/archivos',
+  'evaluaciones-documentales': '/api/evaluaciones-documentales/archivos',
 }
 
 export function cargarArchivo(tipo: TipoCarga, archivo: File): Promise<ResultadoIngesta> {

@@ -6,7 +6,11 @@ export type NivelFormacion = 'ESPECIALIZACION' | 'MAESTRIA' | 'DOCTORADO'
 export type TipoDedicacion = 'TIEMPO_COMPLETO' | 'MEDIO_TIEMPO' | 'CATEDRA'
 export type TipoEstamento = 'ESTUDIANTE' | 'PROFESOR' | 'EGRESADO' | 'EMPLEADOR'
 
-export type TipoCarga = 'estudiantes' | 'docentes'
+export type TipoCarga =
+  | 'estudiantes'
+  | 'docentes'
+  | 'resultados-encuesta-pregunta'
+  | 'evaluaciones-documentales'
 
 export interface RegistroOmitido {
   id: string
