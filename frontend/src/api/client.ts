@@ -1,4 +1,14 @@
 import type {
+  ActividadCiclo,
+  AvanceCiclo,
+  CicloAutoevaluacion,
+  ComparacionResultados,
+  DetalleCiclo,
+  EvaluacionDocumental,
+  GrupoEvaluador,
+  ParticipacionActor,
+  PreevaluacionEvaluador,
+  ProyectoMejoramiento,
   IndicadorCalidad,
   MatrizRadar,
   PonderacionLikert,
@@ -62,6 +72,8 @@ const RUTA_CARGA: Record<TipoCarga, string> = {
   docentes: '/api/docentes/archivos',
   'resultados-encuesta-pregunta': '/api/resultados-encuesta-pregunta/archivos',
   'evaluaciones-documentales': '/api/evaluaciones-documentales/archivos',
+  preevaluaciones: '/api/preevaluaciones/archivos',
+  'participacion-actores': '/api/participacion-actores/archivos',
 }
 
 export function cargarArchivo(tipo: TipoCarga, archivo: File): Promise<ResultadoIngesta> {
@@ -112,6 +124,70 @@ export const resultadosAutoevaluacion = {
     peticion<ResultadoAutoevaluacion>(conParametros('/api/resultados-autoevaluacion', { programa, periodo })),
 }
 
+export interface SolicitudCiclo {
+  id: string
+  programa: string
+  periodo: string
+}
+
+export interface SolicitudActividad {
+  id: string
+  fase: number
+  descripcion: string
+  responsable: string
+  fechaInicioPlanificada: string
+  fechaFinPlanificada: string
+  estado: ActividadCiclo['estado']
+}
+
+const JSON_POST = (cuerpo?: unknown): RequestInit => ({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+})
+
+export const ciclos = {
+  listar: (programa?: string, periodo?: string) =>
+    peticion<CicloAutoevaluacion[]>(conParametros('/api/ciclos', { programa, periodo })),
+
+  detalle: (id: string) => peticion<DetalleCiclo>(`/api/ciclos/${encodeURIComponent(id)}`),
+
+  registrar: (solicitud: SolicitudCiclo) => peticion<DetalleCiclo>('/api/ciclos', JSON_POST(solicitud)),
+
+  registrarActividad: (id: string, solicitud: SolicitudActividad) =>
+    peticion<ActividadCiclo>(`/api/ciclos/${encodeURIComponent(id)}/actividades`, JSON_POST(solicitud)),
+
+  avance: (id: string, fechaReferencia: string) =>
+    peticion<AvanceCiclo>(conParametros(`/api/ciclos/${encodeURIComponent(id)}/avance`, { fechaReferencia })),
+
+  gruposEvaluadores: (id: string) =>
+    peticion<GrupoEvaluador[]>(`/api/ciclos/${encodeURIComponent(id)}/grupos-evaluadores`),
+}
+
+export const preevaluaciones = {
+  listar: (ciclo: string) => peticion<PreevaluacionEvaluador[]>(conParametros('/api/preevaluaciones', { ciclo })),
+
+  consolidar: (ciclo: string) =>
+    peticion<EvaluacionDocumental[]>(`/api/preevaluaciones/${encodeURIComponent(ciclo)}/consolidacion`, JSON_POST()),
+}
+
+export const participacionActores = {
+  listar: (ciclo: string) => peticion<ParticipacionActor[]>(conParametros('/api/participacion-actores', { ciclo })),
+}
+
+export const proyectosMejoramiento = {
+  listar: (programa?: string) =>
+    peticion<ProyectoMejoramiento[]>(conParametros('/api/proyectos-mejoramiento', { programa })),
+}
+
+export const comparaciones = {
+  comparar: (programa: string, periodos: string[]) => {
+    const busqueda = new URLSearchParams({ programa })
+    for (const periodo of periodos) busqueda.append('periodos', periodo)
+    return peticion<ComparacionResultados>(`/api/comparaciones?${busqueda.toString()}`)
+  },
+}
+
 async function peticionArchivo(ruta: string): Promise<{ blob: Blob; nombreArchivo: string }> {
   let respuesta: Response
   try {
@@ -135,6 +211,7 @@ async function peticionArchivo(ruta: string): Promise<{ blob: Blob; nombreArchiv
 }
 
 export interface FiltrosReporte {
+  programa?: string
   periodo?: string
   facultad?: string
   cohorte?: string
@@ -143,6 +220,11 @@ export interface FiltrosReporte {
 export const reportes = {
   ejecutivo: (f: FiltrosReporte) =>
     peticionArchivo(
-      conParametros('/api/reportes/ejecutivo', { periodo: f.periodo, facultad: f.facultad, cohorte: f.cohorte }),
+      conParametros('/api/reportes/ejecutivo', {
+        programa: f.programa,
+        periodo: f.periodo,
+        facultad: f.facultad,
+        cohorte: f.cohorte,
+      }),
     ),
 }
