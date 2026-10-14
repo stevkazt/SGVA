@@ -9,11 +9,15 @@ interface Props {
   datos: Punto[]
   colorBarra?: string
   layout?: 'horizontal' | 'vertical'
+  /** Tope fijo del eje de valores (p. ej. 5 para calificaciones); por defecto lo calcula Recharts. */
+  maximo?: number
 }
 
 /** Barras de una sola serie, para comparar categorías (periodos, niveles de formación, etc.). */
-export function BarraSimpleChart({ datos, colorBarra = 'var(--series-1)', layout = 'horizontal' }: Props) {
+export function BarraSimpleChart({ datos, colorBarra = 'var(--series-1)', layout = 'horizontal', maximo }: Props) {
   const esVertical = layout === 'vertical'
+  const dominio: [number, number | 'auto'] = [0, maximo ?? 'auto']
+  const marcas = maximo === undefined ? undefined : Array.from({ length: maximo + 1 }, (_, i) => i)
 
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -25,7 +29,7 @@ export function BarraSimpleChart({ datos, colorBarra = 'var(--series-1)', layout
         <CartesianGrid stroke="var(--gridline)" horizontal={!esVertical} vertical={esVertical} />
         {esVertical ? (
           <>
-            <XAxis type="number" stroke="var(--baseline)" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
+            <XAxis type="number" domain={dominio} ticks={marcas} stroke="var(--baseline)" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
             <YAxis
               type="category"
               dataKey="etiqueta"
@@ -41,7 +45,13 @@ export function BarraSimpleChart({ datos, colorBarra = 'var(--series-1)', layout
               stroke="var(--baseline)"
               tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
             />
-            <YAxis stroke="var(--baseline)" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} width={48} />
+            <YAxis
+              domain={dominio}
+              ticks={marcas}
+              stroke="var(--baseline)"
+              tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+              width={48}
+            />
           </>
         )}
         <Tooltip

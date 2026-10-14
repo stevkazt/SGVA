@@ -114,7 +114,7 @@ export function ResultadoAutoevaluacionPage() {
           <div className="card">
             <h2>Promedio por factor</h2>
             {datosGrafica.length > 0 ? (
-              <BarraSimpleChart datos={datosGrafica} />
+              <BarraSimpleChart datos={datosGrafica} maximo={5} />
             ) : (
               <p className="empty-state">No hay datos suficientes para calcular los factores.</p>
             )}
