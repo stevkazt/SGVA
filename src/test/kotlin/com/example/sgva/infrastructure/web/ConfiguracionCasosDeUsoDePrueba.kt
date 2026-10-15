@@ -1,11 +1,15 @@
 package com.example.sgva.infrastructure.web
 
 import com.example.sgva.application.RepositorioAcademicoFalso
+import com.example.sgva.application.RepositorioConfiguracionPonderacionesFalso
 import com.example.sgva.domain.AcademicDataRepository
 import com.example.sgva.domain.Caracteristica
 import com.example.sgva.domain.ConfiguracionPonderaciones
+import com.example.sgva.domain.ConfiguracionPonderacionesRepository
 import com.example.sgva.domain.ConfiguracionSeguimiento
 import com.example.sgva.domain.DocumentParserPort
+import com.example.sgva.domain.LectorConfiguracionPonderacionesPort
+import com.example.sgva.infrastructure.configuracion.CargadorConfiguracionPonderaciones
 import com.example.sgva.infrastructure.parsing.CsvDocumentParser
 import com.example.sgva.usecases.CalcularAvanceCicloUseCase
 import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
@@ -14,10 +18,12 @@ import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
 import com.example.sgva.usecases.CalcularResultadoAutoevaluacionUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
+import com.example.sgva.usecases.CargarConfiguracionPonderacionesUseCase
 import com.example.sgva.usecases.CompararResultadosEntreCiclosUseCase
 import com.example.sgva.usecases.ConsolidarPreevaluacionesUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarCicloAutoevaluacionUseCase
+import com.example.sgva.usecases.ConsultarConfiguracionPonderacionesUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
 import com.example.sgva.usecases.ConsultarEstadoCicloAutoevaluacionUseCase
@@ -237,6 +243,24 @@ class ConfiguracionCasosDeUsoDePrueba {
         pesoEncuestas = 0.4,
         pesoDocumental = 0.6,
     )
+
+    @Bean
+    fun repositorioConfiguracionPonderaciones(): RepositorioConfiguracionPonderacionesFalso =
+        RepositorioConfiguracionPonderacionesFalso()
+
+    @Bean
+    fun lectorConfiguracionPonderaciones(): LectorConfiguracionPonderacionesPort = CargadorConfiguracionPonderaciones()
+
+    @Bean
+    fun consultarConfiguracionPonderacionesUseCase(
+        repositorio: ConfiguracionPonderacionesRepository,
+    ): ConsultarConfiguracionPonderacionesUseCase = ConsultarConfiguracionPonderacionesUseCase(repositorio)
+
+    @Bean
+    fun cargarConfiguracionPonderacionesUseCase(
+        lector: LectorConfiguracionPonderacionesPort,
+        repositorio: ConfiguracionPonderacionesRepository,
+    ): CargarConfiguracionPonderacionesUseCase = CargarConfiguracionPonderacionesUseCase(lector, repositorio)
 
     @Bean
     fun calcularResultadoAutoevaluacionUseCase(
