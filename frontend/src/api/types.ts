@@ -13,6 +13,7 @@ export type TipoCarga =
   | 'evaluaciones-documentales'
   | 'preevaluaciones'
   | 'participacion-actores'
+  | 'ponderaciones'
 
 export interface RegistroOmitido {
   id: string
@@ -166,6 +167,20 @@ export interface ComparacionResultados {
   programa: string
   resultados: ResultadoAutoevaluacion[]
   diferencias: DiferenciaResultado[]
+}
+
+export interface CaracteristicaModelo {
+  id: string
+  nombre: string
+  factor: string
+  ponderacion: number
+}
+
+export interface ConfiguracionPonderaciones {
+  caracteristicas: CaracteristicaModelo[]
+  pesosFactores: Record<string, number>
+  pesoEncuestas: number
+  pesoDocumental: number
 }
 
 export interface ErrorRespuesta {

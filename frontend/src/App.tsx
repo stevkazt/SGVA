@@ -5,6 +5,7 @@ import { CiclosPage } from './pages/CiclosPage'
 import { ComparacionPage } from './pages/ComparacionPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { EncuestasPage } from './pages/EncuestasPage'
+import { PonderacionesPage } from './pages/PonderacionesPage'
 import { ProyectosPage } from './pages/ProyectosPage'
 import { ResultadoAutoevaluacionPage } from './pages/ResultadoAutoevaluacionPage'
 import { UploadPage } from './pages/UploadPage'
@@ -31,6 +32,9 @@ function App() {
             <NavLink to="/autoevaluacion" className={({ isActive }) => (isActive ? 'active' : '')}>
               Autoevaluación
             </NavLink>
+            <NavLink to="/ponderaciones" className={({ isActive }) => (isActive ? 'active' : '')}>
+              Ponderaciones
+            </NavLink>
             <NavLink to="/ciclos" className={({ isActive }) => (isActive ? 'active' : '')}>
               Ciclos
             </NavLink>
@@ -48,6 +52,7 @@ function App() {
             <Route path="/carga" element={<UploadPage />} />
             <Route path="/encuestas" element={<EncuestasPage />} />
             <Route path="/autoevaluacion" element={<ResultadoAutoevaluacionPage />} />
+            <Route path="/ponderaciones" element={<PonderacionesPage />} />
             <Route path="/ciclos" element={<CiclosPage />} />
             <Route path="/ciclos/:id" element={<CicloDetallePage />} />
             <Route path="/proyectos" element={<ProyectosPage />} />

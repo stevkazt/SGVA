@@ -2,6 +2,7 @@ import type {
   ActividadCiclo,
   AvanceCiclo,
   CicloAutoevaluacion,
+  ConfiguracionPonderaciones,
   ComparacionResultados,
   DetalleCiclo,
   EvaluacionDocumental,
@@ -74,6 +75,7 @@ const RUTA_CARGA: Record<TipoCarga, string> = {
   'evaluaciones-documentales': '/api/evaluaciones-documentales/archivos',
   preevaluaciones: '/api/preevaluaciones/archivos',
   'participacion-actores': '/api/participacion-actores/archivos',
+  ponderaciones: '/api/ponderaciones/archivos',
 }
 
 export function cargarArchivo(tipo: TipoCarga, archivo: File): Promise<ResultadoIngesta> {
@@ -117,6 +119,10 @@ export const encuestas = {
 
   matrizRadar: (periodo?: string) =>
     peticion<MatrizRadar>(conParametros('/api/encuestas/matriz-radar', { periodo })),
+}
+
+export const ponderaciones = {
+  obtener: () => peticion<ConfiguracionPonderaciones>('/api/ponderaciones'),
 }
 
 export const resultadosAutoevaluacion = {
