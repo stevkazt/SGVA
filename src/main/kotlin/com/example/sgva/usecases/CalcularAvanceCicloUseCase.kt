@@ -21,9 +21,16 @@ import java.time.LocalDate
  */
 class CalcularAvanceCicloUseCase(
     private val repositorio: AcademicDataRepository,
-    private val configuracionPonderaciones: ConfiguracionPonderaciones,
+    private val obtenerConfiguracionPonderaciones: () -> ConfiguracionPonderaciones,
     private val configuracionSeguimiento: ConfiguracionSeguimiento,
 ) {
+
+    /** Variante con una configuración fija, útil cuando ya se dispone de ella (p. ej., en pruebas). */
+    constructor(
+        repositorio: AcademicDataRepository,
+        configuracionPonderaciones: ConfiguracionPonderaciones,
+        configuracionSeguimiento: ConfiguracionSeguimiento,
+    ) : this(repositorio, { configuracionPonderaciones }, configuracionSeguimiento)
 
     /** @throws CicloNoEncontradoException si no existe el [ciclo] referenciado. */
     fun ejecutar(ciclo: String, fechaReferencia: LocalDate): AvanceCiclo {
@@ -40,9 +47,16 @@ class CalcularAvanceCicloUseCase(
         }
 
         val factoresDelGrupo = repositorio.listarGruposEvaluadorPorCiclo(ciclo).flatMap { it.factores }.toSet()
-        val factoresConPendiente = factoresDelGrupo.filter { factor ->
-            caracteristicasConPreevaluacionPendiente(ciclo, factor)
-        }.toSet()
+        // La configuración de ponderaciones solo hace falta si el ciclo tiene grupos evaluadores:
+        // sin ella, el resto del avance (actividades, participación) se calcula igual.
+        val factoresConPendiente = if (factoresDelGrupo.isEmpty()) {
+            emptySet()
+        } else {
+            val configuracionPonderaciones = obtenerConfiguracionPonderaciones()
+            factoresDelGrupo.filter { factor ->
+                caracteristicasConPreevaluacionPendiente(configuracionPonderaciones, ciclo, factor)
+            }.toSet()
+        }
 
         val participacionConSemaforo = repositorio.listarParticipacionPorCiclo(ciclo).map { participacion ->
             ParticipacionConSemaforo(
@@ -75,7 +89,11 @@ class CalcularAvanceCicloUseCase(
      * `true` si alguna característica del [factor] no tiene ninguna
      * preevaluación registrada en el [ciclo] (`DESIGN_SGVA.md` §0.1).
      */
-    private fun caracteristicasConPreevaluacionPendiente(ciclo: String, factor: String): Boolean {
+    private fun caracteristicasConPreevaluacionPendiente(
+        configuracionPonderaciones: ConfiguracionPonderaciones,
+        ciclo: String,
+        factor: String,
+    ): Boolean {
         val caracteristicasDelFactor = configuracionPonderaciones.caracteristicas
             .filter { it.factor == factor }
             .map { it.id }

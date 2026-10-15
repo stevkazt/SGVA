@@ -80,6 +80,9 @@ class GenerarReporteEjecutivoUseCase(
             calcularResultadoAutoevaluacion.ejecutar(programaIndicado, periodoIndicado)
         } catch (formatoInvalido: FormatoPeriodoInvalidoException) {
             return null
+        } catch (sinPonderaciones: DatosInsuficientesException) {
+            // Todavía no se ha cargado el archivo de ponderaciones: la sección se omite.
+            return null
         }
 
         val hayDatos = resultado.promedioGlobal != null ||
@@ -100,7 +103,12 @@ class GenerarReporteEjecutivoUseCase(
         val programaIndicado = programa?.trim()?.takeIf { it.isNotEmpty() } ?: return null
         val periodoIndicado = periodo?.trim()?.takeIf { it.isNotEmpty() } ?: return null
 
-        return consultarEstadoCicloAutoevaluacion.ejecutar(programaIndicado, periodoIndicado, LocalDate.now(reloj))
+        return try {
+            consultarEstadoCicloAutoevaluacion.ejecutar(programaIndicado, periodoIndicado, LocalDate.now(reloj))
+        } catch (sinPonderaciones: DatosInsuficientesException) {
+            // El avance de un ciclo con grupos evaluadores necesita las ponderaciones: la sección se omite.
+            null
+        }
     }
 
     /**

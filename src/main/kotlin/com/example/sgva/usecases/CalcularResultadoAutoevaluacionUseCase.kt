@@ -14,18 +14,27 @@ import com.example.sgva.domain.ResultadoAutoevaluacion
  * características, a partir de los `ResultadoEncuestaPregunta` y
  * `EvaluacionDocumental` ya registrados. El universo de factores y
  * características, y todos los pesos usados en la mezcla, provienen
- * exclusivamente de [configuracion]: este caso de uso no hardcodea ningún
- * peso ni ningún identificador de factor o característica.
+ * exclusivamente de la configuración vigente ([obtenerConfiguracion], que se
+ * consulta en cada cálculo, de modo que un cambio de ponderaciones se aplica
+ * sin reiniciar): este caso de uso no hardcodea ningún peso ni ningún
+ * identificador de factor o característica.
  *
  * Aplica exactamente las reglas de `DESIGN_SGVA.md` §0.1, sin criterios
  * adicionales no documentados.
  */
 class CalcularResultadoAutoevaluacionUseCase(
     private val repositorio: AcademicDataRepository,
-    private val configuracion: ConfiguracionPonderaciones,
+    private val obtenerConfiguracion: () -> ConfiguracionPonderaciones,
 ) {
 
+    /** Variante con una configuración fija, útil cuando ya se dispone de ella (p. ej., en pruebas). */
+    constructor(
+        repositorio: AcademicDataRepository,
+        configuracion: ConfiguracionPonderaciones,
+    ) : this(repositorio, { configuracion })
+
     fun ejecutar(programa: String, periodo: String): ResultadoAutoevaluacion {
+        val configuracion = obtenerConfiguracion()
         val promediosEncuestaPorCaracteristica = repositorio.listarResultadosEncuestaPregunta()
             .filter { it.programa == programa && it.periodo == periodo }
             .groupBy { it.caracteristica }
@@ -37,6 +46,7 @@ class CalcularResultadoAutoevaluacionUseCase(
 
         val promediosPorCaracteristica = configuracion.caracteristicas.associate { caracteristica ->
             caracteristica.id to promedioDeCaracteristica(
+                configuracion = configuracion,
                 resultadoEncuesta = promediosEncuestaPorCaracteristica[caracteristica.id],
                 documental = documentalPorCaracteristica[caracteristica.id]?.calificacion,
             )
@@ -44,7 +54,7 @@ class CalcularResultadoAutoevaluacionUseCase(
 
         val promediosPorFactor = configuracion.pesosFactores.keys.associateWith { factor ->
             promedioPonderadoReponderado(
-                caracteristicasDelFactor(factor).mapNotNull { caracteristica ->
+                caracteristicasDelFactor(configuracion, factor).mapNotNull { caracteristica ->
                     promediosPorCaracteristica[caracteristica.id]?.let { it to caracteristica.ponderacion }
                 },
             )
@@ -65,7 +75,7 @@ class CalcularResultadoAutoevaluacionUseCase(
         )
     }
 
-    private fun caracteristicasDelFactor(factor: String): List<Caracteristica> =
+    private fun caracteristicasDelFactor(configuracion: ConfiguracionPonderaciones, factor: String): List<Caracteristica> =
         configuracion.caracteristicas.filter { it.factor == factor }
 
     /**
@@ -80,7 +90,11 @@ class CalcularResultadoAutoevaluacionUseCase(
      * valor documental completo si la encuesta está ausente, o ausente si no
      * hay evaluación documental.
      */
-    private fun promedioDeCaracteristica(resultadoEncuesta: Double?, documental: Double?): Double? = when {
+    private fun promedioDeCaracteristica(
+        configuracion: ConfiguracionPonderaciones,
+        resultadoEncuesta: Double?,
+        documental: Double?,
+    ): Double? = when {
         documental == null -> null
         resultadoEncuesta == null -> documental
         else -> documental * configuracion.pesoDocumental + resultadoEncuesta * configuracion.pesoEncuestas
