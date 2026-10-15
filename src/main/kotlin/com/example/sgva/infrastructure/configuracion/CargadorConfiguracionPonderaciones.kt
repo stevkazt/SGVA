@@ -3,6 +3,7 @@ package com.example.sgva.infrastructure.configuracion
 import com.example.sgva.domain.Caracteristica
 import com.example.sgva.domain.ConfiguracionPonderaciones
 import com.example.sgva.domain.FormatoArchivoInvalidoException
+import com.example.sgva.domain.LectorConfiguracionPonderacionesPort
 import de.siegmar.fastcsv.reader.CsvReader
 import java.io.IOException
 import java.nio.file.Files
@@ -33,9 +34,19 @@ import java.nio.file.Path
  * archivo faltante) se reporta como [FormatoArchivoInvalidoException], con un
  * mensaje claro y sin recurrir a ningún valor por defecto.
  */
-class CargadorConfiguracionPonderaciones {
+class CargadorConfiguracionPonderaciones : LectorConfiguracionPonderacionesPort {
 
     /** Lee el archivo en [ruta] del sistema de archivos y construye la configuración. */
+    /** Lee el contenido de un archivo de ponderaciones recibido en una carga (`.csv`, UTF-8). */
+    override fun leer(nombreArchivo: String, contenido: ByteArray): ConfiguracionPonderaciones {
+        if (!nombreArchivo.lowercase().endsWith(".csv")) {
+            throw FormatoArchivoInvalidoException(
+                "El archivo de ponderaciones '$nombreArchivo' debe ser un archivo .csv.",
+            )
+        }
+        return parsear(contenido.toString(Charsets.UTF_8).removePrefix("\uFEFF"), nombreArchivo)
+    }
+
     fun cargar(ruta: Path): ConfiguracionPonderaciones {
         val contenido = try {
             Files.readString(ruta)

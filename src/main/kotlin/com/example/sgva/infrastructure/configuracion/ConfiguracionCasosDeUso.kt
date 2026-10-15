@@ -1,9 +1,10 @@
 package com.example.sgva.infrastructure.configuracion
 
 import com.example.sgva.domain.AcademicDataRepository
-import com.example.sgva.domain.ConfiguracionPonderaciones
+import com.example.sgva.domain.ConfiguracionPonderacionesRepository
 import com.example.sgva.domain.ConfiguracionSeguimiento
 import com.example.sgva.domain.DocumentParserPort
+import com.example.sgva.domain.LectorConfiguracionPonderacionesPort
 import com.example.sgva.usecases.CalcularAvanceCicloUseCase
 import com.example.sgva.usecases.CalcularCapacidadInstaladaUseCase
 import com.example.sgva.usecases.CalcularDistribucionFormacionUseCase
@@ -11,10 +12,12 @@ import com.example.sgva.usecases.CalcularEvolucionMatriculaUseCase
 import com.example.sgva.usecases.CalcularPonderacionLikertUseCase
 import com.example.sgva.usecases.CalcularResultadoAutoevaluacionUseCase
 import com.example.sgva.usecases.CalcularTasaDesercionUseCase
+import com.example.sgva.usecases.CargarConfiguracionPonderacionesUseCase
 import com.example.sgva.usecases.CompararResultadosEntreCiclosUseCase
 import com.example.sgva.usecases.ConsolidarPreevaluacionesUseCase
 import com.example.sgva.usecases.ConsolidarPuntajesSaberProUseCase
 import com.example.sgva.usecases.ConsultarCicloAutoevaluacionUseCase
+import com.example.sgva.usecases.ConsultarConfiguracionPonderacionesUseCase
 import com.example.sgva.usecases.ConsultarDocentesUseCase
 import com.example.sgva.usecases.ConsultarEstudiantesUseCase
 import com.example.sgva.usecases.ConsultarEstadoCicloAutoevaluacionUseCase
@@ -48,7 +51,6 @@ import com.example.sgva.usecases.RegistrarRespuestaEncuestaUseCase
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.nio.file.Path
 import java.time.Clock
 
 /**
@@ -211,29 +213,33 @@ class ConfiguracionCasosDeUso {
         )
 
     @Bean
-    fun cargadorConfiguracionPonderaciones(): CargadorConfiguracionPonderaciones = CargadorConfiguracionPonderaciones()
+    fun lectorConfiguracionPonderaciones(): LectorConfiguracionPonderacionesPort = CargadorConfiguracionPonderaciones()
+
+    @Bean
+    fun consultarConfiguracionPonderacionesUseCase(
+        repositorio: ConfiguracionPonderacionesRepository,
+    ): ConsultarConfiguracionPonderacionesUseCase =
+        ConsultarConfiguracionPonderacionesUseCase(repositorio)
+
+    @Bean
+    fun cargarConfiguracionPonderacionesUseCase(
+        lector: LectorConfiguracionPonderacionesPort,
+        repositorio: ConfiguracionPonderacionesRepository,
+    ): CargarConfiguracionPonderacionesUseCase =
+        CargarConfiguracionPonderacionesUseCase(lector, repositorio)
 
     /**
-     * Las ponderaciones del modelo institucional se cargan siempre desde el
-     * archivo externo indicado en la propiedad `sgva.ponderaciones.archivo`
-     * (`DESIGN_SGVA.md` §0.1 y §4): no hay ningún valor por defecto, para no
-     * arrancar silenciosamente con pesos no documentados. Si la propiedad no
-     * está definida o el archivo no existe o es inválido, el arranque de la
-     * aplicación falla con un mensaje claro.
+     * El resultado de autoevaluación consulta en cada cálculo la configuración
+     * de ponderaciones vigente en la base de datos (`DESIGN_SGVA.md` §0.1): no hay ningún valor
+     * por defecto, y mientras no se cargue el archivo de ponderaciones el cálculo responde con un
+     * mensaje claro, sin impedir el arranque de la aplicación.
      */
-    @Bean
-    fun configuracionPonderaciones(
-        cargadorConfiguracionPonderaciones: CargadorConfiguracionPonderaciones,
-        @Value("\${sgva.ponderaciones.archivo}") archivoPonderaciones: String,
-    ): ConfiguracionPonderaciones =
-        cargadorConfiguracionPonderaciones.cargar(Path.of(archivoPonderaciones))
-
     @Bean
     fun calcularResultadoAutoevaluacionUseCase(
         repositorio: AcademicDataRepository,
-        configuracionPonderaciones: ConfiguracionPonderaciones,
+        consultarConfiguracionPonderaciones: ConsultarConfiguracionPonderacionesUseCase,
     ): CalcularResultadoAutoevaluacionUseCase =
-        CalcularResultadoAutoevaluacionUseCase(repositorio, configuracionPonderaciones)
+        CalcularResultadoAutoevaluacionUseCase(repositorio, consultarConfiguracionPonderaciones::ejecutar)
 
     // ===== Módulo 5 — Seguimiento del proceso institucional (V6) =====
 
@@ -329,10 +335,10 @@ class ConfiguracionCasosDeUso {
     @Bean
     fun calcularAvanceCicloUseCase(
         repositorio: AcademicDataRepository,
-        configuracionPonderaciones: ConfiguracionPonderaciones,
+        consultarConfiguracionPonderaciones: ConsultarConfiguracionPonderacionesUseCase,
         configuracionSeguimiento: ConfiguracionSeguimiento,
     ): CalcularAvanceCicloUseCase =
-        CalcularAvanceCicloUseCase(repositorio, configuracionPonderaciones, configuracionSeguimiento)
+        CalcularAvanceCicloUseCase(repositorio, consultarConfiguracionPonderaciones::ejecutar, configuracionSeguimiento)
 
     @Bean
     fun compararResultadosEntreCiclosUseCase(
