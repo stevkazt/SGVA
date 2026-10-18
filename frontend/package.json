@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:demo": "node ../demo/copiar-ejemplos.mjs && VITE_PANEL_PRUEBAS=1 tsc -b && VITE_PANEL_PRUEBAS=1 vite build"
   },
   "dependencies": {
     "react": "^19.2.8",
