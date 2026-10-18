@@ -16,7 +16,7 @@ SECRETOS="$HOME/respaldos_sgva/.demo_secrets"
 LOGS="$RAIZ/demo/logs"
 mkdir -p "$LOGS"
 
-# Contraseña y clave: se crean una vez y se guardan fuera del repositorio.
+# Contraseña, clave y usuarios: se crean una vez y se guardan fuera del repositorio.
 if [ ! -f "$SECRETOS" ]; then
   {
     echo "DEMO_PASSWORD=sgva-$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c 8)"
@@ -25,7 +25,10 @@ if [ ! -f "$SECRETOS" ]; then
   chmod 600 "$SECRETOS"
   echo "Contraseña creada en $SECRETOS"
 fi
+# Usuarios con acceso (cada uno tiene su propio entorno de datos).
+grep -q '^DEMO_USUARIOS=' "$SECRETOS" || echo 'DEMO_USUARIOS=johann,mauricio' >> "$SECRETOS"
 set -a; source "$SECRETOS"; set +a
+export USUARIOS_PERMITIDOS="$DEMO_USUARIOS"
 
 ./demo/detener.sh quiet
 export DEMO_KEY
@@ -49,7 +52,7 @@ npm run build:demo > "$LOGS/build.log" 2>&1 || { echo "Falló el build; revisa $
 
 npx --yes wrangler pages project list 2>/dev/null | grep -q " $PROYECTO " \
   || npx --yes wrangler pages project create "$PROYECTO" --production-branch main
-for nombre in DEMO_PASSWORD DEMO_KEY; do
+for nombre in DEMO_PASSWORD DEMO_KEY DEMO_USUARIOS; do
   printf '%s' "${!nombre}" | npx --yes wrangler pages secret put "$nombre" --project-name "$PROYECTO" > /dev/null
 done
 printf '%s' "$URL" | npx --yes wrangler pages secret put BACKEND_URL --project-name "$PROYECTO" > /dev/null
@@ -57,4 +60,5 @@ npx --yes wrangler pages deploy dist --project-name "$PROYECTO" --branch main --
 
 echo
 echo "Demo publicada: https://$PROYECTO.pages.dev"
+echo "Usuarios: ${DEMO_USUARIOS//,/, } (la misma contraseña para todos)"
 echo "Contraseña: está en $SECRETOS (clave DEMO_PASSWORD)"

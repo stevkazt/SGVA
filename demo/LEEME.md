@@ -12,16 +12,26 @@ Navegador ── https://sgva-demo.pages.dev (contraseña) ──► Cloudflare 
                                                                       │  (añade X-Demo-Key)
                                                             túnel de Cloudflare
                                                                       │
-Tu Mac:  puerta (demo/servidor.mjs, :8081) ── X-Sgva-Modo ──► backend demo   (:8090, base sgva_publica_demo)
-                                                           └► backend limpia (:8091, base sgva_publica_limpia)
+Tu Mac:  puerta (demo/servidor.mjs, :8081)
+           ├─ X-Sgva-Usuario = usuario del login (lo añade la Pages Function), X-Sgva-Modo = demo | limpia
+           └─► un backend SGVA por usuario (puertos 8100+), con su propia base en PostgreSQL:
+                 sgva_s_<usuario>_demo   (clon de la plantilla sgva_plantilla, con datos de ejemplo)
+                 sgva_s_<usuario>_limpia (vacía)
 ```
 
-- **Contraseña:** HTTP Basic de Cloudflare Pages (`frontend/functions/_middleware.ts`), cualquier usuario.
-  Se genera una vez y queda en `~/respaldos_sgva/.demo_secrets` (fuera del repositorio).
-- **La puerta local exige `X-Demo-Key`**, así que la URL del túnel no sirve por sí sola sin pasar por la contraseña.
+- **Acceso:** HTTP Basic de Cloudflare Pages (`frontend/functions/_middleware.ts`). Solo entran los usuarios de
+  `DEMO_USUARIOS` (hoy `johann` y `mauricio`, sin distinguir mayúsculas), todos con la misma contraseña.
+  Usuarios y contraseña viven en `~/respaldos_sgva/.demo_secrets` (fuera del repositorio).
+- **La puerta local exige `X-Demo-Key`**, así que la URL del túnel no sirve por sí sola sin pasar por el login.
+- **Cada usuario tiene su entorno:** lo que carga o borra uno no lo ve el otro, y no depende del navegador: borrar los
+  datos del sitio o entrar desde otro equipo con el mismo usuario abre el mismo entorno. Solo corre un backend por usuario
+  (al cambiar de modo se apaga uno y arranca el otro, unos 6 s) y la puerta los levanta cuando hacen falta.
+- **Sin caducidad:** los entornos no se borran solos. Se pueden liberar con `demo/sesiones.sh liberar <usuario>` (o `todas`).
+- **Para añadir o cambiar usuarios:** editar `DEMO_USUARIOS` en `.demo_secrets` y volver a correr `demo/publicar.sh`.
 - **Datos demo:** modelo 2025 y proceso 2025 reales (fixtures de `src/test/resources`) más datos sintéticos
   (`demo/generar-datos.mjs`: estudiantes, docentes, respuestas individuales de encuesta y el periodo 20251).
-- **Base limpia:** vacía; el visitante sube sus archivos. «Restaurar datos demo» y «Vaciar base limpia» están en el panel.
+- **Panel:** muestra el usuario; «Restaurar datos demo» y «Vaciar base limpia» afectan solo a su entorno.
+- **Memoria:** cada backend usa hasta 512 MB (`SGVA_JVM_MEM`); con dos usuarios, como máximo dos a la vez.
 
 ## Uso
 

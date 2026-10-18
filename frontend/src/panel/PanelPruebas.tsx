@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { archivosEjemplo, ayudaDe, RUTA_DOCUMENTO, recorridoDemo, recorridoLimpia, referenciasDocumento } from './contenido'
-import { cambiarModo, modoActual, restaurarDemo, vaciarLimpia } from './modo'
+import { cambiarModo, modoActual, prepararEntorno, restaurarDemo, vaciarLimpia } from './modo'
 
 type Aviso = { tipo: 'ok' | 'error'; texto: string }
+type Entorno = { estado: 'preparando' } | { estado: 'listo'; usuario: string } | { estado: 'error'; texto: string }
 
 /** Panel lateral de la demo pública: elegir datos, restaurarlos y entender cada pantalla. */
 export function PanelPruebas() {
@@ -14,10 +15,20 @@ export function PanelPruebas() {
   const [confirmando, setConfirmando] = useState(false)
   const [trabajando, setTrabajando] = useState(false)
   const [aviso, setAviso] = useState<Aviso | null>(null)
+  const [entorno, setEntorno] = useState<Entorno>({ estado: 'preparando' })
 
   useEffect(() => {
     localStorage.setItem('sgva.panel', abierto ? 'abierto' : 'cerrado')
   }, [abierto])
+
+  // Cada usuario tiene su propio backend; la primera vez tarda unos segundos en arrancar.
+  useEffect(() => {
+    prepararEntorno()
+      .then((usuario) => setEntorno({ estado: 'listo', usuario }))
+      .catch((error: unknown) =>
+        setEntorno({ estado: 'error', texto: error instanceof Error ? error.message : 'No se pudo preparar tu entorno.' }),
+      )
+  }, [])
 
   async function ejecutarAccion() {
     setTrabajando(true)
@@ -56,6 +67,21 @@ export function PanelPruebas() {
 
       <section>
         <h3>Datos con los que trabajas</h3>
+        {entorno.estado === 'preparando' && (
+          <p className="panel-pruebas__nota" role="status">
+            Preparando tu entorno… la primera vez tarda unos segundos.
+          </p>
+        )}
+        {entorno.estado === 'listo' && entorno.usuario && (
+          <p className="panel-pruebas__nota">
+            Entorno de <strong>{entorno.usuario}</strong>.
+          </p>
+        )}
+        {entorno.estado === 'error' && (
+          <p className="panel-pruebas__aviso panel-pruebas__aviso--error" role="alert">
+            {entorno.texto}
+          </p>
+        )}
         <div className="panel-pruebas__modos" role="group" aria-label="Modo de datos">
           <button type="button" className={modo === 'demo' ? '' : 'secondary'} onClick={() => modo !== 'demo' && cambiarModo('demo')}>
             Datos demo
@@ -66,8 +92,8 @@ export function PanelPruebas() {
         </div>
         <p className="panel-pruebas__nota">
           {modo === 'demo'
-            ? 'Programa de ejemplo EGSTI con el modelo y el proceso 2025 ya cargados. Los datos de estudiantes, docentes, encuestas individuales y el periodo 20251 son sintéticos.'
-            : 'Base vacía: sube tus propios archivos desde «Carga de datos». Es compartida con quien use esta demo al mismo tiempo.'}
+            ? 'Programa de ejemplo EGSTI con el modelo y el proceso 2025 ya cargados. Los datos de estudiantes, docentes, encuestas individuales y el periodo 20251 son sintéticos. Es tu copia: lo que cambies no lo ve el otro usuario.'
+            : 'Base vacía y solo tuya: sube tus propios archivos desde «Carga de datos». Tus datos se conservan aunque cierres el navegador.'}
         </p>
         {!confirmando ? (
           <button type="button" className="secondary" onClick={() => setConfirmando(true)} disabled={trabajando}>

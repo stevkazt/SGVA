@@ -3,7 +3,11 @@
  * corre en el computador del investigador y se expone con un túnel de
  * Cloudflare. Añade X-Demo-Key para que la puerta local acepte la petición.
  */
+import { credencialesDe } from './acceso'
+
 export interface Env {
+  /** Usuarios con acceso, separados por coma. Cada uno tiene su propio entorno. */
+  DEMO_USUARIOS: string
   /** Contraseña de acceso a la demo. */
   DEMO_PASSWORD: string
   /** Clave compartida con la puerta local (demo/servidor.mjs). */
@@ -12,7 +16,7 @@ export interface Env {
   BACKEND_URL: string
 }
 
-const CABECERAS_QUE_NO_SE_REENVIAN = ['authorization', 'cookie', 'host', 'x-demo-key']
+const CABECERAS_QUE_NO_SE_REENVIAN = ['authorization', 'cookie', 'host', 'x-demo-key', 'x-sgva-usuario', 'x-sgva-sesion']
 
 function json(estado: number, mensaje: string): Response {
   return new Response(JSON.stringify({ mensaje }), {
@@ -27,9 +31,12 @@ export async function reenviar({ request, env }: { request: Request; env: Env })
   }
   const entrada = new URL(request.url)
   const destino = new URL(entrada.pathname + entrada.search, env.BACKEND_URL)
+  const usuario = credencialesDe(request)?.usuario
+  if (!usuario) return json(401, 'Falta el usuario.')
   const cabeceras = new Headers(request.headers)
   for (const nombre of CABECERAS_QUE_NO_SE_REENVIAN) cabeceras.delete(nombre)
   cabeceras.set('x-demo-key', env.DEMO_KEY)
+  cabeceras.set('x-sgva-usuario', usuario) // el usuario del login define el entorno
 
   try {
     return await fetch(destino, {
