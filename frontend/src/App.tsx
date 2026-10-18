@@ -9,6 +9,8 @@ import { PonderacionesPage } from './pages/PonderacionesPage'
 import { ProyectosPage } from './pages/ProyectosPage'
 import { ResultadoAutoevaluacionPage } from './pages/ResultadoAutoevaluacionPage'
 import { UploadPage } from './pages/UploadPage'
+import { PanelPruebas } from './panel/PanelPruebas'
+import { panelActivo } from './panel/modo'
 
 function App() {
   return (
@@ -59,6 +61,7 @@ function App() {
             <Route path="/comparacion" element={<ComparacionPage />} />
           </Routes>
         </main>
+        {panelActivo && <PanelPruebas />}
       </div>
     </HashRouter>
   )
