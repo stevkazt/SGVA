@@ -78,9 +78,9 @@ export interface PasoRecorrido {
 }
 
 export const recorridoDemo: PasoRecorrido[] = [
-  { texto: 'Mira el Dashboard: matrícula, Saber Pro y deserción (cohorte 20211).', ruta: '/' },
+  { texto: 'Revisa los pesos del modelo en Ponderaciones (requisito para calcular).', ruta: '/ponderaciones' },
   { texto: 'Consulta la Autoevaluación de EGSTI, periodo 20252: nota global 4,29.', ruta: '/autoevaluacion' },
-  { texto: 'Revisa cómo se reparten los pesos del modelo.', ruta: '/ponderaciones' },
+  { texto: 'Mira el Dashboard: matrícula, Saber Pro y deserción (cohorte 20211).', ruta: '/' },
   { texto: 'Abre el ciclo EGSTI-20252: fases, actividades, semáforo y PDF.', ruta: '/ciclos' },
   { texto: 'Mira el plan de mejoramiento.', ruta: '/proyectos' },
   { texto: 'Compara 20251 con 20252.', ruta: '/comparacion' },

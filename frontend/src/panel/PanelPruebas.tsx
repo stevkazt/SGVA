@@ -142,6 +142,9 @@ export function PanelPruebas() {
         <p className="panel-pruebas__nota">
           Descárgalos y súbelos en «Carga de datos» con el tipo indicado, en este orden. Sirven también como modelo del formato.
         </p>
+        <p className="panel-pruebas__nota">
+          Nota: Al usar Base Limpia, las pantallas de Encuestas, Proyectos y secciones del ciclo (actividades y grupos) quedarán vacías, ya que su ingreso se realiza exclusivamente vía API REST (ver documentación).
+        </p>
         <ul className="panel-pruebas__lista panel-pruebas__lista--archivos">
           {archivosEjemplo.map((ejemplo) => (
             <li key={ejemplo.archivo}>
