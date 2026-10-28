@@ -1,5 +1,4 @@
 import { NavLink, Route, HashRouter, Routes } from 'react-router-dom'
-import santotoLogo from './assets/santoto-logo.png'
 import { CicloDetallePage } from './pages/CicloDetallePage'
 import { CiclosPage } from './pages/CiclosPage'
 import { ComparacionPage } from './pages/ComparacionPage'
@@ -17,7 +16,6 @@ function App() {
         <nav className="top-nav">
           <div className="top-nav__inner">
             <span className="brand-lockup">
-              <img src={santotoLogo} alt="Santo Tomás" />
               <span className="brand-lockup__modificador">SGVA</span>
             </span>
             <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>
