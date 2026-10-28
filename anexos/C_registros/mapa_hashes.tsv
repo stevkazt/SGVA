@@ -1,0 +1,149 @@
+original	anonimizado	fecha_utc	mensaje
+1076ad7	7321fb0	2026-07-28 23:12	Initial commit
+f6a7f10	dbe349b	2026-07-29 01:21	chore(setup): establecer entorno base del laboratorio y calibracion V0
+f2563ae	6651756	2026-07-29 01:32	refactor(tests): actualizar reglas de ArchUnit y refinamiento metodologico
+0a9a3c9	888274f	2026-08-27 07:58	docs(diseno): alinear alcance, reglas de validacion y version de spring boot
+801b16a	d2925bf	2026-08-27 07:59	chore(logging): migrar PROMPT_LOG a indice con carpeta logs/ y automatizar via hook SessionEnd
+da4f829	2119cb8	2026-08-27 09:54	test(arquitectura): permite sufijo Port en interfaces de dominio
+2cfe6fe	3e7472f	2026-08-27 09:55	feat(dominio): modela entidades Estudiante y Docente con reglas de validación
+9f1c415	0a1058a	2026-08-27 09:55	docs(logs): completa registro de P-001 y actualiza justificación de pruebas arquitectónicas
+2c3a212	bd74ef6	2026-08-27 09:58	fix(fixtures): corrige formato de id y cohorte a numérico/AAAAS en datos de prueba
+4e32d17	855b8dd	2026-09-01 10:17	docs(V1): actualizar indice PROMPT_LOG con resultados de P-001
+3953a3c	f9ab23e	2026-09-01 10:42	feat(domain): agregar puerto AcademicDataRepository y EntidadDuplicadaException
+98c29f1	4b1731d	2026-09-01 10:42	feat(usecases): registrar y consultar estudiantes y docentes
+8f6315b	b14fb66	2026-09-01 10:42	feat(infrastructure): adaptador en memoria y configuracion de casos de uso
+31c205d	bc315df	2026-09-01 10:42	test: 12 pruebas para casos de uso y repositorio en memoria
+365d47f	c40f420	2026-09-01 10:59	docs(V1): registrar log P-002 - casos de uso y puerto AcademicDataRepository
+635dfcf	44abeab	2026-09-01 11:33	feat(domain): agregar DocumentParserPort, ResultadoIngesta/RegistroOmitido y FormatoArchivoInvalidoException
+f3b0632	1e3a1f4	2026-09-01 11:33	feat(usecases): orquestar ingesta de archivos y registro masivo de estudiantes y docentes
+90f648e	1bd54f9	2026-09-01 11:33	feat(infrastructure): parsers CSV/Excel, normalizacion de datos y cableado de casos de uso de ingesta
+db31a61	221e7d7	2026-09-01 11:33	test: 20 pruebas para parseo CSV/Excel, normalizacion y orquestacion de ingesta
+bb3de0d	f735b62	2026-09-01 11:43	docs(V1): registrar log P-003 con resultados de SonarQube y actualizar DESIGN_SGVA
+6ed518c	c08764e	2026-09-01 12:01	feat(domain): agregar IndicadorCalidad, ParametrosDeAnalisis y excepciones de calculo
+77518a9	9b059ad	2026-09-01 12:01	feat(usecases): calcular evolucion de matricula, tasa de desercion y consolidacion Saber Pro
+bb6117c	d78f752	2026-09-01 12:01	feat(infrastructure): cablear casos de uso de indicadores y bean Clock
+0812005	30f6775	2026-09-01 12:01	test: 15 pruebas para indicadores de calidad y casos de uso de calculo (Modulo 1)
+46745d6	3727c0a	2026-09-01 12:22	docs(V1): registrar log P-004 y formalizar metrica de restauraciones arquitectonicas autodetectadas
+1962f9c	614c1bd	2026-09-01 12:51	feat(domain): agregar EquivalenciaTiempoCompleto y nuevos indicadores canonicos
+73aac88	1286374	2026-09-01 12:51	feat(usecases): calcular distribucion de formacion docente y capacidad instalada
+562c8f1	0fa8bbf	2026-09-01 12:51	feat(infrastructure): cablear casos de uso de distribucion de formacion y capacidad instalada
+c9c7b30	6260bf6	2026-09-01 12:51	test: 8 pruebas para distribucion de formacion docente y capacidad instalada
+4d758bf	2096723	2026-09-01 13:08	docs(V1): registrar log P-005 - indicadores de Modulo 2 (docentes)
+13a5c62	9fdc811	2026-09-09 02:54	feat(infrastructure): controladores REST para estudiantes y docentes
+8c8b947	8720020	2026-09-09 02:54	feat(infrastructure): controlador REST para indicadores de calidad
+3c54943	d57bd36	2026-09-09 02:54	feat(infrastructure): manejo global de errores HTTP para excepciones de dominio
+7b1b392	7d9aca8	2026-09-09 03:37	test: 30 pruebas de integracion MockMvc para controladores REST y manejo de errores
+04e6840	38c2d3d	2026-09-09 03:50	fix(infrastructure): reemplazar HttpStatus.UNPROCESSABLE_ENTITY deprecado por UNPROCESSABLE_CONTENT
+67b29d7	89e01ef	2026-09-09 03:51	docs(V1): registrar log P-006 y cerrar V1 - adaptador REST completo, deuda tecnica corregida
+d1b8b9b	d58d2fb	2026-09-09 03:55	test: exponer RepositorioAcademicoFalso como publico y agregar limpiar() para pruebas web
+453950e	b8d5ba6	2026-09-09 03:57	test: exponer RepositorioAcademicoFalso como publico y agregar limpiar(); actualizar log P-006
+5c8c5f4	aa02aac	2026-09-09 04:09	docs: agregar sintesis de V1 (hallazgos metodologicos y evolucion de deuda tecnica)
+876e331	7ec63ef	2026-09-12 13:04	docs(V1): registrar log P-006 y cerrar V1 - adaptador REST completo
+f8b6772	07eb3c6	2026-09-12 13:45	feat(domain): agregar Modulo 3 - RespuestaEncuesta, PonderacionLikert, MatrizRadar y extension de puertos
+0b45bcb	adcafac	2026-09-12 13:45	feat(usecases): registro, ingesta y calculo de ponderacion Likert y matriz radar para encuestas
+94ec6c8	f09f37f	2026-09-12 13:45	feat(infrastructure): parseo, persistencia, cableado y controlador REST para encuestas
+204c0ce	fc2c592	2026-09-12 13:45	test: 34 pruebas para Modulo 3 (encuestas de percepcion)
+a2a2682	358f2ba	2026-09-12 13:45	docs(V2): registrar log P-007 - Modulo 3 completo con resultados de SonarQube
+cc186a3	95d48bc	2026-09-12 14:06	docs: agregar documentacion de infraestructura local (SonarQube, PostgreSQL)
+dd0c2bb	fc50004	2026-09-12 15:07	docs: agregar documentacion de infraestructura local (SonarQube, PostgreSQL)
+e235294	db938cf	2026-09-12 15:21	build: agregar dependencias de JPA y PostgreSQL
+4082d01	50e2b6b	2026-09-12 15:21	docs(V3): registrar log P-008 - sustitucion de persistencia con resultados de SonarQube
+92abc40	ebff554	2026-09-12 15:23	feat(infrastructure): sustituir persistencia en memoria por PostgreSQL via Spring Data JPA
+02a54a2	f2e2999	2026-09-12 15:23	test: reemplazar AcademicDataRepositoryEnMemoria por RepositorioAcademicoFalso y agregar prueba JPA contra PostgreSQL real
+c543d90	cb987dd	2026-09-13 01:13	feat(domain): agregar ReporteEjecutivo como value object para reportes ejecutivos
+6913b10	3b1b197	2026-09-13 01:13	feat(usecases): componer GenerarReporteEjecutivoUseCase sobre los casos de uso de indicadores y encuestas
+778372d	a1a0565	2026-09-13 01:13	feat(infrastructure): generar reportes ejecutivos en PDF con Apache PDFBox y exponerlos via REST
+fed00dd	ceedcba	2026-09-13 01:13	test: 9 pruebas para generacion de reportes ejecutivos en PDF
+6d8be07	ada9f6e	2026-09-13 02:53	docs(V4): registrar log P-009 - integracion de reportes PDF con resultados de SonarQube
+8505593	6277a0a	2026-09-14 02:56	docs: verificacion independiente de resultados reportados por Claude Code CLI en commits de cierre
+7515323	49e0c0e	2026-09-14 16:53	docs: verificacion de control negativo - ArchitectureTest detecta violaciones reales
+a3feb9b	ac51796	2026-09-14 17:06	docs: confirmar via git log que ArchitectureTest.kt no fue modificado desde V0 (3 commits, todos previos a P-001)
+c91b893	105fc4f	2026-09-18 02:46	docs(instrumentacion): documentos de los instrumentos de medición y perfil de reglas de SonarQube
+e3e212d	5b9857b	2026-09-18 02:47	docs(metodologia): documentar amenazas a la validez del estudio
+d60c127	e5a8e8d	2026-09-18 02:48	docs(sintesis): agregar síntesis de resultados V2 (expansión funcional)
+0841963	0a0a439	2026-09-18 02:48	docs(sintesis): agregar síntesis de resultados V3 (estrés arquitectónico - persistencia)
+21d89ed	dc6e5c5	2026-09-18 02:48	docs(sintesis): agregar síntesis de resultados V4 (estrés arquitectónico - integración externa)
+5fb42b6	3793b58	2026-09-18 02:48	docs(resultados): agregar primer análisis de la hipótesis de investigación
+2d7640c	5cb27eb	2026-09-18 03:40	docs: retirar documentos internos de análisis y verificación del repositorio de trabajo
+0f59ffd	4d519b7	2026-09-25 21:22	feat(frontend): conectar la exportación del reporte ejecutivo en PDF
+61c7548	8f688bd	2026-09-25 21:22	docs(frontend): documentar estructura, rutas y flujo de desarrollo
+88c5782	86f346b	2026-09-25 21:30	chore(frontend): agregar el proyecto base React + Vite + TypeScript
+6ef5b21	c5904db	2026-09-25 21:31	docs(logs): registrar el extra práctico del frontend fuera del protocolo V0-V4
+5f15530	2b7a5c0	2026-09-25 21:35	chore: ignorar univ-Design-Manual
+c3cb899	92a6bf7	2026-10-03 00:11	chore(infra): agrega archivo docker-compose para base de datos postgresql
+2f0ec8a	b13096c	2026-10-03 00:14	docs(root): actualiza instrucciones de ejecución con docker en README frontend y backend
+0906b09	8abe735	2026-10-03 00:18	chore: elimina .DS_Store del rastreo de git y lo añade a .gitignore
+486e90b	e1d7f5b	2026-10-07 23:20	docs(design): actualiza DESIGN_SGVA para V5 (alineación con proceso institucional)
+4da7207	9b3b1a6	2026-10-07 23:25	docs(root): agrega restricción de lectura de la carpeta docs a CLAUDE.md
+b7abb0a	724112a	2026-10-07 23:31	docs(root): agrega aclaración de autoría con Claude Sonnet 5 al README
+1e14f2e	d65d05d	2026-10-07 23:40	chore(git): Excluded /docs folder from git
+09e00ce	e8a501d	2026-10-10 15:46	docs(design): actualiza DESIGN_SGVA para V5 con modelo 2025
+e5edacb	d19fdf4	2026-10-10 16:03	feat(domain): modela Caracteristica y ConfiguracionPonderaciones con validación de pesos
+2cd2851	2866cd5	2026-10-10 16:03	test(domain): agrega pruebas de Caracteristica y ConfiguracionPonderaciones
+3cea345	6ff6226	2026-10-10 16:04	docs(V5): registrar log P-010 - dominio de características y ponderaciones
+29bbe09	ce85fbb	2026-10-10 16:39	feat(domain): agrega programa a Docente, amplía TipoEstamento a siete estamentos y modela ResultadoEncuestaPregunta
+fedf8d9	b2b9486	2026-10-10 16:39	feat(usecases): agrega registro, consulta y carga masiva de ResultadoEncuestaPregunta
+42f19b9	0862d8e	2026-10-10 16:39	feat(infrastructure): persiste y carga ResultadoEncuestaPregunta y el programa de Docente
+9081235	573b301	2026-10-10 16:39	test: agrega pruebas de ResultadoEncuestaPregunta y actualiza las de Docente con programa
+adc20da	5ed021a	2026-10-10 16:44	docs(V5): registrar log P-011 - programa, estamentos y encuesta por pregunta
+d6d4076	d8b870b	2026-10-10 17:22	feat(domain): agrega EvaluacionDocumental y ValoracionCualitativa
+ce45bbc	cf0dd51	2026-10-10 17:26	feat(usecases): agrega registro, consulta y carga masiva de EvaluacionDocumental
+7a58da5	18a79a2	2026-10-10 17:26	feat(infrastructure): persiste, carga y expone EvaluacionDocumental
+14e30c5	5a1f648	2026-10-10 17:26	test: agrega pruebas de EvaluacionDocumental y ValoracionCualitativa
+6506b5d	3897535	2026-10-10 17:27	docs(V5): registrar log P-012 - evaluación documental y valoración cualitativa
+5569cc7	39e9a9b	2026-10-10 18:34	feat(infrastructure): soporta separador, codificación y filas de título en la lectura de archivos
+a2307c8	8b0c009	2026-10-10 18:34	test: agrega pruebas de robustez de lectura de archivos
+8f11f5d	99eac01	2026-10-10 18:35	docs(V5): registrar log P-013 - robustez de lectura de archivos
+802d07f	89c94f4	2026-10-10 19:51	feat(domain): agrega ResultadoAutoevaluacion con promedios por característica, factor y global
+25701af	d2d5e53	2026-10-10 19:51	feat(usecases): calcula el resultado de autoevaluación con mezcla y reponderación
+8c7208b	c3ee305	2026-10-10 19:51	test: agrega pruebas del cálculo de autoevaluación y de ResultadoAutoevaluacion
+b947c9e	8801d5a	2026-10-10 22:10	test: agrega fixtures del modelo 2025 para la validación de V5
+0739b68	cf36204	2026-10-10 22:10	feat(infrastructure): carga las ponderaciones del modelo desde un archivo externo
+2f17631	deafe25	2026-10-10 22:10	test: agrega pruebas de la carga de ponderaciones
+24d64c2	bbd3fc8	2026-10-10 22:56	docs(V5): registrar log P-014 - resultado de autoevaluación y carga de ponderaciones
+dff05b9	23fb959	2026-10-13 00:48	feat(infrastructure): expone el resultado de autoevaluación por programa y periodo
+a2b1f00	f54099f	2026-10-13 00:48	test: agrega pruebas del controlador de resultado de autoevaluación
+0bc3edb	7a3b89b	2026-10-13 00:49	docs(V5): registrar log P-015 - endpoint REST del resultado de autoevaluación
+4bcb4b7	a6ae7aa	2026-10-13 01:28	feat(domain): agrega el resultado de autoevaluación al reporte ejecutivo
+30de462	aa47882	2026-10-13 01:28	feat(usecases): calcula el resultado de autoevaluación en el reporte ejecutivo
+9bde792	6940cb0	2026-10-13 01:28	feat(infrastructure): muestra el resultado de autoevaluación en el reporte PDF
+93120db	c54cf9e	2026-10-13 01:28	test: agrega pruebas de la sección de autoevaluación del reporte ejecutivo
+7b3abb3	1c94be0	2026-10-13 01:35	docs(V5): registrar log P-016 - sección de resultado de autoevaluación en el reporte ejecutivo
+f729121	6363a2f	2026-10-13 01:35	docs(V5): completar la medición de Sonar de P-015 en PROMPT_LOG
+8623d35	d80235c	2026-10-13 01:44	test: valida el cálculo de autoevaluación contra el modelo 2025
+3eeea7e	0d57629	2026-10-13 01:45	docs(V5): registrar log P-017 - validación contra el modelo 2025
+e39e561	d0aee8a	2026-10-13 01:49	docs(design): documenta el seguimiento del proceso de autoevaluación para V6
+335f198	35e2675	2026-10-13 01:55	chore(hook): usa V6 como iteración por defecto del log de sesión
+27fc8bf	310c5cb	2026-10-13 03:20	feat(domain): modela el seguimiento del proceso de autoevaluación
+1671d9d	a3519ce	2026-10-13 03:20	feat(usecases): agrega registro, consulta, avance y comparación de ciclos de autoevaluación
+3d80a7d	3a8e41a	2026-10-13 03:20	feat(infrastructure): persiste, carga y expone el seguimiento del proceso de autoevaluación
+def59d9	41c49b4	2026-10-13 03:20	test: agrega pruebas del seguimiento del proceso de autoevaluación
+9e48b1a	2a691ec	2026-10-13 03:24	docs(V6): registrar log P-018 - seguimiento del proceso de autoevaluación
+8906b6c	ba28d78	2026-10-14 11:33	test: agrega fixtures del proceso 2025 para la validación de V6
+c3a1b14	f9bde8a	2026-10-14 11:44	test: valida el seguimiento del proceso contra el proceso 2025
+e5356ed	820540a	2026-10-14 11:46	docs(V6): registrar log P-026 - validación contra el proceso 2025
+5a7c75a	87ed2e3	2026-10-14 11:53	docs(V6): completar las notas del investigador de P-010 a P-018 y P-026
+026562b	073199d	2026-10-14 11:55	docs(V6): completar la medición de Sonar de P-010 a P-014 en PROMPT_LOG
+90bcb36	be7d22e	2026-10-14 12:20	feat(domain): agrega el estado del ciclo de autoevaluación al reporte ejecutivo
+dd32438	2605373	2026-10-14 12:20	feat(usecases): compone el estado del ciclo y la comparación con el ciclo anterior en el reporte
+19aeab0	5854542	2026-10-14 12:20	feat(infrastructure): muestra el estado del ciclo de autoevaluación en el reporte PDF
+9598ea2	fd16e90	2026-10-14 12:20	test: agrega pruebas de la sección de estado del ciclo en el reporte ejecutivo
+c29b9bb	c757227	2026-10-14 12:21	docs(V6): registrar log P-025 - estado del ciclo en el reporte ejecutivo
+2bb14cf	54bd325	2026-10-14 12:35	feat(frontend): agrega la carga de resultados de encuesta y evaluación documental
+5ab63d1	4af3d2c	2026-10-14 12:35	feat(frontend): agrega la pantalla de resultado de autoevaluación
+0ec0608	6a4ae03	2026-10-14 12:37	feat(frontend): agrega el cliente y los tipos del seguimiento del proceso
+7553060	7014ce0	2026-10-14 12:37	feat(frontend): agrega componentes y utilidades del seguimiento del proceso
+44c90ae	34b8a55	2026-10-14 12:37	feat(frontend): agrega las pantallas de ciclos, proyectos y comparación
+7ff2950	9bcc2a3	2026-10-14 12:38	docs(logs): registrar los extras de frontend 02 y 03 fuera del protocolo
+4674a17	b328d3a	2026-10-14 12:42	fix(frontend): fija la escala de 0 a 5 en la gráfica de promedios por factor
+7531360	9e2f9b9	2026-10-14 13:06	docs(V6): completar las notas del investigador de P-025
+744b188	578c588	2026-10-15 01:30	feat(domain): agrega los puertos de la configuración de ponderaciones
+79ab97c	ef3a0b7	2026-10-15 01:30	feat(usecases): consulta y carga las ponderaciones desde la base de datos
+cfec1c0	e2101a0	2026-10-15 01:30	feat(infrastructure): persiste las ponderaciones y las expone por REST
+85f2e06	a41c857	2026-10-15 01:30	test: cubre la carga y consulta de ponderaciones en la base de datos
+e730e01	9e5b8e6	2026-10-15 01:30	feat(frontend): permite cargar y consultar las ponderaciones del modelo
+18f300f	235b94d	2026-10-15 01:31	docs(logs): registrar la mejora de ponderaciones en base de datos
+0a84193	dff2c16	2026-10-25 23:32	chore(hook): elimina el hook de registro de sesión
+e917692	595c449	2026-10-25 23:32	chore(frontend): permite acceder mediante túneles de cloudflare
+798236b	d000909	2026-10-25 23:36	docs(transcripts): agrega los respaldos de los transcripts de las sesiones
+74a59bd	a5b1bde	2026-10-26 00:12	docs(anexos): agrega los anexos citados en la tesis

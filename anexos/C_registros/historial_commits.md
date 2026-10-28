@@ -2,6 +2,8 @@
 
 Lista de los commits de `main` en orden cronológico, generada con `git log` para la revisión anónima: hash abreviado, fecha (UTC), mensaje y archivos cambiados. Se omiten los nombres y correos de los autores. Los commits medidos con SonarQube en cada prompt están en `anexos/B_sintesis_y_mediciones/sonar_resultados_serie.md`, y cada log de `logs/` cita los commits de su prompt.
 
+El historial completo, con el contenido de cada archivo en cada commit, está en `sgva_historial_anonimo.bundle`, en esta misma carpeta. Para explorarlo: `git clone sgva_historial_anonimo.bundle sgva` y, dentro, `git log`, `git show <hash>` o `git log -p -- <archivo>`. En esa copia los autores figuran como «Anonimo», se reemplazaron los datos que identifican al autor y a la institución, y se retiraron el logo de la universidad y la propuesta de grado; por eso sus hashes difieren de los de esta lista y de los logs. `mapa_hashes.tsv` da la equivalencia entre ambos.
+
 ## 1. `1076ad7` — 2026-07-28 23:12 UTC
 
 **Initial commit**
