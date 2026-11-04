@@ -1,6 +1,6 @@
 # Anexos
 
 - **Anexo A — Documentos rectores:** `anexos/A_documentos_rectores/`, `CLAUDE.md` y `DESIGN_SGVA.md` (raíz).
-- **Anexo B — Síntesis y mediciones:** `anexos/B_sintesis_y_mediciones/`.
+- **Anexo B — Síntesis y mediciones:** `anexos/B_sintesis_y_mediciones/`. `complejidad_y_puerto_serie.csv` reúne, por prompt, la complejidad ciclomática y cognitiva guardadas en el historial de la serie de SonarQube y el uso del puerto de datos calculado sobre el código de cada commit.
 - **Anexo C — Registros:** `PROMPT_LOG.md` y `README.md` (raíz), `anexos/C_registros/TESTS_ARQUITECTONICOS.md` e historial de git.
 - **Anexo D — Logs de sesión:** `logs/` (P-000 a P-018, P-025 y P-026).
