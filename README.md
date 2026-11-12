@@ -36,6 +36,8 @@ Levanta la base de datos, el backend y el frontend. Abre http://localhost:5173 (
 
 La primera vez tarda unos minutos porque compila el backend y el frontend.
 
+**Cómo saber que funcionó:** en la terminal aparece una línea como `Started SgvaApplicationKt in 8.4 seconds`; desde ahí ya puedes abrir http://localhost:5173. Verás muchos mensajes del arranque, y los avisos `WARN` (por ejemplo, sobre el dialecto de Hibernate) son normales y no afectan. Deja la terminal abierta mientras pruebas; `Ctrl+C` detiene todo.
+
 ## Base de Datos (PostgreSQL)
 
 El proyecto requiere una instancia local de PostgreSQL. Para levantarla fácilmente con la configuración por defecto, ejecuta en la raíz del proyecto:
