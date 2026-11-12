@@ -1,0 +1,10 @@
+.git
+.gradle
+build
+transcripts
+anexos
+logs
+demo/logs
+frontend/node_modules
+frontend/dist
+**/node_modules

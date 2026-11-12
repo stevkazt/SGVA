@@ -1,18 +1,35 @@
 version: "3.8"
 
+# Versión con el panel de pruebas: dos contenedores (base de datos y aplicación).
+# Uso: docker compose up --build  y abrir http://localhost:5173
+
 services:
   db:
     image: postgres:16
-    container_name: sgva-postgres
     restart: always
     environment:
       POSTGRES_USER: sgva
       POSTGRES_PASSWORD: sgva_dev_password
       POSTGRES_DB: sgva
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgva -d sgva"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGPASSWORD: sgva_dev_password
+      DB_HOST: db
+    ports:
+      - "5173:5173"
 
 volumes:
   pgdata:

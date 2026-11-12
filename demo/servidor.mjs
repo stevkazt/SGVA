@@ -56,8 +56,13 @@ function responderJson(res, estado, cuerpo) {
 
 const dormir = (ms) => new Promise((resolver) => setTimeout(resolver, ms))
 
+// Con PGHOST (p. ej. dentro de docker compose) se habla con PostgreSQL por red;
+// sin él, con `docker exec` contra el contenedor de la base.
 async function psql(base, sql) {
-  const { stdout } = await ejecutar('docker', ['exec', config.contenedor, 'psql', '-U', 'sgva', '-d', base, '-v', 'ON_ERROR_STOP=1', '-tAc', sql])
+  const argumentos = ['-U', 'sgva', '-d', base, '-v', 'ON_ERROR_STOP=1', '-tAc', sql]
+  const { stdout } = process.env.PGHOST
+    ? await ejecutar('psql', ['-h', process.env.PGHOST, ...argumentos])
+    : await ejecutar('docker', ['exec', config.contenedor, 'psql', ...argumentos])
   return stdout.trim()
 }
 

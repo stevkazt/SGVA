@@ -48,6 +48,16 @@ demo/detener.sh                  # apaga todo
 - El backend corre con la base de PostgreSQL del contenedor `sgva-postgres`; no toca la base `sgva` ni otras.
 - Logs en `demo/logs/`.
 
+## Con Docker (revisores)
+
+Solo requiere Docker; no hay login ni usuarios (la puerta usa el entorno `local`):
+
+```
+docker compose up --build
+```
+
+Abre http://localhost:5173. Son dos contenedores: `db` (PostgreSQL) y `app` (la puerta de la demo, los backends y el frontend con el panel). La primera vez prepara los datos de ejemplo (unos 30 s). Dentro del contenedor la puerta habla con PostgreSQL por red (`PGHOST`) en vez de `docker exec`.
+
 ## Desarrollo local del panel
 
 ```
