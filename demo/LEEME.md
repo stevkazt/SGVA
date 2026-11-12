@@ -56,7 +56,7 @@ Solo requiere Docker; no hay login ni usuarios (la puerta usa el entorno `local`
 docker compose up --build
 ```
 
-Abre http://localhost:5173. Son dos contenedores: `db` (PostgreSQL) y `app` (la puerta de la demo, los backends y el frontend con el panel). La primera vez prepara los datos de ejemplo (unos 30 s). Dentro del contenedor la puerta habla con PostgreSQL por red (`PGHOST`) en vez de `docker exec`.
+Abre http://localhost:5173. Son dos contenedores: `db` (PostgreSQL) y `app` (la puerta de la demo, los backends y el frontend con el panel). La primera vez prepara los datos de ejemplo (unos 30 s). **Cómo saber que funcionó:** en la terminal aparece `Local: http://localhost:5173/` (el servidor del frontend) y, al abrir la página, el panel lateral con los datos de ejemplo. Los avisos `WARN` del arranque son normales. Deja la terminal abierta mientras pruebas; `Ctrl+C` detiene todo. Dentro del contenedor la puerta habla con PostgreSQL por red (`PGHOST`) en vez de `docker exec`.
 
 ## Desarrollo local del panel
 

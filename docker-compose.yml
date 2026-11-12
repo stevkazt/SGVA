@@ -1,5 +1,3 @@
-version: "3.8"
-
 # Versión con el panel de pruebas: dos contenedores (base de datos y aplicación).
 # Uso: docker compose up --build  y abrir http://localhost:5173
 
