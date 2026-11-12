@@ -24,13 +24,57 @@ El proyecto está estructurado bajo los principios de **Arquitectura Limpia (Cle
 - `usecases/`: Lógica de la aplicación y puertos primarios.
 - `infrastructure/`: Implementaciones de adaptadores, repositorios de bases de datos, controladores web y parseo de archivos.
 
+## Inicio rápido con Docker
+
+Solo requiere Docker. Desde la raíz del proyecto:
+
+```bash
+docker compose up --build
+```
+
+Levanta la base de datos, el backend y el frontend. Abre http://localhost:5173 (la API queda en el puerto 8080). Con la base vacía, sigue la sección «Carga de datos» más abajo para cargar los archivos de ejemplo. Para detenerlo: `docker compose down` (añade `-v` para borrar también los datos).
+
+La primera vez tarda unos minutos porque compila el backend y el frontend.
+
 ## Base de Datos (PostgreSQL)
 
 El proyecto requiere una instancia local de PostgreSQL. Para levantarla fácilmente con la configuración por defecto, ejecuta en la raíz del proyecto:
-\`\`\`bash
-docker compose up -d
-\`\`\`
+```bash
+docker compose up -d db
+```
 Una vez que el contenedor esté corriendo, puedes iniciar la aplicación principal con `./gradlew bootRun`.
+
+## Frontend
+
+El frontend (React + Vite) está en `frontend/` y consume la API del backend. Con el backend corriendo en el puerto 8080:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Vite sirve la interfaz y reenvía las peticiones `/api` al backend. Si este corre en otro puerto, indícalo con `VITE_BACKEND_URL`, por ejemplo `VITE_BACKEND_URL=http://localhost:8099 npm run dev`.
+
+## Carga de datos
+
+Con la base vacía, varios endpoints responden «no hay datos». Para verla funcionando, abre la sección «Carga de datos» del frontend y sube los archivos de ejemplo:
+
+- `docs/modelo_autoevaluacion_2022.csv`: ponderaciones del modelo institucional (sección «Ponderaciones»).
+- `src/test/resources/fixtures/*.csv`: estudiantes, docentes, encuestas, evaluaciones documentales, participación de actores y preevaluaciones de ejemplo.
+
+También se pueden cargar por la API, por ejemplo `POST /api/estudiantes/archivos` con el CSV en el campo `archivo`.
+
+## Panel de pruebas (opcional)
+
+El panel lateral de pruebas permite alternar entre datos de ejemplo y una base vacía, restaurar o vaciar los datos, y explica cada pantalla con un recorrido sugerido. Está en la rama `demo/panel-pruebas`; `main` no lo incluye. Para usarlo, solo con Docker:
+
+```bash
+git checkout demo/panel-pruebas
+docker compose up --build
+```
+
+Abre http://localhost:5173. La primera vez prepara los datos de ejemplo, lo que tarda unos 30 segundos. Esa rama usa dos contenedores (base de datos y aplicación) y no necesita Java ni Node. Más detalles en `demo/LEEME.md` de esa rama.
 
 ## Ejecución del Entorno de Medición (Laboratorio)
 
