@@ -60,8 +60,8 @@ Vite sirve la interfaz y reenvía las peticiones `/api` al backend. Si este corr
 
 Con la base vacía, varios endpoints responden «no hay datos». Para verla funcionando, abre la sección «Carga de datos» del frontend y sube los archivos de ejemplo:
 
-- `docs/modelo_autoevaluacion_2022.csv`: ponderaciones del modelo institucional (sección «Ponderaciones»).
-- `src/test/resources/fixtures/*.csv`: estudiantes, docentes, encuestas, evaluaciones documentales, participación de actores y preevaluaciones de ejemplo.
+- `src/test/resources/fixtures/modelo2025/ponderaciones_modelo_2025.csv`: ponderaciones del modelo institucional (sección «Ponderaciones»). Se carga primero.
+- `src/test/resources/fixtures/*.csv` y las subcarpetas `modelo2025/` y `proceso2025/`: estudiantes, docentes, encuestas, evaluaciones documentales, participación de actores y preevaluaciones de ejemplo.
 
 También se pueden cargar por la API, por ejemplo `POST /api/estudiantes/archivos` con el CSV en el campo `archivo`.
 
