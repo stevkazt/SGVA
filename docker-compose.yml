@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:16
-    container_name: sgva-postgres
     restart: always
     environment:
       POSTGRES_USER: sgva
